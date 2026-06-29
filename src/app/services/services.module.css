@@ -1,0 +1,49 @@
+.hero { padding: 64px 0 16px; }
+.heroTitle { font-size: clamp(3rem, 10vw, 6rem); line-height: 0.98; letter-spacing: -0.03em; font-weight: 800; }
+.heroTitleGold { display: block; color: var(--accent); }
+.heroBody { color: var(--text-muted); max-width: 52ch; margin-top: 22px; }
+
+.section { padding: 64px 0; }
+.headTitle { font-size: clamp(1.8rem, 4vw, 2.4rem); }
+.headSub { color: var(--text-muted); margin-top: 10px; max-width: 64ch; }
+
+/* Service breakdown grid */
+.breakdown { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 36px; }
+@media (min-width: 900px) { .breakdown { grid-template-columns: repeat(2, 1fr); } }
+.svcCard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow); }
+.svcTitle { font-size: 1.35rem; font-weight: 700; }
+.svcTags { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0; }
+.svcDesc { color: var(--text-muted); font-size: 0.92rem; }
+.svcMeta { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.metaLabel { color: var(--accent-soft); font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; }
+.metaText { color: var(--text-muted); font-size: 0.86rem; }
+.includes { border-top: 1px solid var(--border); padding-top: 16px; }
+.checkGrid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+@media (min-width: 560px) { .checkGrid { grid-template-columns: 1fr 1fr; } }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 0.86rem; color: var(--text-muted); }
+.checkMark { color: var(--accent-soft); flex-shrink: 0; }
+
+/* Pricing */
+.pricing { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 36px; }
+@media (min-width: 900px) { .pricing { grid-template-columns: repeat(3, 1fr); align-items: start; } }
+.priceCard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+.priceCardFeatured { border-color: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-soft), var(--shadow); }
+.badge { align-self: flex-start; font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--text-muted); }
+.badgeFeatured { background: var(--accent); color: var(--btn-fg); }
+.priceName { font-size: 1.25rem; font-weight: 700; margin-top: 6px; }
+.priceFrom { color: var(--text-muted); font-size: 0.8rem; }
+.priceBig { font-size: 2.6rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
+.priceDesc { color: var(--text-muted); font-size: 0.88rem; }
+.priceIncludesLabel { font-size: 0.86rem; font-weight: 600; margin-top: 6px; }
+.priceList { list-style: none; display: grid; gap: 8px; margin: 4px 0 16px; }
+.priceList li { display: flex; gap: 8px; font-size: 0.86rem; color: var(--text-muted); }
+.priceFootnote { text-align: center; color: var(--text-muted); font-size: 0.8rem; max-width: 60ch; margin: 28px auto 0; }
+
+/* Timeline */
+.timeline { margin-top: 40px; display: grid; gap: 0; position: relative; max-width: 720px; }
+.tlItem { display: grid; grid-template-columns: 48px 1fr; gap: 20px; padding-bottom: 36px; position: relative; }
+.tlItem:not(:last-child)::before { content: ''; position: absolute; left: 23px; top: 40px; bottom: 0; width: 2px; background: var(--border); }
+.tlNum { width: 48px; height: 48px; border-radius: 12px; border: 2px solid var(--accent-soft); color: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; background: var(--bg); z-index: 1; }
+.tlTitle { font-weight: 700; font-size: 1.1rem; }
+.tlText { color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; }

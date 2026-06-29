@@ -12,7 +12,10 @@ export function SiteFooter() {
       <div className="container" style={{ padding: '56px 24px 32px', display: 'grid', gap: 40, gridTemplateColumns: '1fr' }}>
         <div style={{ display: 'grid', gap: 40, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
           <div style={{ maxWidth: 320 }}>
-            <span style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--accent)', color: 'var(--btn-fg)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, letterSpacing: '-0.04em' }}>en</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <img src="/logo-light.png" alt="Erwin Natividad" className="themeLogo logoLight" style={{ height: 44 }} />
+              <img src="/logo-dark.png" alt="" aria-hidden="true" className="themeLogo logoDark" style={{ height: 44 }} />
+            </span>
             <p style={{ color: 'var(--text-muted)', marginTop: 16, fontSize: '0.92rem' }}>
               Experienced voice over artist and dedicated coach committed to delivering exceptional, high-quality, and professional results that truly elevate your projects and captivate your audience.
             </p>

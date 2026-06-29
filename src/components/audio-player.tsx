@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 
 // Compact audio player matching the design (play/pause, progress, time, volume).
 // Pass src to make it play real audio; without src it shows the control UI.
-export function AudioPlayer({ src }: { src?: string }) {
+export function AudioPlayer({ src, durationLabel }: { src?: string; durationLabel?: string }) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -15,6 +15,8 @@ export function AudioPlayer({ src }: { src?: string }) {
     const sec = Math.floor(s % 60).toString().padStart(2, '0')
     return `${m}:${sec}`
   }
+
+  const totalLabel = !src && durationLabel ? durationLabel : fmt(duration)
 
   function toggle() {
     const a = audioRef.current
@@ -42,7 +44,7 @@ export function AudioPlayer({ src }: { src?: string }) {
           <div style={{ width: `${progress}%`, height: '100%', background: 'var(--accent)' }} />
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          <span>{fmt(current)}</span><span>{fmt(duration)}</span>
+          <span>{fmt(current)}</span><span>{totalLabel}</span>
         </div>
       </div>
       <span aria-hidden style={{ color: 'var(--text-muted)', flexShrink: 0 }}>{'\u{1F50A}'}</span>

@@ -1,0 +1,33 @@
+.hero { padding: 64px 0 8px; }
+.heroTitle { font-size: clamp(3rem, 11vw, 6.5rem); line-height: 0.96; letter-spacing: -0.03em; font-weight: 800; }
+.heroTitleGold { display: block; color: var(--accent); }
+.heroBody { color: var(--text-muted); max-width: 52ch; margin-top: 22px; }
+
+.toolbar { display: flex; gap: 12px; margin-top: 40px; flex-wrap: wrap; }
+.searchWrap { flex: 1; min-width: 240px; display: flex; align-items: center; gap: 10px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 0 14px; }
+.searchInput { flex: 1; border: none; background: none; color: var(--text); font: inherit; padding: 13px 0; outline: none; }
+.searchInput::placeholder { color: var(--text-muted); }
+.searchIcon { color: var(--text-muted); flex-shrink: 0; }
+
+.quickHead { font-size: clamp(1.4rem, 3vw, 1.9rem); margin-top: 36px; }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.chip { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: transparent;
+  color: var(--text); font: inherit; font-size: 0.9rem; cursor: pointer; transition: all 0.15s ease; }
+.chip:hover { border-color: var(--text-muted); }
+.chipActive { background: var(--btn-bg); color: var(--btn-fg); border-color: var(--btn-bg); }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 36px; }
+@media (min-width: 680px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1040px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px;
+  display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow); }
+.cardImg { aspect-ratio: 16 / 9; background: var(--surface-2); border-radius: 10px; }
+.cardTags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tagGold { font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--tag-border); }
+.cardTitle { font-size: 1.2rem; font-weight: 700; }
+.cardDesc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+.cardDate { color: var(--text-muted); font-size: 0.78rem; }
+
+.loadMoreWrap { display: flex; justify-content: center; margin-top: 40px; }
+.empty { text-align: center; color: var(--text-muted); padding: 48px 0; }

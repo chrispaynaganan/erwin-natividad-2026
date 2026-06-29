@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { ThemeToggle } from './theme-toggle'
 
 const nav = [
@@ -10,19 +11,20 @@ const nav = [
   { href: '/contact', label: 'Contact' },
 ]
 
-// Placeholder "en" monogram — replace with Erwin's real logo SVG in /public.
+// Theme-aware logo (knocked-out PNGs in /public). Light logo on light bg, dark on dark.
 function Logo() {
   return (
-    <Link href="/" aria-label="Erwin Natividad — home"
-      style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--accent)', color: 'var(--btn-fg)',
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, letterSpacing: '-0.04em' }}>
-      en
+    <Link href="/" aria-label="Erwin Natividad — home" style={{ display: 'inline-flex', alignItems: 'center' }}>
+      <img src="/logo-light.png" alt="Erwin Natividad" className="themeLogo logoLight" />
+      <img src="/logo-dark.png" alt="" aria-hidden="true" className="themeLogo logoDark" />
     </Link>
   )
 }
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72, gap: 16 }}>
@@ -31,7 +33,9 @@ export function SiteHeader() {
         {/* Desktop nav — segmented pill container */}
         <nav style={{ display: 'none', gap: 4, padding: 4, borderRadius: 999, background: 'var(--surface-2)', border: '1px solid var(--border)' }} className="enNavDesktop">
           {nav.map((i) => (
-            <Link key={i.href} href={i.href} style={{ padding: '8px 18px', borderRadius: 999, fontSize: '0.95rem', color: 'var(--text)' }}>
+            <Link key={i.href} href={i.href} style={{ padding: '8px 18px', borderRadius: 999, fontSize: '0.95rem',
+              background: isActive(i.href) ? 'var(--nav-active-bg)' : 'transparent',
+              color: isActive(i.href) ? 'var(--nav-active-fg)' : 'var(--text)' }}>
               {i.label}
             </Link>
           ))}
