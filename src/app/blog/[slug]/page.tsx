@@ -1,9 +1,40 @@
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { posts, getPost } from '@/lib/blog'
+import s from './post.module.css'
+
+export function generateStaticParams() {
+  return posts.map((p) => ({ slug: p.slug }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
+  const p = getPost(slug)
+  return { title: p ? p.title : 'Post' }
+}
+
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const p = getPost(slug)
+  if (!p) notFound()
+
   return (
-    <main className="container" style={{ padding: '4rem 1.5rem' }}>
-      <h1 style={{ fontSize: 'var(--text-h1)' }}>{slug}</h1>
-      <p style={{ color: 'var(--color-text-muted)', marginTop: '0.75rem' }}>Article body renders here.</p>
+    <main className={`${s.wrap} container`}>
+      <nav className={s.breadcrumb} aria-label="Breadcrumb">
+        <Link href="/">Home</Link><span>/</span>
+        <Link href="/blog">Blog</Link><span>/</span>
+        <span style={{ color: 'var(--accent-soft)' }}>{p.title}</span>
+      </nav>
+
+      <span className={s.cat}>{p.category}</span>
+      <h1 className={s.title}>{p.title}</h1>
+      <div className={s.meta}><span>{p.date}</span><span>&middot;</span><span>{p.readMinutes} min read</span></div>
+
+      <article className={s.body}>
+        {p.body.map((para, i) => <p key={i}>{para}</p>)}
+      </article>
+
+      <Link href="/blog" className={`btn btnOutline ${s.back}`}>&larr; Back to all posts</Link>
     </main>
   )
 }

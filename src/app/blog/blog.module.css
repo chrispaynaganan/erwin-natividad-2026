@@ -1,0 +1,18 @@
+.hero { padding: 56px 0 8px; }
+.heroTitle { font-size: clamp(2.6rem, 9vw, 5rem); line-height: 0.98; letter-spacing: -0.03em; font-weight: 800; }
+.heroTitleGold { color: var(--accent); }
+.heroBody { color: var(--text-muted); max-width: 52ch; margin-top: 20px; font-size: 1.05rem; }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin: 44px 0 64px; }
+@media (min-width: 680px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+.card { display: flex; flex-direction: column; gap: 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease; }
+.card:hover { transform: translateY(-3px); border-color: var(--text-muted); }
+.cat { align-self: flex-start; font-size: 0.75rem; padding: 4px 11px; border-radius: 999px;
+  background: var(--tag-bg); color: var(--tag-text); border: 1px solid var(--tag-border); }
+.cardTitle { font-size: 1.2rem; font-weight: 700; line-height: 1.25; }
+.excerpt { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; flex: 1; }
+.meta { color: var(--text-muted); font-size: 0.8rem; display: flex; gap: 10px; }

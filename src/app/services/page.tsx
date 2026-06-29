@@ -43,7 +43,7 @@ const breakdown = [
 
 const pricing = [
   { name: 'Basic Package', badge: 'Most affordable', featured: false, from: 'From $250 (Save 10%)', price: '$150', desc: 'Perfect for short-form content and quick projects (make this longer)', listLabel: 'Basic package includes:', list: ['Up to 150 words', '1 revision round', '48-hour delivery', 'Professional editing & mastering'], cta: 'Book Basic' },
-  { name: 'Standard Package', badge: 'Most affordable', featured: true, from: 'From $550 (Save 10%)', price: '$350', desc: 'Most popular \u2013 ideal for most projects', listLabel: 'Everything in basic, plus:', list: ['Up to 500 words', '2 revision rounds', '24-hour delivery', 'Professional editing & mastering'], cta: 'Book Standard' },
+  { name: 'Standard Package', badge: 'Most Popular', featured: true, from: 'From $550 (Save 10%)', price: '$350', desc: 'Most popular \u2013 ideal for most projects', listLabel: 'Everything in basic, plus:', list: ['Up to 500 words', '2 revision rounds', '24-hour delivery', 'Professional editing & mastering'], cta: 'Book Standard' },
   { name: 'Custom', badge: 'Let\u2019s Talk', featured: false, from: 'Starts at', price: '$500', desc: 'For large-scale or ongoing projects', listLabel: 'Basic package includes:', list: ['Up to 150 words', '1 revision round', '48-hour delivery', 'Professional editing & mastering'], cta: 'Inquire' },
 ]
 
