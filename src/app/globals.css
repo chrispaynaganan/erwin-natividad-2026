@@ -1,0 +1,111 @@
+/* =====================================================================
+   Erwin Natividad — global theme + tokens
+   Light is the default; [data-theme="dark"] overrides.
+   Typeface: Articulat CF (commercial — drop .woff2 files in /public/fonts).
+   ===================================================================== */
+
+/* --- Articulat CF (self-hosted). Add the files, or swap for your Adobe kit. --- */
+@font-face {
+  font-family: 'Articulat CF';
+  src: url('/fonts/ArticulatCF-Normal.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Articulat CF';
+  src: url('/fonts/ArticulatCF-Medium.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Articulat CF';
+  src: url('/fonts/ArticulatCF-DemiBold.woff2') format('woff2');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Articulat CF';
+  src: url('/fonts/ArticulatCF-Bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Articulat CF';
+  src: url('/fonts/ArticulatCF-Heavy.woff2') format('woff2');
+  font-weight: 800; font-style: normal; font-display: swap;
+}
+
+:root {
+  --font-sans: 'Articulat CF', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Light mode */
+  --bg: #FCFCFB;
+  --surface: #FFFFFF;
+  --surface-2: #F4F3F0;
+  --border: #E7E5E0;
+  --text: #161513;
+  --text-muted: #6B6862;
+  --accent: #B5912F;          /* gold for highlighted words + labels */
+  --btn-bg: #6E5E2A;          /* filled buttons (bronze) */
+  --btn-fg: #FFFFFF;
+  --pill-border: #DAD7D0;
+  --pill-text: #4A4843;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05);
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --container: 1200px;
+}
+
+[data-theme="dark"] {
+  --bg: #0E0E0D;
+  --surface: #181816;
+  --surface-2: #1F1F1C;
+  --border: #2A2A27;
+  --text: #F5F4F1;
+  --text-muted: #9A978F;
+  --accent: #E5BD57;
+  --btn-bg: #E5BD57;
+  --btn-fg: #161513;
+  --pill-border: #34332F;
+  --pill-text: #C9C6BE;
+  --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+h1, h2, h3, h4 { font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; }
+a { color: inherit; text-decoration: none; }
+
+.container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+.gold { color: var(--accent); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.95rem;
+  cursor: pointer; transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease; }
+.btnSolid { background: var(--btn-bg); color: var(--btn-fg); border: 1px solid var(--btn-bg); }
+.btnSolid:hover { opacity: 0.9; }
+.btnOutline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btnOutline:hover { border-color: var(--text-muted); }
+
+/* Pills / tags */
+.pill { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--pill-border); color: var(--pill-text); font-size: 0.8rem; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(18px);
+  transition: opacity 0.7s cubic-bezier(0.2,0.6,0.2,1), transform 0.7s cubic-bezier(0.2,0.6,0.2,1); }
+.reveal.in-view { opacity: 1; transform: none; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  body { transition: none; }
+}
