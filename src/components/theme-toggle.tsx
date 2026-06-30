@@ -23,9 +23,9 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       style={{
-        width: 40, height: 40, borderRadius: '50%', border: '1px solid var(--border)',
+        width: 36, height: 36, borderRadius: 'var(--radius-sm)', border: 'none',
         background: 'var(--surface-2)', color: 'var(--text)', cursor: 'pointer',
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
       }}
     >
       {theme === 'dark' ? '\u2600' : '\u263E'}
