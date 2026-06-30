@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { IconChevronDown } from '@tabler/icons-react'
 
 export type Faq = { q: string; a: string }
 
@@ -16,7 +17,7 @@ export function FaqGrid({ items }: { items: Faq[] }) {
           <div key={i} className={`faqCard ${i >= 4 && !showAll ? 'faqHideMobile' : ''}`}>
             <button className="faqQ" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)}>
               <span>{item.q}</span>
-              <span className="faqChevron" data-open={open === i}>{'\u25BE'}</span>
+              <span className="faqChevron" data-open={open === i}><IconChevronDown size={18} stroke={1.75} /></span>
             </button>
             {open === i && <p className="faqA">{item.a}</p>}
           </div>

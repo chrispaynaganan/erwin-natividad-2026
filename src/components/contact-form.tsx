@@ -1,5 +1,6 @@
 'use client'
 import { useActionState } from 'react'
+import { IconSend } from '@tabler/icons-react'
 import { submitContact, type ContactState } from '@/app/contact/actions'
 import s from '@/app/contact/contact.module.css'
 
@@ -41,7 +42,7 @@ export function ContactForm() {
       {state && <p className={state.ok ? s.success : s.error}>{state.message}</p>}
 
       <button type="submit" className="btn btnSolid" disabled={pending} style={{ width: '100%', marginTop: 6 }}>
-        {'\u2708'} {pending ? 'Sending\u2026' : 'Let\u2019s Talk'}
+        <IconSend size={17} stroke={1.75} /> {pending ? 'Sending\u2026' : 'Let\u2019s Talk'}
       </button>
     </form>
   )

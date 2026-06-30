@@ -1,6 +1,7 @@
 import { Reveal } from '@/components/reveal'
 import { FaqGrid, type Faq } from '@/components/faq'
 import { ContactForm } from '@/components/contact-form'
+import { IconMail, IconPhone, IconMapPin, IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconBrandTwitter } from '@tabler/icons-react'
 import s from './contact.module.css'
 
 export const metadata = { title: 'Contact' }
@@ -13,12 +14,12 @@ const expect = [
 ]
 
 const direct = [
-  { icon: '\u2709', label: 'Email', value: 'erwin.natividad@voiceover.com' },
-  { icon: '\u260E', label: 'Phone', value: '+1 (234) 567-8900' },
-  { icon: '\u{1F5FA}', label: 'Location', value: 'Remote' },
+  { Icon: IconMail, label: 'Email', value: 'erwin.natividad@voiceover.com' },
+  { Icon: IconPhone, label: 'Phone', value: '+1 (234) 567-8900' },
+  { Icon: IconMapPin, label: 'Location', value: 'Remote' },
 ]
 
-const socials = ['f', '\u25C9', 'in', '\u25B6', 't']
+const socials = [IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconBrandTwitter]
 
 const faqs: Faq[] = [
   { q: 'How soon can you start on a project?', a: 'Most projects begin within 2\u20133 business days of a signed agreement and deposit. Rush turnaround is available on request.' },
@@ -57,7 +58,7 @@ export default function ContactPage() {
                 <div className={s.directTitle}>Direct Contact</div>
                 {direct.map((d) => (
                   <div key={d.label} className={s.directRow}>
-                    <span className={s.directIcon} aria-hidden>{d.icon}</span>
+                    <span className={s.directIcon} aria-hidden><d.Icon size={20} stroke={1.75} /></span>
                     <span>
                       <div className={s.directLabel}>{d.label}</div>
                       <div className={s.directValue}>{d.value}</div>
@@ -71,7 +72,7 @@ export default function ContactPage() {
               <div>
                 <p className={s.socialLabel}>You can also find me on</p>
                 <div className={s.socials}>
-                  {socials.map((c, i) => <span key={i} className={s.social} aria-hidden>{c}</span>)}
+                  {socials.map((Ic, i) => <span key={i} className={s.social}><Ic size={18} stroke={1.75} aria-hidden /></span>)}
                 </div>
               </div>
             </Reveal>

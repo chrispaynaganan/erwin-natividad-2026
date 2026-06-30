@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { IconMenu2 } from '@tabler/icons-react'
 import { ThemeToggle } from './theme-toggle'
 
 const nav = [
@@ -85,8 +86,8 @@ export function SiteHeader() {
           <ThemeToggle />
           <Link href="/contact" className="btn btnSolid enHideMobile enCta">Work With Me</Link>
           <button aria-label="Menu" onClick={() => setOpen((o) => !o)} className="enMenuBtn"
-            style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--surface-2)', color: 'var(--text)', cursor: 'pointer', fontSize: 16 }}>
-            {'\u2630'}
+            style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--surface-2)', color: 'var(--text)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+            <IconMenu2 size={18} stroke={1.75} />
           </button>
         </div>
       </div>

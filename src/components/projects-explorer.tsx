@@ -2,6 +2,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { AudioPlayer } from './audio-player'
+import { IconSearch, IconAdjustmentsHorizontal } from '@tabler/icons-react'
 import { type Project } from '@/lib/projects'
 import s from '@/app/work/work.module.css'
 
@@ -73,7 +74,7 @@ export function ProjectsExplorer({ projects, categories }: { projects: Project[]
       {/* Search + Filters */}
       <div className={s.toolbar}>
         <div className={s.searchWrap}>
-          <span className={s.searchIcon} aria-hidden>{'\u{1F50D}'}</span>
+          <span className={s.searchIcon} aria-hidden><IconSearch size={18} stroke={1.75} /></span>
           <input
             className={s.searchInput}
             placeholder="Search projects by title or description..."
@@ -86,7 +87,7 @@ export function ProjectsExplorer({ projects, categories }: { projects: Project[]
         <div className={s.filterWrap} ref={filterRef}>
           <button className={s.filterBtn} type="button" aria-expanded={filtersOpen}
             onClick={() => setFiltersOpen((o) => !o)}>
-            {'\u2261'} <span className={s.filterBtnLabel}>Filters</span>
+            <IconAdjustmentsHorizontal size={17} stroke={1.75} /> <span className={s.filterBtnLabel}>Filters</span>
             {advancedCount > 0 && <span className={s.filterDot} aria-hidden />}
           </button>
 

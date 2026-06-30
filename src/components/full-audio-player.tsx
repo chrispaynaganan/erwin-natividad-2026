@@ -1,4 +1,5 @@
 'use client'
+import { IconPlayerPlay, IconPlayerPause, IconRewindBackward10, IconRewindForward10, IconVolume } from '@tabler/icons-react'
 import { useRef, useState } from 'react'
 
 export function FullAudioPlayer({ src, durationLabel }: { src?: string; durationLabel?: string }) {
@@ -23,9 +24,9 @@ export function FullAudioPlayer({ src, durationLabel }: { src?: string; duration
           onTimeUpdate={(e) => { const a = e.currentTarget; setCurrent(a.currentTime); setProgress((a.currentTime / (a.duration || 1)) * 100) }}
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)} onEnded={() => setPlaying(false)} />
       )}
-      <button onClick={toggle} aria-label={playing ? 'Pause' : 'Play'} style={{ ...round, background: 'var(--btn-bg)', color: 'var(--btn-fg)', border: 'none' }}>{playing ? '\u275A\u275A' : '\u25B6'}</button>
-      <button onClick={() => skip(-10)} aria-label="Back 10 seconds" style={{ ...round, fontSize: 12 }}>10{'\u21BA'}</button>
-      <button onClick={() => skip(10)} aria-label="Forward 10 seconds" style={{ ...round, fontSize: 12 }}>{'\u21BB'}10</button>
+      <button onClick={toggle} aria-label={playing ? 'Pause' : 'Play'} style={{ ...round, background: 'var(--btn-bg)', color: 'var(--btn-fg)', border: 'none' }}>{playing ? <IconPlayerPause size={18} stroke={1.75} /> : <IconPlayerPlay size={18} stroke={1.75} />}</button>
+      <button onClick={() => skip(-10)} aria-label="Back 10 seconds" style={round}><IconRewindBackward10 size={18} stroke={1.75} /></button>
+      <button onClick={() => skip(10)} aria-label="Forward 10 seconds" style={round}><IconRewindForward10 size={18} stroke={1.75} /></button>
       <div style={{ flex: 1, minWidth: 160, display: 'grid', gap: 6 }}>
         <div style={{ height: 6, borderRadius: 999, background: 'var(--border)', overflow: 'hidden' }}>
           <div style={{ width: `${progress}%`, height: '100%', background: 'var(--accent)' }} />
@@ -34,7 +35,7 @@ export function FullAudioPlayer({ src, durationLabel }: { src?: string; duration
           <span>{fmt(current)}</span><span>{total}</span>
         </div>
       </div>
-      <span aria-hidden style={{ color: 'var(--text-muted)' }}>{'\u{1F50A}'}</span>
+      <span aria-hidden style={{ color: 'var(--text-muted)', display: 'inline-flex' }}><IconVolume size={18} stroke={1.75} /></span>
     </div>
   )
 }

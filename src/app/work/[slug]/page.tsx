@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { projects, getProject, getAdjacent } from '@/lib/projects'
 import { FullAudioPlayer } from '@/components/full-audio-player'
+import { IconCalendar, IconBriefcase, IconChevronLeft, IconChevronRight, IconArrowUpRight } from '@tabler/icons-react'
 import s from './detail.module.css'
 
 export function generateStaticParams() {
@@ -41,8 +42,8 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
           <h1 className={s.title}>{p.title}</h1>
           <p className={s.summary}>{p.desc}</p>
           <div className={s.metaRow}>
-            <span>{'\u{1F4C5}'} {p.date}</span>
-            {p.client && <span>{'\u{1F4BC}'} {p.client}</span>}
+            <span><IconCalendar size={16} stroke={1.75} /> {p.date}</span>
+            {p.client && <span><IconBriefcase size={16} stroke={1.75} /> {p.client}</span>}
           </div>
 
           <h2 className={s.playerLabel}>Listen to my full demo</h2>
@@ -56,13 +57,13 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
           <div className={s.pagination}>
             {prev ? (
               <Link href={`/work/${prev.slug}`} className={s.pageCard}>
-                <div className={s.pageKicker}>{'\u2039'} Previous Project</div>
+                <div className={s.pageKicker}><IconChevronLeft size={15} stroke={1.75} /> Previous Project</div>
                 <div className={s.pageTitle}>{prev.title}</div>
               </Link>
             ) : <span />}
             {next && (
               <Link href={`/work/${next.slug}`} className={`${s.pageCard} ${s.pageNext}`}>
-                <div className={s.pageKicker}>Next Project {'\u203A'}</div>
+                <div className={s.pageKicker}>Next Project <IconChevronRight size={15} stroke={1.75} /></div>
                 <div className={s.pageTitle}>{next.title}</div>
               </Link>
             )}
@@ -92,9 +93,9 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
           <div className={s.sideCard}>
             <div className={s.sideTitle}>Explore More</div>
             <div className={s.explore}>
-              <Link href="/work" className={s.exploreLink}>All Projects <span>{'\u2197'}</span></Link>
-              <Link href="/about" className={s.exploreLink}>About Erwin <span>{'\u2197'}</span></Link>
-              <Link href="/services" className={s.exploreLink}>Services Offered <span>{'\u2197'}</span></Link>
+              <Link href="/work" className={s.exploreLink}>All Projects <span style={{display:'inline-flex'}}><IconArrowUpRight size={16} stroke={1.75} /></span></Link>
+              <Link href="/about" className={s.exploreLink}>About Erwin <span style={{display:'inline-flex'}}><IconArrowUpRight size={16} stroke={1.75} /></span></Link>
+              <Link href="/services" className={s.exploreLink}>Services Offered <span style={{display:'inline-flex'}}><IconArrowUpRight size={16} stroke={1.75} /></span></Link>
             </div>
           </div>
         </aside>

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { IconSun, IconMoon } from '@tabler/icons-react'
 
 // Light/dark toggle. Persists to localStorage; the inline script in layout.tsx
 // applies the saved theme before paint to avoid a flash.
@@ -28,7 +29,7 @@ export function ThemeToggle() {
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
       }}
     >
-      {theme === 'dark' ? '\u2600' : '\u263E'}
+      {theme === 'dark' ? <IconSun size={18} stroke={1.75} /> : <IconMoon size={18} stroke={1.75} />}
     </button>
   )
 }

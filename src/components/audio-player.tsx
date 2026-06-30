@@ -1,4 +1,5 @@
 'use client'
+import { IconPlayerPlay, IconPlayerPause, IconVolume } from '@tabler/icons-react'
 import { useRef, useState } from 'react'
 
 // Compact audio player matching the design (play/pause, progress, time, volume).
@@ -36,8 +37,8 @@ export function AudioPlayer({ src, durationLabel }: { src?: string; durationLabe
           onEnded={() => setPlaying(false)} />
       )}
       <button onClick={toggle} aria-label={playing ? 'Pause' : 'Play'}
-        style={{ width: 34, height: 34, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--btn-bg)', color: 'var(--btn-fg)', cursor: 'pointer', flexShrink: 0 }}>
-        {playing ? '\u275A\u275A' : '\u25B6'}
+        style={{ width: 34, height: 34, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--btn-bg)', color: 'var(--btn-fg)', cursor: 'pointer', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        {playing ? <IconPlayerPause size={18} stroke={1.75} /> : <IconPlayerPlay size={18} stroke={1.75} />}
       </button>
       <div style={{ flex: 1, display: 'grid', gap: 4 }}>
         <div style={{ height: 4, borderRadius: 999, background: 'var(--border)', overflow: 'hidden' }}>
@@ -47,7 +48,7 @@ export function AudioPlayer({ src, durationLabel }: { src?: string; durationLabe
           <span>{fmt(current)}</span><span>{totalLabel}</span>
         </div>
       </div>
-      <span aria-hidden style={{ color: 'var(--text-muted)', flexShrink: 0 }}>{'\u{1F50A}'}</span>
+      <span aria-hidden style={{ color: 'var(--text-muted)', flexShrink: 0, display: 'inline-flex' }}><IconVolume size={18} stroke={1.75} /></span>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { IconCheck } from '@tabler/icons-react'
 import { Reveal } from '@/components/reveal'
 import { CtaSection } from '@/components/cta-section'
 import { FaqGrid, type Faq } from '@/components/faq'
@@ -99,7 +100,7 @@ export default function ServicesPage() {
                   <div className={s.metaLabel}>What&rsquo;s Included</div>
                   <div className={s.checkGrid}>
                     {c.includes.map((item) => (
-                      <div key={item} className={s.check}><span className={s.checkMark}>{'\u2713'}</span><span>{item}</span></div>
+                      <div key={item} className={s.check}><span className={s.checkMark}><IconCheck size={16} stroke={2} /></span><span>{item}</span></div>
                     ))}
                   </div>
                 </div>
@@ -126,7 +127,7 @@ export default function ServicesPage() {
                 <p className={s.priceDesc}>{p.desc}</p>
                 <div className={s.priceIncludesLabel}>{p.listLabel}</div>
                 <ul className={s.priceList}>
-                  {p.list.map((li) => <li key={li}><span className="gold">{'\u2713'}</span>{li}</li>)}
+                  {p.list.map((li) => <li key={li}><span className="gold" style={{display:'inline-flex'}}><IconCheck size={15} stroke={2} /></span>{li}</li>)}
                 </ul>
                 <Link href="/contact" className={`btn ${p.featured ? 'btnSolid' : 'btnOutline'}`} style={{ width: '100%' }}>{p.cta}</Link>
               </div>

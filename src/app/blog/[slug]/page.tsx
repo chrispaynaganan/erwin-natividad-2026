@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { posts, getPost } from '@/lib/blog'
+import { IconArrowLeft } from '@tabler/icons-react'
 import s from './post.module.css'
 
 export function generateStaticParams() {
@@ -34,7 +35,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         {p.body.map((para, i) => <p key={i}>{para}</p>)}
       </article>
 
-      <Link href="/blog" className={`btn btnOutline ${s.back}`}>&larr; Back to all posts</Link>
+      <Link href="/blog" className={`btn btnOutline ${s.back}`}><IconArrowLeft size={17} stroke={1.75} /> Back to all posts</Link>
     </main>
   )
 }

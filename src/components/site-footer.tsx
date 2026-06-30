@@ -1,14 +1,15 @@
 import Link from 'next/link'
+import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconBrandTwitter } from '@tabler/icons-react'
 
 const nav = [['Home', '/'], ['Services', '/services'], ['Projects', '/work'], ['About', '/about'], ['Contact', '/contact']]
 const quick = [['Privacy Policy', '/privacy'], ['Terms and Conditions', '/terms'], ['Blogs', '/blog'], ['FAQs', '/contact']]
 
-const socials: { label: string; href: string; icon: React.ReactNode }[] = [
-  { label: 'Facebook', href: '#', icon: <path d="M13.5 21v-7h2.3l.4-2.7h-2.7V9.6c0-.8.3-1.3 1.4-1.3h1.4V5.9c-.7-.1-1.5-.2-2.4-.2-2 0-3.4 1.2-3.4 3.5v2H8.2v2.7h2.3V21z" fill="currentColor" /> },
-  { label: 'Instagram', href: '#', icon: <><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" strokeWidth="1.6" /><circle cx="12" cy="12" r="3.8" fill="none" stroke="currentColor" strokeWidth="1.6" /><circle cx="16.7" cy="7.3" r="1.1" fill="currentColor" /></> },
-  { label: 'LinkedIn', href: '#', icon: <path d="M6.94 8.5V19H3.5V8.5zM5.22 3.5a2 2 0 110 4 2 2 0 010-4zM20.5 19h-3.43v-5.3c0-1.4-.5-2.3-1.7-2.3-.93 0-1.48.63-1.72 1.23-.09.22-.11.52-.11.82V19H10.1c.05-9.06 0-10.5 0-10.5h3.43v1.5c.46-.7 1.27-1.7 3.1-1.7 2.26 0 3.96 1.48 3.96 4.66z" fill="currentColor" /> },
-  { label: 'YouTube', href: '#', icon: <><rect x="2.5" y="6" width="19" height="12" rx="3.5" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M10.2 9.3 15 12l-4.8 2.7z" fill="currentColor" /></> },
-  { label: 'Twitter', href: '#', icon: <path d="M22 5.9c-.7.3-1.5.5-2.3.6.8-.5 1.4-1.3 1.7-2.2-.8.5-1.6.8-2.5 1a3.9 3.9 0 0 0-6.7 3.6A11 11 0 0 1 3 4.9a3.9 3.9 0 0 0 1.2 5.2c-.6 0-1.2-.2-1.7-.5v.1c0 1.9 1.3 3.5 3.1 3.8-.6.2-1.2.2-1.8.1a3.9 3.9 0 0 0 3.6 2.7A7.8 7.8 0 0 1 2 18.1a11 11 0 0 0 6 1.8c7.1 0 11-5.9 11-11v-.5c.8-.6 1.4-1.3 1.9-2z" fill="currentColor" /> },
+const socials = [
+  { label: 'Facebook', href: '#', Icon: IconBrandFacebook },
+  { label: 'Instagram', href: '#', Icon: IconBrandInstagram },
+  { label: 'LinkedIn', href: '#', Icon: IconBrandLinkedin },
+  { label: 'YouTube', href: '#', Icon: IconBrandYoutube },
+  { label: 'Twitter', href: '#', Icon: IconBrandTwitter },
 ]
 
 export function SiteFooter() {
@@ -58,7 +59,7 @@ export function SiteFooter() {
             <div className="footerSocials">
               {socials.map((s) => (
                 <a key={s.label} href={s.href} aria-label={s.label} className="footerSocial">
-                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">{s.icon}</svg>
+                  <s.Icon size={18} stroke={1.75} aria-hidden="true" />
                 </a>
               ))}
             </div>
