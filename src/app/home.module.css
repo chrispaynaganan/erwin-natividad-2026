@@ -4,7 +4,7 @@
 .headSub { color: var(--text-muted); margin-top: 10px; max-width: 60ch; }
 
 /* ---------- Hero ---------- */
-.hero { padding: 56px 0 32px; }
+.hero { padding-top: 56px; padding-bottom: 32px; }
 .heroGrid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
 .heroName { font-size: clamp(3.5rem, 12vw, 7rem); line-height: 0.95; letter-spacing: -0.03em; font-weight: 800; }
 .heroNameGold { display: block; color: var(--accent); }

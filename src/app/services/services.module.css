@@ -1,4 +1,4 @@
-.hero { padding: 64px 0 16px; }
+.hero { padding-top: 64px; padding-bottom: 16px; }
 .heroTitle { font-size: clamp(3rem, 10vw, 6rem); line-height: 0.98; letter-spacing: -0.03em; font-weight: 800; }
 .heroTitleGold { display: block; color: var(--accent); }
 .heroBody { color: var(--text-muted); max-width: 52ch; margin-top: 22px; }
