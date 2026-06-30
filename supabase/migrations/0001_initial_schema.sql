@@ -305,6 +305,7 @@ create table public.bookings (
   message             text,
   referral_source     text,
   status              booking_status not null default 'new',
+  waitlisted          boolean not null default false,
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
 );
@@ -377,6 +378,12 @@ create table public.settings (
 create trigger trg_settings_updated
   before update on public.settings
   for each row execute function public.set_updated_at();
+
+-- Seed: max discovery-call requests accepted per rolling week before new
+-- submissions are placed on a waitlist instead. Editable in admin Settings.
+insert into public.settings (key, value, is_public)
+values ('discovery_weekly_cap', '3'::jsonb, false)
+on conflict (key) do nothing;
 
 -- =====================================================================
 -- ROW LEVEL SECURITY

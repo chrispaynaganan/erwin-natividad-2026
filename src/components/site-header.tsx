@@ -84,7 +84,7 @@ export function SiteHeader() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <ThemeToggle />
-          <Link href="/contact" className="btn btnSolid enHideMobile enCta">Work With Me</Link>
+          <Link href="/work-with-me" className="btn btnSolid enHideMobile enCta">Work With Me</Link>
           <button aria-label="Menu" onClick={() => setOpen((o) => !o)} className="enMenuBtn"
             style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--surface-2)', color: 'var(--text)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <IconMenu2 size={18} stroke={1.75} />
@@ -103,7 +103,7 @@ export function SiteHeader() {
               {i.label}
             </Link>
           ))}
-          <Link href="/contact" onClick={() => setOpen(false)} className="btn btnSolid" style={{ marginTop: 4 }}>Work With Me</Link>
+          <Link href="/work-with-me" onClick={() => setOpen(false)} className="btn btnSolid" style={{ marginTop: 4 }}>Work With Me</Link>
         </div>
       )}
 

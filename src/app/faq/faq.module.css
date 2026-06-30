@@ -1,0 +1,12 @@
+.hero { padding-top: 64px; padding-bottom: 8px; }
+.heroTitle { font-size: clamp(2.6rem, 9vw, 5rem); line-height: 1.0; letter-spacing: -0.03em; font-weight: 400; }
+.heroTitleGold { color: var(--accent); }
+.heroBody { color: var(--text-muted); max-width: 58ch; margin-top: 18px; }
+
+.section { padding-top: 16px; padding-bottom: 40px; }
+.catHead { font-size: 1.4rem; font-weight: 700; }
+.catSub { color: var(--text-muted); font-size: 0.92rem; margin-top: 4px; }
+
+.finalCta { text-align: center; padding-top: 32px; padding-bottom: 80px; }
+.ctaTitle { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 400; letter-spacing: -0.02em; }
+.ctaBody { color: var(--text-muted); margin: 12px 0 22px; }

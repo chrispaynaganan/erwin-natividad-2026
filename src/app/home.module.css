@@ -61,4 +61,4 @@
 
 /* ---------- CTA ---------- */
 .ctaForm { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; max-width: 520px; }
-.ctaInput { flex: 1; min-width: 220px; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; }
+.ctaInput { flex: 1; min-width: 220px; padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; }

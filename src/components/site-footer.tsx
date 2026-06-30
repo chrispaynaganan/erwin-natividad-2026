@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconBrandTwitter } from '@tabler/icons-react'
 
 const nav = [['Home', '/'], ['Services', '/services'], ['Projects', '/work'], ['About', '/about'], ['Contact', '/contact']]
-const quick = [['Privacy Policy', '/privacy'], ['Terms and Conditions', '/terms'], ['Blogs', '/blog'], ['FAQs', '/contact']]
+const quick = [['Privacy Policy', '/privacy'], ['Terms and Conditions', '/terms'], ['Blogs', '/blog'], ['FAQs', '/faq']]
 
 const socials = [
   { label: 'Facebook', href: '#', Icon: IconBrandFacebook },
