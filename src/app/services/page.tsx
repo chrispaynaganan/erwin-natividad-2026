@@ -129,7 +129,7 @@ export default function ServicesPage() {
                 <ul className={s.priceList}>
                   {p.list.map((li) => <li key={li}><span className="gold" style={{display:'inline-flex'}}><IconCheck size={15} stroke={2} /></span>{li}</li>)}
                 </ul>
-                <Link href="/contact" className={`btn ${p.featured ? 'btnSolid' : 'btnOutline'}`} style={{ width: '100%' }}>{p.cta}</Link>
+                <Link href="/contact" className={`btn ${p.featured ? 'btnSolid' : 'btnOutline'}`} style={{ width: '100%', marginTop: 'auto' }}>{p.cta}</Link>
               </div>
             </Reveal>
           ))}

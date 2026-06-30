@@ -146,7 +146,7 @@ export function ProjectsExplorer({ projects, categories }: { projects: Project[]
               <p className={s.cardDesc}>{p.desc}</p>
               <span className={s.cardDate}>{p.date}</span>
               <AudioPlayer durationLabel={p.duration} />
-              <Link href={`/work/${p.slug}`} className="btn btnSolid" style={{ width: '100%' }}>View Project</Link>
+              <Link href={`/work/${p.slug}`} className="btn btnSolid" style={{ width: '100%', marginTop: 'auto' }}>View Project</Link>
             </article>
           ))}
         </div>

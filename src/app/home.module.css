@@ -1,4 +1,4 @@
-.section { padding: 72px 0; }
+.section { padding-top: 72px; padding-bottom: 72px; }
 .eyebrow { color: var(--accent-soft); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
 .headTitle { font-size: clamp(1.9rem, 4vw, 2.5rem); }
 .headSub { color: var(--text-muted); margin-top: 10px; max-width: 60ch; }
@@ -6,7 +6,7 @@
 /* ---------- Hero ---------- */
 .hero { padding-top: 56px; padding-bottom: 32px; }
 .heroGrid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
-.heroName { font-size: clamp(3.5rem, 12vw, 7rem); line-height: 0.95; letter-spacing: -0.03em; font-weight: 800; }
+.heroName { font-size: clamp(3.5rem, 12vw, 7rem); line-height: 0.95; letter-spacing: -0.03em; font-weight: 400; }
 .heroNameGold { display: block; color: var(--accent); }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .heroEyebrow { color: var(--accent-soft); font-weight: 600; margin-top: 28px; font-size: 1.05rem; }
@@ -19,7 +19,7 @@
 @media (min-width: 900px) { .heroGrid { grid-template-columns: 1.1fr 0.9fr; } }
 
 /* ---------- Logo strip ---------- */
-.logos { text-align: center; padding: 8px 0 8px; }
+.logos { text-align: center; padding-top: 8px; padding-bottom: 8px; }
 .logosLabel { color: var(--text-muted); font-size: 0.9rem; }
 .logosRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 24px; align-items: center; margin-top: 28px; opacity: 0.5; }
 .logoChip { height: 28px; border-radius: 6px; background: var(--surface-2); }
@@ -54,7 +54,7 @@
 
 /* ---------- Testimonials ---------- */
 .quoteMark { color: var(--accent); font-size: 2.5rem; line-height: 1; font-weight: 800; }
-.tCard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+.tCard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
 .tText { margin: 10px 0 18px; }
 .tName { font-weight: 600; }
 .tRole { color: var(--text-muted); font-size: 0.82rem; }

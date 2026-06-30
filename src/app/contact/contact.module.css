@@ -1,5 +1,5 @@
 .hero { padding-top: 56px; padding-bottom: 8px; }
-.heroTitle { font-size: clamp(3rem, 11vw, 6.5rem); line-height: 0.96; letter-spacing: -0.03em; font-weight: 800; }
+.heroTitle { font-size: clamp(3rem, 11vw, 6.5rem); line-height: 0.96; letter-spacing: -0.03em; font-weight: 400; }
 .heroTitleGold { display: block; color: var(--accent); }
 .heroBody { color: var(--text-muted); max-width: 48ch; margin-top: 24px; font-size: 1.15rem; }
 
@@ -7,13 +7,13 @@
 @media (min-width: 980px) { .layout { grid-template-columns: 1fr 380px; align-items: start; } }
 
 /* Form */
-.form { border: 1px solid var(--border); border-radius: 18px; padding: 32px; background: var(--surface); box-shadow: var(--shadow); }
+.form { border: 1px solid var(--border); border-radius: 16px; padding: 24px; background: var(--surface); box-shadow: var(--shadow); }
 .formTitle { color: var(--accent-soft); font-size: 1.4rem; font-weight: 700; }
 .formSub { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; margin-bottom: 24px; }
 .field { display: grid; gap: 8px; margin-bottom: 20px; }
 .label { font-size: 0.9rem; font-weight: 500; }
 .req { color: var(--accent-soft); }
-.input { width: 100%; padding: 13px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: inherit; resize: vertical; }
+.input { width: 100%; padding: 10px 13px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font: inherit; resize: vertical; }
 .input::placeholder { color: var(--text-muted); }
 .row2 { display: grid; grid-template-columns: 1fr; gap: 0; }
 @media (min-width: 560px) { .row2 { grid-template-columns: 1fr 1fr; gap: 20px; } }
@@ -22,7 +22,7 @@
 
 /* Sidebar */
 .side { display: grid; gap: 24px; }
-.expectCard { border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+.expectCard { border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
 .expectTitle { color: var(--accent-soft); font-weight: 700; margin-bottom: 16px; }
 .expectItem { display: grid; grid-template-columns: 28px 1fr; gap: 12px; margin-bottom: 14px; }
 .expectNum { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--accent-soft); color: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
@@ -30,7 +30,7 @@
 .expectText strong { color: var(--text); }
 .expectText span { color: var(--text-muted); }
 
-.directCard { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+.directCard { background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
 .directTitle { font-weight: 700; font-size: 1.2rem; margin-bottom: 16px; }
 .directRow { display: grid; grid-template-columns: 32px 1fr; gap: 12px; margin-bottom: 16px; align-items: start; }
 .directIcon { color: var(--accent-soft); }
@@ -41,6 +41,6 @@
 .socials { display: flex; gap: 10px; }
 .social { width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--accent-soft); color: var(--accent-soft); display: inline-flex; align-items: center; justify-content: center; }
 
-.faqSection { padding: 64px 0; }
+.faqSection { padding-top: 64px; padding-bottom: 64px; }
 .faqHead { font-size: clamp(1.8rem, 4vw, 2.4rem); }
 .faqSub { color: var(--text-muted); margin-top: 10px; }
