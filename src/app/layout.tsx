@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { getSiteContent } from '@/lib/content/store'
 
 export const metadata: Metadata = {
   title: { default: 'Erwin Natividad — Voiceover Artist & Voice Coach', template: '%s · Erwin Natividad' },
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
 
 const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='light';}})();`
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { nav } = await getSiteContent()
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -24,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <SiteHeader />
+        <SiteHeader branding={nav} />
         {children}
         <SiteFooter />
       </body>

@@ -32,7 +32,6 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname
   const isPrivate =
-    path.startsWith('/admin') ||
     path.startsWith('/account') ||
     path.startsWith('/members')
 

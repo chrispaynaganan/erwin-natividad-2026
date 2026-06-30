@@ -12,17 +12,20 @@ const nav = [
   { href: '/contact', label: 'Contact' },
 ]
 
+export type HeaderBranding = { logoLight: string; logoDark: string; ctaLabel: string; ctaHref: string }
+const DEFAULT_BRANDING: HeaderBranding = { logoLight: '/logo-light.png', logoDark: '/logo-dark.png', ctaLabel: 'Work With Me', ctaHref: '/work-with-me' }
+
 // Theme-aware logo (knocked-out PNGs in /public). Light logo on light bg, dark on dark.
-function Logo() {
+function Logo({ light, dark }: { light: string; dark: string }) {
   return (
     <Link href="/" aria-label="Erwin Natividad — home" style={{ display: 'inline-flex', alignItems: 'center' }}>
-      <img src="/logo-light.png" alt="Erwin Natividad" className="themeLogo logoLight" />
-      <img src="/logo-dark.png" alt="" aria-hidden="true" className="themeLogo logoDark" />
+      <img src={light} alt="Erwin Natividad" className="themeLogo logoLight" />
+      <img src={dark} alt="" aria-hidden="true" className="themeLogo logoDark" />
     </Link>
   )
 }
 
-export function SiteHeader() {
+export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderBranding }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
@@ -64,7 +67,7 @@ export function SiteHeader() {
   return (
     <header className={`enHeader ${scrolled ? 'enScrolled' : ''}`} style={{ position: 'sticky', top: 0, zIndex: 50 }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60, gap: 16 }}>
-        <Logo />
+        <Logo light={branding.logoLight} dark={branding.logoDark} />
 
         {/* Desktop nav — borderless segmented container with a sliding indicator */}
         <nav className="enNavDesktop" style={{ display: 'none', position: 'relative', gap: 2, padding: 3, borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)' }}>
@@ -84,7 +87,7 @@ export function SiteHeader() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <ThemeToggle />
-          <Link href="/work-with-me" className="btn btnSolid enHideMobile enCta">Work With Me</Link>
+          <Link href={branding.ctaHref} className="btn btnSolid enHideMobile enCta">{branding.ctaLabel}</Link>
           <button aria-label="Menu" onClick={() => setOpen((o) => !o)} className="enMenuBtn"
             style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--surface-2)', color: 'var(--text)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <IconMenu2 size={18} stroke={1.75} />
@@ -103,7 +106,7 @@ export function SiteHeader() {
               {i.label}
             </Link>
           ))}
-          <Link href="/work-with-me" onClick={() => setOpen(false)} className="btn btnSolid" style={{ marginTop: 4 }}>Work With Me</Link>
+          <Link href={branding.ctaHref} onClick={() => setOpen(false)} className="btn btnSolid" style={{ marginTop: 4 }}>{branding.ctaLabel}</Link>
         </div>
       )}
 
