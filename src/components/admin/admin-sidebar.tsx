@@ -27,7 +27,24 @@ export function AdminSidebar({ role }: { role: AppRole }) {
   const groups = Array.from(new Set(visible.map((i) => i.group)))
 
   return (
-    <aside style={{ width: 220, flexShrink: 0, borderRight: '1px solid var(--border)', background: 'var(--surface)', minHeight: '100vh', padding: '20px 0' }}>
+    // Pinned to the viewport with its own scrollbar: the main content scrolls,
+    // the sidebar stays. `sticky + top:0 + height:100vh` keeps it in normal
+    // flow (so the flex layout is unchanged) while `overflow-y: auto` lets the
+    // nav scroll internally if it's ever taller than the screen.
+    <aside
+      style={{
+        width: 220,
+        flexShrink: 0,
+        borderRight: '1px solid var(--border)',
+        background: 'var(--surface)',
+        position: 'sticky',
+        top: 0,
+        alignSelf: 'flex-start',
+        height: '100vh',
+        overflowY: 'auto',
+        padding: '20px 0',
+      }}
+    >
       <div style={{ padding: '0 20px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--accent)', color: 'var(--btn-fg)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>en</span>
         <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Admin</span>

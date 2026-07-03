@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { SiteHeader } from '@/components/site-header'
-import { SiteFooter } from '@/components/site-footer'
+import { SiteChrome } from '@/components/site-chrome'
 import { getSiteContent } from '@/lib/content/store'
 
 export const metadata: Metadata = {
@@ -26,9 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <SiteHeader branding={nav} />
-        {children}
-        <SiteFooter />
+        <SiteChrome branding={nav}>{children}</SiteChrome>
       </body>
     </html>
   )
