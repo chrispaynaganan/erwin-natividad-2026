@@ -15,14 +15,16 @@ export type SessionProfile = {
 // Returns the signed-in user + their profile, or null.
 export async function getSessionProfile(): Promise<SessionProfile | null> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  console.log('[auth] getUser →', user ? `user ${user.email}` : 'NO USER', userError ? `error: ${userError.message}` : '')
   if (!user) return null
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('id, role, full_name, avatar_url')
     .eq('id', user.id)
     .single()
+  console.log('[auth] profile →', profile ?? 'NULL', profileError ? `error: ${profileError.message} (code ${profileError.code})` : '')
 
   if (!profile) return null
   return { user: { id: user.id, email: user.email }, profile: profile as SessionProfile['profile'] }
