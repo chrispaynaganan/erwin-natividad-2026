@@ -136,8 +136,12 @@ export async function submitBooking(_prev: BookingState, formData: FormData): Pr
       referral_source: 'discovery_call',
       waitlisted,
     })
-    if (error) return { ok: false, message: 'Something went wrong sending your request. Please try again, or email Erwin directly.' }
-  } catch {
+    if (error) {
+      console.error('[work-with-me] insert failed:', error)
+      return { ok: false, message: 'Something went wrong sending your request. Please try again, or email Erwin directly.' }
+    }
+  } catch (e) {
+    console.error('[work-with-me] unexpected error:', e)
     return { ok: false, message: 'Something went wrong. Please try again, or email Erwin directly.' }
   }
 
