@@ -1,91 +1,93 @@
+import {
+  IconMail, IconPhone, IconMapPin,
+  IconBrandFacebook, IconBrandInstagram, IconBrandTiktok, IconBrandYoutube, IconBrandLinkedin,
+} from '@tabler/icons-react'
 import { Reveal } from '@/components/reveal'
-import { FaqGrid, type Faq } from '@/components/faq'
 import { ContactForm } from '@/components/contact-form'
-import { IconMail, IconPhone, IconMapPin, IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconBrandTwitter } from '@tabler/icons-react'
+import { FaqGrid } from '@/components/faq'
+import { getSiteContent } from '@/lib/content/store'
 import s from './contact.module.css'
 
 export const metadata = { title: 'Contact' }
+export const dynamic = 'force-dynamic'
 
-const expect = [
-  { t: 'Response time:', d: 'I typically respond within 24-48 hours' },
-  { t: 'Next steps:', d: 'A brief discovery call or email discussion about your project' },
-  { t: 'Be prepared:', d: 'Having your script or word count estimate ready speeds things up' },
-  { t: 'International welcome:', d: 'I work with clients worldwide across all time zones' },
+// Social URLs stay placeholders until Erwin provides real profiles
+// (same as the footer) — they'll move into editable content with the
+// footer/socials pass.
+const socials = [
+  { label: 'Facebook', Icon: IconBrandFacebook },
+  { label: 'Instagram', Icon: IconBrandInstagram },
+  { label: 'TikTok', Icon: IconBrandTiktok },
+  { label: 'YouTube', Icon: IconBrandYoutube },
+  { label: 'LinkedIn', Icon: IconBrandLinkedin },
 ]
 
-const direct = [
-  { Icon: IconMail, label: 'Email', value: 'erwin.natividad@voiceover.com' },
-  { Icon: IconPhone, label: 'Phone', value: '+1 (234) 567-8900' },
-  { Icon: IconMapPin, label: 'Location', value: 'Remote' },
-]
+export default async function ContactPage() {
+  const { contact } = await getSiteContent()
 
-const socials = [IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandYoutube, IconBrandTwitter]
+  const direct = [
+    { Icon: IconMail, label: 'Email', value: contact.direct.email },
+    { Icon: IconPhone, label: 'Phone', value: contact.direct.phone },
+    { Icon: IconMapPin, label: 'Location', value: contact.direct.location },
+  ]
 
-const faqs: Faq[] = [
-  { q: 'How soon can you start on a project?', a: 'Most projects begin within 2\u20133 business days of a signed agreement and deposit. Rush turnaround is available on request.' },
-  { q: 'Do you require a deposit before starting?', a: 'Yes \u2014 a 50% deposit secures your slot and start date. The balance is due on delivery of the final files.' },
-  { q: 'Do you work with international clients?', a: 'Absolutely. I work with clients worldwide and deliver remotely, scheduling sessions across time zones as needed.' },
-  { q: 'What information should I have ready before reaching out?', a: 'Your script or brief, intended use, target tone, deadline, and any reference samples help me give you an accurate quote.' },
-]
-
-export default function ContactPage() {
   return (
     <main>
+      {/* HERO */}
       <section className={`${s.hero} container`}>
-        <h1 className={s.heroTitle}>Let&rsquo;s work <span className={s.heroTitleGold}>together</span></h1>
-        <p className={s.heroBody}>Whether you have a project in mind or just want to say hello, I&rsquo;d love to hear from you.</p>
+        <h1 className={s.heroTitle}>{contact.hero.title} <span className={s.heroTitleGold}>{contact.hero.titleGold}</span></h1>
+        <p className={s.heroBody}>{contact.hero.body}</p>
       </section>
 
+      {/* FORM + SIDEBAR */}
       <section className="container">
         <div className={s.layout}>
           <Reveal><ContactForm /></Reveal>
 
-          <aside className={s.side}>
-            <Reveal delay={60}>
+          <div className={s.side}>
+            <Reveal delay={80}>
               <div className={s.expectCard}>
-                <div className={s.expectTitle}>What to Expect</div>
-                {expect.map((e, i) => (
+                <div className={s.expectTitle}>{contact.expect.title}</div>
+                {contact.expect.items.map((e, i) => (
                   <div key={i} className={s.expectItem}>
                     <span className={s.expectNum}>{i + 1}</span>
-                    <span className={s.expectText}><strong>{e.t}</strong> <span>{e.d}</span></span>
+                    <p className={s.expectText}><strong>{e.t}</strong> <span>{e.d}</span></p>
                   </div>
                 ))}
               </div>
             </Reveal>
 
-            <Reveal delay={120}>
+            <Reveal delay={140}>
               <div className={s.directCard}>
-                <div className={s.directTitle}>Direct Contact</div>
-                {direct.map((d) => (
-                  <div key={d.label} className={s.directRow}>
-                    <span className={s.directIcon} aria-hidden><d.Icon size={20} stroke={1.75} /></span>
-                    <span>
-                      <div className={s.directLabel}>{d.label}</div>
-                      <div className={s.directValue}>{d.value}</div>
-                    </span>
+                <div className={s.directTitle}>{contact.direct.title}</div>
+                {direct.map(({ Icon, label, value }) => (
+                  <div key={label} className={s.directRow}>
+                    <span className={s.directIcon}><Icon size={20} stroke={1.75} /></span>
+                    <div>
+                      <div className={s.directLabel}>{label}</div>
+                      <div className={s.directValue}>{value}</div>
+                    </div>
                   </div>
                 ))}
-              </div>
-            </Reveal>
-
-            <Reveal delay={160}>
-              <div>
-                <p className={s.socialLabel}>You can also find me on</p>
+                <p className={s.socialLabel}>{contact.direct.socialLabel}</p>
                 <div className={s.socials}>
-                  {socials.map((Ic, i) => <span key={i} className={s.social}><Ic size={18} stroke={1.75} aria-hidden /></span>)}
+                  {socials.map(({ label, Icon }) => (
+                    <a key={label} href="#" aria-label={label} className={s.social}><Icon size={19} stroke={1.75} /></a>
+                  ))}
                 </div>
               </div>
             </Reveal>
-          </aside>
+          </div>
         </div>
       </section>
 
+      {/* QUICK ANSWERS */}
       <section className={`${s.faqSection} container`}>
         <Reveal>
-          <h2 className={s.faqHead}>Quick <span className="gold">Answers</span></h2>
-          <p className={s.faqSub}>Common questions about booking and working together</p>
+          <h2 className={s.faqHead}>{contact.faqs.title} <span className="gold">{contact.faqs.titleGold}</span></h2>
+          <p className={s.faqSub}>{contact.faqs.sub}</p>
         </Reveal>
-        <FaqGrid items={faqs} />
+        <FaqGrid items={contact.faqs.items} />
       </section>
     </main>
   )

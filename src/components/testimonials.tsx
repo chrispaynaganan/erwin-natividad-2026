@@ -1,19 +1,16 @@
-const items = [
-  { text: 'Erwin\u2019s voice brought our brand campaign to life in ways we never imagined. His professionalism and ability to nail the perfect tone on the first take saved us time and delivered exceptional results.', name: 'Sarah Mitchell', role: 'Marketing Director, TechVision Inc.' },
-  { text: 'As a voice coaching student, I can\u2019t recommend Erwin enough. He helped me discover my authentic voice and gave me the confidence to pursue professional work. Three months later, I landed my first commercial gig!', name: 'Michael Chen', role: 'Voice Coaching Student' },
-  { text: 'Working with Erwin on our audiobook series was a dream. His range of character voices and emotional depth brought our story to life. Listeners consistently praise the narration quality.', name: 'Jessica Torres', role: 'Author & Publisher' },
-]
+import { getSiteContent } from '@/lib/content/store'
 
-// Shared "What People Say" testimonials (home + about).
-export function Testimonials() {
+// Shared "What People Say" section (About page). Reads the same editable
+// content as the homepage testimonials — edit under Content → Home → Testimonials.
+export async function Testimonials() {
+  const { home } = await getSiteContent()
+  const t9s = home.testimonials
   return (
     <section className="container" style={{ padding: '64px 0' }}>
-      <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)' }}>What People <span className="gold">Say</span></h2>
-      <p style={{ color: 'var(--text-muted)', marginTop: 10, maxWidth: '60ch' }}>
-        Don&rsquo;t just take my word for it &mdash; hear from clients and students who&rsquo;ve experienced the difference.
-      </p>
+      <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)' }}>{t9s.title} <span className="gold">{t9s.titleGold}</span></h2>
+      <p style={{ color: 'var(--text-muted)', marginTop: 10, maxWidth: '60ch' }}>{t9s.sub}</p>
       <div className="tGrid">
-        {items.map((t) => (
+        {t9s.items.map((t) => (
           <figure key={t.name} className="tCard">
             <div className="tMark">&ldquo;</div>
             <blockquote className="tText">{t.text}</blockquote>

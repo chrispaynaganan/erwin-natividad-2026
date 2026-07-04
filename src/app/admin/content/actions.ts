@@ -8,6 +8,9 @@ import type { SiteContent } from '@/lib/content/site-content'
 
 export type SaveState = { ok: boolean; message: string } | null
 
+// Every route that reads the content store; all get revalidated on save.
+const CONTENT_PATHS = ['/', '/services', '/about', '/contact', '/faq', '/blog', '/work', '/work-with-me']
+
 export async function saveSiteContent(content: SiteContent): Promise<SaveState> {
   // Only editors and above may change site content.
   try {
@@ -24,8 +27,8 @@ export async function saveSiteContent(content: SiteContent): Promise<SaveState> 
     )
     if (error) return { ok: false, message: 'Could not save: ' + error.message }
 
-    // Push the change to the public pages that read this content.
-    revalidatePath('/')
+    // Push the change to every public page that reads this content.
+    for (const p of CONTENT_PATHS) revalidatePath(p)
     revalidatePath('/', 'layout')
     return { ok: true, message: 'Saved \u2014 your changes are now live on the site.' }
   } catch {

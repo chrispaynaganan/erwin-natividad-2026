@@ -2,16 +2,20 @@ import Link from 'next/link'
 import { Reveal } from '@/components/reveal'
 import { CtaSection } from '@/components/cta-section'
 import { posts } from '@/lib/blog'
+import { getSiteContent } from '@/lib/content/store'
 import s from './blog.module.css'
 
 export const metadata = { title: 'Blog' }
+export const dynamic = 'force-dynamic'
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const { blog } = await getSiteContent()
+
   return (
     <main>
       <section className={`${s.hero} container`}>
-        <h1 className={s.heroTitle}>The <span className={s.heroTitleGold}>Journal</span></h1>
-        <p className={s.heroBody}>Thoughts on voice, craft, and the business of bringing scripts to life \u2014 plus practical tips for clients and aspiring voice artists.</p>
+        <h1 className={s.heroTitle}>{blog.hero.title} <span className={s.heroTitleGold}>{blog.hero.titleGold}</span></h1>
+        <p className={s.heroBody}>{blog.hero.body}</p>
       </section>
 
       <section className="container">
