@@ -35,37 +35,42 @@ export async function saveEpisode(input: EpisodeInput): Promise<SaveState> {
   if (!input.slug.trim()) return { ok: false, message: 'Slug is required.' }
   if (!input.show_id) return { ok: false, message: 'Choose a show first.' }
 
-  const db = createAdminClient()
-  const row = {
-    show_id: input.show_id,
-    title: input.title.trim(),
-    slug: input.slug.trim(),
-    description: input.description || null,
-    show_notes: input.show_notes || null,
-    transcript: input.transcript || null,
-    audio_path: input.audio_path,
-    duration_secs: input.duration_secs,
-    episode_number: input.episode_number,
-    season: input.season,
-    cover_url: input.cover_url || null,
-    is_premium: input.is_premium,
-    status: input.status,
-    published_at: input.status === 'published' ? (input.published_at ?? new Date().toISOString()) : input.published_at,
+  try {
+    const db = createAdminClient()
+    const row = {
+      show_id: input.show_id,
+      title: input.title.trim(),
+      slug: input.slug.trim(),
+      description: input.description || null,
+      show_notes: input.show_notes || null,
+      transcript: input.transcript || null,
+      audio_path: input.audio_path,
+      duration_secs: input.duration_secs,
+      episode_number: input.episode_number,
+      season: input.season,
+      cover_url: input.cover_url || null,
+      is_premium: input.is_premium,
+      status: input.status,
+      published_at: input.status === 'published' ? (input.published_at ?? new Date().toISOString()) : input.published_at,
+    }
+
+    const { data, error } = input.id
+      ? await db.from('episodes').update(row).eq('id', input.id).select('id').single()
+      : await db.from('episodes').insert(row).select('id').single()
+
+    if (error) {
+      // Unique violation on (show_id, slug) is the most likely real-world case.
+      if (error.code === '23505') return { ok: false, message: 'That slug is already used by another episode in this show.' }
+      return { ok: false, message: 'Could not save: ' + error.message }
+    }
+
+    revalidatePath('/admin/episodes')
+    revalidatePath(`/admin/episodes/${data.id}`)
+    return { ok: true, message: 'Episode saved.', id: data.id }
+  } catch (e) {
+    console.error('[saveEpisode] unexpected error:', e)
+    return { ok: false, message: 'Unexpected error while saving: ' + (e instanceof Error ? e.message : String(e)) }
   }
-
-  const { data, error } = input.id
-    ? await db.from('episodes').update(row).eq('id', input.id).select('id').single()
-    : await db.from('episodes').insert(row).select('id').single()
-
-  if (error) {
-    // Unique violation on (show_id, slug) is the most likely real-world case.
-    if (error.code === '23505') return { ok: false, message: 'That slug is already used by another episode in this show.' }
-    return { ok: false, message: 'Could not save: ' + error.message }
-  }
-
-  revalidatePath('/admin/episodes')
-  revalidatePath(`/admin/episodes/${data.id}`)
-  return { ok: true, message: 'Episode saved.', id: data.id }
 }
 
 export async function deleteEpisode(id: string): Promise<SaveState> {
