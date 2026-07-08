@@ -9,13 +9,18 @@ import { createAdminClient } from '@/lib/supabase/admin'
 //   client-side via ffmpeg.wasm (see lib/audio/convert.ts) — there's no
 //   fast, dependency-light server-side equivalent to `sharp` for audio here,
 //   so the browser does the transcoding before the file is ever sent.
-// - Uploads to the PRIVATE `episode-audio` bucket and returns only the
-//   Storage path, never a public URL. Playback goes through a signed URL
-//   minted server-side after the same premium/membership check used by RLS
-//   (see doc 02 — "Premium audio never leaks").
+// - Bucket-aware: `episode-audio` is PRIVATE (premium gating — see doc 02,
+//   "Premium audio never leaks"), so only a Storage path is returned there,
+//   never a public URL. `project-audio` (portfolio demos) is PUBLIC — anyone
+//   should be able to play a demo — so a public URL is returned for it.
 export const runtime = 'nodejs'
 
-const MAX_BYTES = 200 * 1024 * 1024 // generous cap for long-form episodes — confirm this matches the episode-audio bucket's own file_size_limit
+const MAX_BYTES = 200 * 1024 * 1024 // generous cap for long-form episodes — confirm this matches each bucket's own file_size_limit
+
+const AUDIO_BUCKETS: Record<string, { public: boolean }> = {
+  'episode-audio': { public: false },
+  'project-audio': { public: true },
+}
 
 export async function POST(req: Request) {
   const session = await getSessionProfile()
@@ -25,8 +30,11 @@ export async function POST(req: Request) {
 
   const form = await req.formData()
   const file = form.get('file')
-  const folder = (String(form.get('folder') ?? 'episodes').replace(/[^a-zA-Z0-9-_]/g, '') || 'episodes').toLowerCase()
+  const bucket = String(form.get('bucket') ?? 'episode-audio')
+  const folder = (String(form.get('folder') ?? 'misc').replace(/[^a-zA-Z0-9-_]/g, '') || 'misc').toLowerCase()
 
+  const bucketConfig = AUDIO_BUCKETS[bucket]
+  if (!bucketConfig) return NextResponse.json({ error: 'Unknown audio bucket.' }, { status: 400 })
   if (!(file instanceof File)) return NextResponse.json({ error: 'No file received.' }, { status: 400 })
   if (!/\.m4a$/i.test(file.name) && file.type !== 'audio/mp4') {
     return NextResponse.json({ error: 'Expected an AAC (.m4a) file \u2014 conversion should happen before upload.' }, { status: 400 })
@@ -37,7 +45,7 @@ export async function POST(req: Request) {
   const path = `${folder}/${crypto.randomUUID()}.m4a`
 
   const db = createAdminClient()
-  const { error } = await db.storage.from('episode-audio').upload(path, body, {
+  const { error } = await db.storage.from(bucket).upload(path, body, {
     contentType: 'audio/mp4',
     cacheControl: '31536000',
     upsert: false,
@@ -47,6 +55,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Upload failed: ' + error.message }, { status: 500 })
   }
 
-  // No getPublicUrl call here on purpose — the bucket is private.
+  if (bucketConfig.public) {
+    const { data } = db.storage.from(bucket).getPublicUrl(path)
+    return NextResponse.json({ path, url: data.publicUrl })
+  }
+
+  // Private bucket — no getPublicUrl call, no url in the response.
   return NextResponse.json({ path })
 }

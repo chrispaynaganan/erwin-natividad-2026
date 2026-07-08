@@ -4,20 +4,23 @@ import { useRef, useState } from 'react'
 import { IconUpload, IconX, IconLoader2, IconMusic } from '@tabler/icons-react'
 import { convertToAAC } from '@/lib/audio/convert'
 
-export type AudioValue = { path: string; durationSecs: number; fileName: string }
+export type AudioValue = { path: string; url?: string; durationSecs: number; fileName: string }
 
-// Audio picker for the Episodes admin: takes any browser-playable audio
-// file, converts it to AAC (.m4a) in-browser via ffmpeg.wasm, then uploads
-// the already-converted file to the PRIVATE episode-audio bucket.
+// Audio picker used across the admin: mirrors ImageField's pattern.
+// Converts any browser-playable audio file to AAC (.m4a) in-browser via
+// ffmpeg.wasm, then uploads the already-converted file.
 //
-// Unlike ImageField, the value here is a private Storage path, not a public
-// URL — there's nothing to <img>-style preview, so we just show the
-// filename and duration once uploaded.
-export function AudioField({ label, value, onChange, folder = 'episodes', hint }: {
+// For PRIVATE buckets (episode-audio), value.url is undefined — there's
+// nothing to preview or play directly; the private path is stored and
+// playback goes through a signed URL minted server-side. For PUBLIC buckets
+// (project-audio), value.url is a real playable URL, same as ImageField's
+// value.
+export function AudioField({ label, value, onChange, folder = 'episodes', bucket = 'episode-audio', hint }: {
   label: string
   value: AudioValue | null
   onChange: (v: AudioValue | null) => void
   folder?: string
+  bucket?: string
   hint?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -39,12 +42,13 @@ export function AudioField({ label, value, onChange, folder = 'episodes', hint }
       setStage('uploading')
       const fd = new FormData()
       fd.set('file', aac)
+      fd.set('bucket', bucket)
       fd.set('folder', folder)
       const res = await fetch('/api/upload/audio', { method: 'POST', body: fd })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Upload failed.')
 
-      onChange({ path: data.path, durationSecs, fileName: aac.name })
+      onChange({ path: data.path, url: data.url, durationSecs, fileName: aac.name })
     } catch (e2) {
       setErr(e2 instanceof Error ? e2.message : 'Conversion or upload failed.')
     } finally {
@@ -65,6 +69,10 @@ export function AudioField({ label, value, onChange, folder = 'episodes', hint }
             <span style={{ fontSize: '0.8rem', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value.fileName}</span>
             {value.durationSecs > 0 && (
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{formatDuration(value.durationSecs)}</span>
+            )}
+            {value.url && (
+              // eslint-disable-next-line jsx-a11y/media-has-caption
+              <audio controls src={value.url} style={{ height: 28, maxWidth: 200 }} />
             )}
             <button type="button" aria-label="Remove audio" onClick={() => onChange(null)}
               style={{ width: 20, height: 20, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>

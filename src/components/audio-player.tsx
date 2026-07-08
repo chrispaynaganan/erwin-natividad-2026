@@ -1,5 +1,5 @@
 'use client'
-import { IconPlayerPlay, IconPlayerPause, IconVolume } from '@tabler/icons-react'
+import { IconPlayerPlay, IconPlayerPause, IconVolume2, IconVolumeOff } from '@tabler/icons-react'
 import { useRef, useState } from 'react'
 
 // Compact audio player matching the design (play/pause, progress, time, volume).
@@ -10,6 +10,7 @@ export function AudioPlayer({ src, durationLabel }: { src?: string; durationLabe
   const [progress, setProgress] = useState(0)
   const [current, setCurrent] = useState(0)
   const [duration, setDuration] = useState(12)
+  const [muted, setMuted] = useState(false)
 
   function fmt(s: number) {
     const m = Math.floor(s / 60)
@@ -28,10 +29,17 @@ export function AudioPlayer({ src, durationLabel }: { src?: string; durationLabe
     setPlaying((p) => !p)
   }
 
+  function toggleMute() {
+    const a = audioRef.current
+    const next = !muted
+    if (a) a.muted = next
+    setMuted(next)
+  }
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '10px 14px' }}>
       {src && (
-        <audio ref={audioRef} src={src}
+        <audio ref={audioRef} src={src} muted={muted}
           onTimeUpdate={(e) => { const a = e.currentTarget; setCurrent(a.currentTime); setProgress((a.currentTime / (a.duration || 1)) * 100) }}
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
           onEnded={() => setPlaying(false)} />
@@ -48,7 +56,10 @@ export function AudioPlayer({ src, durationLabel }: { src?: string; durationLabe
           <span>{fmt(current)}</span><span>{totalLabel}</span>
         </div>
       </div>
-      <span aria-hidden style={{ color: 'var(--text-muted)', flexShrink: 0, display: 'inline-flex' }}><IconVolume size={18} stroke={1.75} /></span>
+      <button type="button" onClick={toggleMute} aria-label={muted ? 'Unmute' : 'Mute'}
+        style={{ color: 'var(--text-muted)', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+        {muted ? <IconVolumeOff size={18} stroke={1.75} /> : <IconVolume2 size={18} stroke={1.75} />}
+      </button>
     </div>
   )
 }

@@ -139,13 +139,13 @@ export function ProjectsExplorer({ projects, categories }: { projects: Project[]
       ) : (
         <div className={s.grid}>
           {shown.map((p) => (
-            <article key={p.title} className={s.card}>
+            <article key={p.slug} className={s.card}>
               <div className={s.cardImg} />
               <div className={s.cardTags}>{p.tags.map((t) => <span key={t} className={s.tagGold}>{t}</span>)}</div>
               <h3 className={s.cardTitle}>{p.title}</h3>
               <p className={s.cardDesc}>{p.desc}</p>
               <span className={s.cardDate}>{p.date}</span>
-              <AudioPlayer durationLabel={p.duration} />
+              <AudioPlayer src={p.audioUrl} durationLabel={p.duration} />
               <Link href={`/work/${p.slug}`} className="btn btnSolid" style={{ width: '100%', marginTop: 'auto' }}>View Project</Link>
             </article>
           ))}

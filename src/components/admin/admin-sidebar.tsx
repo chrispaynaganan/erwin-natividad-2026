@@ -13,6 +13,7 @@ const items: Item[] = [
   { href: '/admin/blog', label: 'Blog', min: 'editor', group: 'Content' },
   { href: '/admin/episodes', label: 'Episodes', min: 'editor', group: 'Content' },
   { href: '/admin/shows', label: 'Shows', min: 'editor', group: 'Content' },
+  { href: '/admin/projects', label: 'Projects', min: 'editor', group: 'Content' },
   { href: '/admin/members', label: 'Members', min: 'admin', group: 'Admin' },
   { href: '/admin/payments', label: 'Payments', min: 'admin', group: 'Admin' },
   { href: '/admin/team', label: 'Team', min: 'admin', group: 'Admin' },

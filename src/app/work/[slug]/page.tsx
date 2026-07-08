@@ -1,25 +1,26 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { projects, getProject, getAdjacent } from '@/lib/projects'
+import { getProjects, getProject, getAdjacent } from '@/lib/projects'
 import { FullAudioPlayer } from '@/components/full-audio-player'
 import { IconCalendar, IconBriefcase, IconChevronLeft, IconChevronRight, IconArrowUpRight } from '@tabler/icons-react'
 import s from './detail.module.css'
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const projects = await getProjects()
   return projects.map((p) => ({ slug: p.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const p = getProject(slug)
+  const p = await getProject(slug)
   return { title: p ? p.title : 'Project' }
 }
 
 export default async function ProjectDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const p = getProject(slug)
+  const p = await getProject(slug)
   if (!p) notFound()
-  const { prev, next } = getAdjacent(slug)
+  const { prev, next } = await getAdjacent(slug)
 
   const specs: [string, string | undefined][] = [
     ['Client', p.client], ['Completed', p.completed], ['Recording Studio', p.studio],
@@ -47,7 +48,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
           </div>
 
           <h2 className={s.playerLabel}>Listen to my full demo</h2>
-          <FullAudioPlayer durationLabel={p.duration} />
+          <FullAudioPlayer src={p.audioUrl} durationLabel={p.duration} />
 
           <h2 className={s.detailsTitle}>Project Details</h2>
           <div className={s.body}>

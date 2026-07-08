@@ -1,13 +1,15 @@
 import { CtaSection } from '@/components/cta-section'
 import { ProjectsExplorer } from '@/components/projects-explorer'
-import { projects } from '@/lib/projects'
+import { getProjects } from '@/lib/projects'
 import s from './work.module.css'
 
 export const metadata = { title: 'Projects' }
 
 const categories = ['All', 'Action', 'Advertising', 'Audiobook', 'Commercial', 'Conversational', 'Documentary', 'Explainer', 'Fiction', 'Narration', 'Radio', 'eLearning']
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const projects = await getProjects()
+
   return (
     <main>
       <section className={`${s.hero} container`}>
