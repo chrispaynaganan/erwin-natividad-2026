@@ -5,6 +5,15 @@
 // Supabase); the admin Content editor writes it back. Saved blobs from
 // older shapes stay valid — store.ts deep-merges over these defaults, so
 // any field missing from the saved copy falls back to what's here.
+//
+// NOTE (unify-featured-work): `home.featuredWork.items` was removed from
+// this model. The homepage's 3 Featured Work cards now read live from the
+// `projects` table (`is_featured = true`, ordered by sort_order, limit 3
+// — see lib/projects.ts's getFeaturedProjects()) instead of this static
+// blob. `featuredWork.title/titleGold/sub/viewAll` are still edited here
+// since those are just section copy, not project data. Any `items` array
+// left over in an older saved Supabase row is harmless — deepMerge only
+// copies over keys that still exist in the type below.
 // =====================================================================
 
 export type LinkItem = { label: string; href: string }
@@ -44,7 +53,7 @@ export type SiteContent = {
     }
     logos: { label: string; items: LogoItem[] }
     whatIDo: SectionHead & { items: ServiceItem[] }
-    featuredWork: SectionHead & { viewAll: LinkItem; items: WorkItem[] }
+    featuredWork: SectionHead & { viewAll: LinkItem }
     meet: { title: string; titleGold: string; quote: string; body: string[]; cta: LinkItem }
     testimonials: SectionHead & { items: Testimonial[] }
     cta: SectionHead & { emailPlaceholder: string; button: LinkItem }
@@ -133,11 +142,6 @@ export const defaultSiteContent: SiteContent = {
       titleGold: 'Work',
       sub: 'Explore some of my recent voice over projects across various industries and styles.',
       viewAll: { label: 'View All Demos', href: '/work' },
-      items: [
-        { tags: ['Commercial', 'Upbeat', 'Advertising'], title: 'Energetic Commercial Demo Reel', body: 'High-energy commercial voice over showcasing versatility in product advertising and promotiona...', date: 'March 2026' },
-        { tags: ['Narration', 'Documentary', 'Informative'], title: 'Documentary Narration - Environmental Series', body: 'Calm, authoritative narration for a 6-part environmental documentary series.', date: 'March 2026' },
-        { tags: ['eLearning', 'Corporate', 'Training'], title: 'Corporate Training Module', body: 'Professional, clear voice over for employee onboarding and compliance training modules.', date: 'March 2026' },
-      ],
     },
     meet: {
       title: 'Meet',

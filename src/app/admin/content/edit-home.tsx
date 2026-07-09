@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ImageField } from '@/components/admin/image-field'
-import type { ServiceItem, WorkItem, Testimonial, LogoItem } from '@/lib/content/site-content'
+import type { ServiceItem, Testimonial, LogoItem } from '@/lib/content/site-content'
 import { Field, LinkField, TagsField, ItemShell, AddButton, HeadFields, move, type EditorProps } from './fields'
 import { IconTrash } from '@tabler/icons-react'
 import s from './content.module.css'
@@ -19,7 +20,6 @@ const TABS: { key: TabKey; label: string }[] = [
 ]
 
 const blankService = (): ServiceItem => ({ title: 'New service', body: '', primary: { label: 'Learn More', href: '/services' }, secondary: { label: '', href: '' } })
-const blankWork = (): WorkItem => ({ tags: [], title: 'New project', body: '', date: '' })
 const blankTestimonial = (): Testimonial => ({ text: '', name: 'New client', role: '' })
 const blankLogo = (): LogoItem => ({ name: 'New company', imageUrl: '' })
 
@@ -79,20 +79,12 @@ export function EditHome({ c, edit }: EditorProps) {
             <h2 className={s.cardTitle}>Featured Work</h2>
             <HeadFields head={c.home.featuredWork} onChange={(h) => edit((d) => { Object.assign(d.home.featuredWork, h) })} />
             <LinkField label={'\u201CView all\u201D button'} value={c.home.featuredWork.viewAll} onChange={(v) => edit((d) => { d.home.featuredWork.viewAll = v })} />
-            <div className={s.items}>
-              {c.home.featuredWork.items.map((it, i) => (
-                <ItemShell key={i} title={it.title || `Project ${i + 1}`} i={i} count={c.home.featuredWork.items.length}
-                  onUp={() => edit((d) => move(d.home.featuredWork.items, i, -1))}
-                  onDown={() => edit((d) => move(d.home.featuredWork.items, i, 1))}
-                  onRemove={() => edit((d) => { d.home.featuredWork.items.splice(i, 1) })}>
-                  <Field label="Title" value={it.title} onChange={(v) => edit((d) => { d.home.featuredWork.items[i].title = v })} />
-                  <TagsField label="Tags" value={it.tags} onChange={(v) => edit((d) => { d.home.featuredWork.items[i].tags = v })} />
-                  <Field label="Description" textarea value={it.body} onChange={(v) => edit((d) => { d.home.featuredWork.items[i].body = v })} />
-                  <Field label="Date" value={it.date} onChange={(v) => edit((d) => { d.home.featuredWork.items[i].date = v })} placeholder="March 2026" />
-                </ItemShell>
-              ))}
-              <AddButton label="Add project" onClick={() => edit((d) => { d.home.featuredWork.items.push(blankWork()) })} />
-            </div>
+            <p className={s.hint}>
+              The 3 project cards shown on the homepage are no longer managed here — they\u2019re pulled
+              live from <strong>Projects admin</strong>. Mark up to three projects as <strong>Featured</strong>{' '}
+              there and they\u2019ll appear on the homepage automatically, ordered by each project\u2019s sort order.
+            </p>
+            <Link href="/admin/projects" className="btn btnOutline">Go to Projects admin</Link>
           </section>
         )}
 

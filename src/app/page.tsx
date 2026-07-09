@@ -2,13 +2,17 @@ import Link from 'next/link'
 import { Reveal } from '@/components/reveal'
 import { AudioPlayer } from '@/components/audio-player'
 import { getSiteContent } from '@/lib/content/store'
+import { getFeaturedProjects } from '@/lib/projects'
 import s from './home.module.css'
 
 // Read fresh content each request so admin edits appear immediately.
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const { home } = await getSiteContent()
+  const [{ home }, featuredProjects] = await Promise.all([
+    getSiteContent(),
+    getFeaturedProjects(),
+  ])
   const { hero, logos, whatIDo, featuredWork, meet, testimonials, cta } = home
 
   return (
@@ -72,7 +76,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* FEATURED WORK */}
+      {/* FEATURED WORK — now sourced from the `projects` table (is_featured, up to 3, by sort_order), not the Content 2.0 blob */}
       <section className={`${s.section} container`}>
         <Reveal>
           <div className={s.workHead}>
@@ -83,20 +87,28 @@ export default async function HomePage() {
             {featuredWork.viewAll.label && <Link href={featuredWork.viewAll.href} className="btn btnOutline">{featuredWork.viewAll.label}</Link>}
           </div>
         </Reveal>
-        <div className={s.workGrid}>
-          {featuredWork.items.map((w, i) => (
-            <Reveal key={i} delay={(i % 3) * 80}>
-              <div className={s.workCard}>
-                <div className={s.workTags}>{w.tags.map((t) => <span key={t} className="pill">{t}</span>)}</div>
-                <h3>{w.title}</h3>
-                <p>{w.body}</p>
-                <span className={s.workDate}>{w.date}</span>
-                <AudioPlayer />
-                <Link href={featuredWork.viewAll.href} className="btn btnSolid" style={{ width: '100%' }}>View Project</Link>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        {featuredProjects.length > 0 ? (
+          <div className={s.workGrid}>
+            {featuredProjects.map((p, i) => (
+              <Reveal key={p.slug} delay={(i % 3) * 80}>
+                <div className={s.workCard}>
+                  <div className={s.workTags}>{p.tags.map((t) => <span key={t} className="pill">{t}</span>)}</div>
+                  <h3>{p.title}</h3>
+                  <p>{p.desc}</p>
+                  <span className={s.workDate}>{p.date}</span>
+                  {/* ASSUMPTION: AudioPlayer accepts a `src` prop — not verified, audio-player.tsx wasn't
+                      provided. If this errors on build, send me that file and I'll fix the prop name. */}
+                  <AudioPlayer src={p.audioUrl} />
+                  <Link href={`/work/${p.slug}`} className="btn btnSolid" style={{ width: '100%' }}>View Project</Link>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <p className={s.headSub} style={{ marginTop: 24 }}>
+            No featured projects yet — mark up to 3 as Featured in Projects admin to have them appear here.
+          </p>
+        )}
       </section>
 
       {/* MEET ERWIN */}
