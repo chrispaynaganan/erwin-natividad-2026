@@ -51,7 +51,11 @@ export default async function HomePage() {
           </div>
           <div className={s.heroPhoto}>
             {hero.photoUrl ? (
-              <img src={hero.photoUrl} alt="Erwin Natividad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img
+                src={hero.photoUrl}
+                alt="Erwin Natividad"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }}
+              />
             ) : (
               'Erwin\u2019s portrait'
             )}
@@ -135,7 +139,11 @@ export default async function HomePage() {
           <Reveal>
             <div className={s.meetPhoto}>
               {meet.photoUrl && (
-                <img src={meet.photoUrl} alt="Erwin Natividad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img
+                  src={meet.photoUrl}
+                  alt="Erwin Natividad"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }}
+                />
               )}
             </div>
           </Reveal>
