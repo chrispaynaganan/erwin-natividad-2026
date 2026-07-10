@@ -1,46 +1,36 @@
 /* src/app/admin/settings/settings.module.css
-   Hardcodes the LOCKED brand token hex values from the project doc (§4)
-   directly, with [data-theme='dark'] overrides — same mechanism the rest
-   of the site uses. Done this way instead of var(--...) because the actual
-   global custom-property names weren't available to confirm; this guarantees
-   correct rendering either way. If you'd rather this pull from the real
-   global tokens, send over globals.css and these can switch to var(--x). */
+   Updated to use the CONFIRMED real global variable names (seen directly in
+   admin-sidebar.tsx: --border, --surface, --accent, --text-muted, --text,
+   --btn-fg, --accent-soft — no "color-" prefix). Hex fallbacks kept as a
+   safety net for any name not yet confirmed (e.g. --bg, --surface-2). */
 
 .card {
-  background: #FFFFFF;
-  border: 1px solid #E7E5E0;
+  background: var(--surface, #FFFFFF);
+  border: 1px solid var(--border, #E7E5E0);
   border-radius: 12px;
   padding: 24px;
   margin-top: 24px;
 }
 :global([data-theme='dark']) .card {
-  background: #181816;
-  border-color: #2A2A27;
+  background: var(--surface, #181816);
+  border-color: var(--border, #2A2A27);
 }
 
 .label {
   display: block;
   font-size: 14px;
-  color: #6B6862;
+  color: var(--text-muted, #6B6862);
   margin-bottom: 6px;
-}
-:global([data-theme='dark']) .label {
-  color: #9A978F;
 }
 
 .input {
   width: 100%;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #E7E5E0;
-  background: #FCFCFB;
-  color: #161513;
+  border: 1px solid var(--border, #E7E5E0);
+  background: var(--bg, #FCFCFB);
+  color: var(--text, #161513);
   font: inherit;
-}
-:global([data-theme='dark']) .input {
-  border-color: #2A2A27;
-  background: #0E0E0D;
-  color: #F5F4F1;
 }
 
 .field { margin-bottom: 16px; }
@@ -48,20 +38,14 @@
 
 .hr {
   border: none;
-  border-top: 1px solid #E7E5E0;
+  border-top: 1px solid var(--border, #E7E5E0);
   margin: 20px 0;
-}
-:global([data-theme='dark']) .hr {
-  border-top-color: #2A2A27;
 }
 
 .statusOk {
   margin-top: 12px;
-  color: #B48F19;
+  color: var(--accent, #B48F19);
   font-size: 14px;
-}
-:global([data-theme='dark']) .statusOk {
-  color: #D4AF37;
 }
 
 .statusErr {
@@ -71,11 +55,8 @@
 }
 
 .hint {
-  color: #6B6862;
+  color: var(--text-muted, #6B6862);
   font-size: 14px;
-}
-:global([data-theme='dark']) .hint {
-  color: #9A978F;
 }
 
 .checkboxRow {
