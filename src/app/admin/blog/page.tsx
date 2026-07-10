@@ -1,8 +1,11 @@
-export default function Page() {
-  return (
-    <div>
-      <h1 style={{ fontSize: "var(--text-h2)" }}>Blog</h1>
-      <p style={{ color: "var(--color-text-muted)", marginTop: "0.5rem" }}>Manage blog.</p>
-    </div>
-  )
+import { requireRole } from '@/lib/auth'
+import { listBlogPosts } from '@/lib/blog-db/store'
+import { BlogList } from './blog-list'
+
+export const dynamic = 'force-dynamic'
+
+export default async function BlogAdminPage() {
+  await requireRole('editor')
+  const posts = await listBlogPosts()
+  return <BlogList posts={posts} />
 }
