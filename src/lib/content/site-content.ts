@@ -14,6 +14,16 @@
 // since those are just section copy, not project data. Any `items` array
 // left over in an older saved Supabase row is harmless — deepMerge only
 // copies over keys that still exist in the type below.
+//
+// NOTE (pricing-auto-compute): PricingTier's `from`/`price` (manually-typed
+// strings) and `list: string[]` were replaced with a computed model: each
+// inclusion now carries its own price (never shown publicly), and the
+// package's displayed price is derived at render time as
+// sum(list.price) * (1 - discountPercent / 100). `pricePrefix` replaces the
+// old freeform `from` string — it's just the small label above the price
+// ("From", "Starts at", etc.); the dollar amount + "(Save X%)" part is
+// computed, not typed. store.ts normalizes any pre-existing saved data
+// still in the old shape (string list items) into the new object shape.
 // =====================================================================
 
 export type LinkItem = { label: string; href: string }
@@ -25,7 +35,8 @@ export type FaqItem = { q: string; a: string }
 export type SectionHead = { title: string; titleGold: string; sub: string }
 export type FaqSection = SectionHead & { items: FaqItem[] }
 export type BreakdownItem = { title: string; tags: string[]; desc: string; who: string; turnaround: string; includes: string[] }
-export type PricingTier = { name: string; badge: string; featured: boolean; from: string; price: string; desc: string; listLabel: string; list: string[]; cta: string }
+export type PricingInclusion = { id: string; label: string; price: number }
+export type PricingTier = { name: string; badge: string; featured: boolean; pricePrefix: string; discountPercent: number; desc: string; listLabel: string; list: PricingInclusion[]; cta: string }
 export type StepItem = { title: string; text: string }
 export type SkillGroup = { title: string; tags: string[] }
 export type StatItem = { num: string; label: string }
@@ -221,10 +232,51 @@ export const defaultSiteContent: SiteContent = {
       titleGold: 'Packages',
       sub: 'Transparent pricing designed to fit projects of all sizes. Custom quotes available for unique requirements.',
       footnote: '$ Prices may vary based on project complexity, word count, and delivery timeline. 50% deposit required before production begins. Final payment due upon delivery.',
+      // Inclusion prices below are placeholder defaults chosen so the DISPLAYED
+      // total matches what the live site already shows ($150 / $350 / $500) —
+      // deploying this shouldn't visibly change the cards until someone edits
+      // inclusion prices in admin. Prices are per-inclusion and never rendered
+      // publicly; only label + checkmark show on the card.
       items: [
-        { name: 'Basic Package', badge: 'Most affordable', featured: false, from: 'From $250 (Save 10%)', price: '$150', desc: 'Perfect for short-form content and quick projects (make this longer)', listLabel: 'Basic package includes:', list: ['Up to 150 words', '1 revision round', '48-hour delivery', 'Professional editing & mastering'], cta: 'Book Basic' },
-        { name: 'Standard Package', badge: 'Most Popular', featured: true, from: 'From $550 (Save 10%)', price: '$350', desc: 'Most popular \u2013 ideal for most projects', listLabel: 'Everything in basic, plus:', list: ['Up to 500 words', '2 revision rounds', '24-hour delivery', 'Professional editing & mastering'], cta: 'Book Standard' },
-        { name: 'Custom', badge: 'Let\u2019s Talk', featured: false, from: 'Starts at', price: '$500', desc: 'For large-scale or ongoing projects', listLabel: 'Basic package includes:', list: ['Up to 150 words', '1 revision round', '48-hour delivery', 'Professional editing & mastering'], cta: 'Inquire' },
+        {
+          name: 'Basic Package', badge: 'Most affordable', featured: false,
+          pricePrefix: 'From', discountPercent: 25,
+          desc: 'Perfect for short-form content and quick projects (make this longer)',
+          listLabel: 'Basic package includes:',
+          list: [
+            { id: 'basic-words', label: 'Up to 150 words', price: 100 },
+            { id: 'basic-revision', label: '1 revision round', price: 40 },
+            { id: 'basic-delivery', label: '48-hour delivery', price: 30 },
+            { id: 'basic-editing', label: 'Professional editing & mastering', price: 30 },
+          ],
+          cta: 'Book Basic',
+        },
+        {
+          name: 'Standard Package', badge: 'Most Popular', featured: true,
+          pricePrefix: 'From', discountPercent: 30,
+          desc: 'Most popular \u2013 ideal for most projects',
+          listLabel: 'Everything in basic, plus:',
+          list: [
+            { id: 'std-words', label: 'Up to 500 words', price: 300 },
+            { id: 'std-revision', label: '2 revision rounds', price: 80 },
+            { id: 'std-delivery', label: '24-hour delivery', price: 70 },
+            { id: 'std-editing', label: 'Professional editing & mastering', price: 50 },
+          ],
+          cta: 'Book Standard',
+        },
+        {
+          name: 'Custom', badge: 'Let\u2019s Talk', featured: false,
+          pricePrefix: 'Starts at', discountPercent: 0,
+          desc: 'For large-scale or ongoing projects',
+          listLabel: 'Basic package includes:',
+          list: [
+            { id: 'custom-words', label: 'Up to 150 words', price: 300 },
+            { id: 'custom-revision', label: '1 revision round', price: 50 },
+            { id: 'custom-delivery', label: '48-hour delivery', price: 50 },
+            { id: 'custom-editing', label: 'Professional editing & mastering', price: 100 },
+          ],
+          cta: 'Inquire',
+        },
       ],
     },
     how: {

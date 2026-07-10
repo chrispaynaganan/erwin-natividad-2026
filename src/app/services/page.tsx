@@ -9,6 +9,10 @@ import s from './services.module.css'
 export const metadata = { title: 'Services' }
 export const dynamic = 'force-dynamic'
 
+function formatMoney(n: number): string {
+  return Number.isInteger(n) ? String(n) : n.toFixed(2)
+}
+
 export default async function ServicesPage() {
   const { services } = await getSiteContent()
   const { hero, breakdown, pricing, how, faqs } = services
@@ -52,29 +56,46 @@ export default async function ServicesPage() {
         </div>
       </section>
 
-      {/* PRICING */}
+      {/* PRICING — total is computed from each inclusion's price + the package's
+          discount %, never manually typed. Inclusion prices are admin-only and
+          never rendered here — only the label + checkmark show publicly. */}
       <section className={`${s.section} container`}>
         <Reveal>
           <h2 className={s.headTitle}>{pricing.title} <span className="gold">{pricing.titleGold}</span></h2>
           <p className={s.headSub}>{pricing.sub}</p>
         </Reveal>
         <div className={s.pricing}>
-          {pricing.items.map((p, i) => (
-            <Reveal key={p.name || i} delay={i * 80}>
-              <div className={`${s.priceCard} ${p.featured ? s.priceCardFeatured : ''}`}>
-                <span className={`${s.badge} ${p.featured ? s.badgeFeatured : ''}`}>{p.badge}</span>
-                <div className={s.priceName}>{p.name}</div>
-                <div className={s.priceFrom}>{p.from}</div>
-                <div className={s.priceBig}>{p.price}</div>
-                <p className={s.priceDesc}>{p.desc}</p>
-                <div className={s.priceIncludesLabel}>{p.listLabel}</div>
-                <ul className={s.priceList}>
-                  {p.list.map((li) => <li key={li}><span className="gold" style={{display:'inline-flex'}}><IconCheck size={15} stroke={2} /></span>{li}</li>)}
-                </ul>
-                <Link href="/contact" className={`btn ${p.featured ? 'btnSolid' : 'btnOutline'}`} style={{ width: '100%', marginTop: 'auto' }}>{p.cta}</Link>
-              </div>
-            </Reveal>
-          ))}
+          {pricing.items.map((p, i) => {
+            const subtotal = p.list.reduce((sum, item) => sum + (item.price || 0), 0)
+            const hasDiscount = p.discountPercent > 0
+            const total = hasDiscount ? subtotal * (1 - p.discountPercent / 100) : subtotal
+
+            return (
+              <Reveal key={p.name || i} delay={i * 80}>
+                <div className={`${s.priceCard} ${p.featured ? s.priceCardFeatured : ''}`}>
+                  <span className={`${s.badge} ${p.featured ? s.badgeFeatured : ''}`}>{p.badge}</span>
+                  <div className={s.priceName}>{p.name}</div>
+                  <div className={s.priceFrom}>
+                    {hasDiscount
+                      ? `${p.pricePrefix} $${formatMoney(subtotal)} (Save ${p.discountPercent}%)`
+                      : p.pricePrefix}
+                  </div>
+                  <div className={s.priceBig}>${formatMoney(total)}</div>
+                  <p className={s.priceDesc}>{p.desc}</p>
+                  <div className={s.priceIncludesLabel}>{p.listLabel}</div>
+                  <ul className={s.priceList}>
+                    {p.list.map((item) => (
+                      <li key={item.id}>
+                        <span className="gold" style={{ display: 'inline-flex' }}><IconCheck size={15} stroke={2} /></span>
+                        {item.label}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href="/contact" className={`btn ${p.featured ? 'btnSolid' : 'btnOutline'}`} style={{ width: '100%', marginTop: 'auto' }}>{p.cta}</Link>
+                </div>
+              </Reveal>
+            )
+          })}
         </div>
         <p className={s.priceFootnote}>{pricing.footnote}</p>
       </section>
