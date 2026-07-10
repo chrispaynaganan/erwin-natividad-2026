@@ -67,7 +67,7 @@ export default async function ServicesPage() {
         <div className={s.pricing}>
           {pricing.items.map((p, i) => {
             const subtotal = p.list.reduce((sum, item) => sum + (item.price || 0), 0)
-            const hasDiscount = p.discountPercent > 0
+            const hasDiscount = !p.useCustomPrice && p.discountPercent > 0
             const total = hasDiscount ? subtotal * (1 - p.discountPercent / 100) : subtotal
 
             return (
@@ -76,11 +76,13 @@ export default async function ServicesPage() {
                   <span className={`${s.badge} ${p.featured ? s.badgeFeatured : ''}`}>{p.badge}</span>
                   <div className={s.priceName}>{p.name}</div>
                   <div className={s.priceFrom}>
-                    {hasDiscount
-                      ? `${p.pricePrefix} $${formatMoney(subtotal)} (Save ${p.discountPercent}%)`
-                      : p.pricePrefix}
+                    {p.useCustomPrice
+                      ? p.pricePrefix
+                      : hasDiscount
+                        ? `${p.pricePrefix} $${formatMoney(subtotal)} (Save ${p.discountPercent}%)`
+                        : p.pricePrefix}
                   </div>
-                  <div className={s.priceBig}>${formatMoney(total)}</div>
+                  <div className={s.priceBig}>{p.useCustomPrice ? p.customPriceLabel : `$${formatMoney(total)}`}</div>
                   <p className={s.priceDesc}>{p.desc}</p>
                   <div className={s.priceIncludesLabel}>{p.listLabel}</div>
                   <ul className={s.priceList}>

@@ -16,7 +16,7 @@ const TABS: { key: TabKey; label: string }[] = [
 ]
 
 const blankBreakdown = (): BreakdownItem => ({ title: 'New service', tags: [], desc: '', who: '', turnaround: '', includes: [] })
-const blankTier = (): PricingTier => ({ name: 'New package', badge: '', featured: false, pricePrefix: 'From', discountPercent: 0, desc: '', listLabel: 'Includes:', list: [], cta: 'Book' })
+const blankTier = (): PricingTier => ({ name: 'New package', badge: '', featured: false, pricePrefix: 'From', discountPercent: 0, useCustomPrice: false, customPriceLabel: 'Let\u2019s Talk', desc: '', listLabel: 'Includes:', list: [], cta: 'Book' })
 
 export function EditServices({ c, edit }: EditorProps) {
   const [tab, setTab] = useState<TabKey>('hero')
@@ -85,15 +85,29 @@ export function EditServices({ c, edit }: EditorProps) {
                     </div>
                     <div className={s.row2}>
                       <Field label="Price prefix (small label above price)" value={it.pricePrefix} onChange={(v) => edit((d) => { d.services.pricing.items[i].pricePrefix = v })} placeholder="From" />
-                      <Field label="Discount % (0 = no discount shown)" value={String(it.discountPercent)} onChange={(v) => edit((d) => { d.services.pricing.items[i].discountPercent = Number(v.replace(/[^0-9.]/g, '')) || 0 })} placeholder="10" />
+                      <label className={s.field}>
+                        <span className={s.label}>Price display</span>
+                        <select className={s.input} value={it.useCustomPrice ? 'custom' : 'computed'}
+                          onChange={(e) => edit((d) => { d.services.pricing.items[i].useCustomPrice = e.target.value === 'custom' })}>
+                          <option value="computed">Computed from inclusions</option>
+                          <option value="custom">Custom text (price discussed)</option>
+                        </select>
+                      </label>
                     </div>
+                    {it.useCustomPrice ? (
+                      <Field label={'Custom price text (shown instead of a computed price, e.g. \u201CLet\u2019s Talk\u201D)'} value={it.customPriceLabel} onChange={(v) => edit((d) => { d.services.pricing.items[i].customPriceLabel = v })} placeholder="Let\u2019s Talk" />
+                    ) : (
+                      <Field label="Discount % (0 = no discount shown)" value={String(it.discountPercent)} onChange={(v) => edit((d) => { d.services.pricing.items[i].discountPercent = Number(v.replace(/[^0-9.]/g, '')) || 0 })} placeholder="10" />
+                    )}
                     <Field label="Short description" value={it.desc} onChange={(v) => edit((d) => { d.services.pricing.items[i].desc = v })} />
                     <Field label="List label" value={it.listLabel} onChange={(v) => edit((d) => { d.services.pricing.items[i].listLabel = v })} placeholder="Basic package includes:" />
                     <InclusionsField label="Included items & prices" value={it.list} onChange={(v) => edit((d) => { d.services.pricing.items[i].list = v })} />
-                    <p className={s.hint}>
-                      Computed price shown on the card: <strong>${Number.isInteger(total) ? total : total.toFixed(2)}</strong>
-                      {it.discountPercent > 0 ? ` (from a $${Number.isInteger(subtotal) ? subtotal : subtotal.toFixed(2)} subtotal, ${it.discountPercent}% off)` : ''}
-                    </p>
+                    {!it.useCustomPrice && (
+                      <p className={s.hint}>
+                        Computed price shown on the card: <strong>${Number.isInteger(total) ? total : total.toFixed(2)}</strong>
+                        {it.discountPercent > 0 ? ` (from a $${Number.isInteger(subtotal) ? subtotal : subtotal.toFixed(2)} subtotal, ${it.discountPercent}% off)` : ''}
+                      </p>
+                    )}
                     <div className={s.row2}>
                       <Field label="Button text" value={it.cta} onChange={(v) => edit((d) => { d.services.pricing.items[i].cta = v })} />
                       <label className={s.field}>

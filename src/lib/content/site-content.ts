@@ -24,6 +24,12 @@
 // ("From", "Starts at", etc.); the dollar amount + "(Save X%)" part is
 // computed, not typed. store.ts normalizes any pre-existing saved data
 // still in the old shape (string list items) into the new object shape.
+//
+// `useCustomPrice` + `customPriceLabel` are the bypass for "price is
+// discussed" tiers (e.g. Custom/Enterprise): when true, the computed total
+// is ignored entirely and `customPriceLabel` (e.g. "Let's Talk") renders in
+// its place. The inclusion checklist still shows either way — what's
+// included is independent of how the price itself is displayed.
 // =====================================================================
 
 export type LinkItem = { label: string; href: string }
@@ -36,7 +42,7 @@ export type SectionHead = { title: string; titleGold: string; sub: string }
 export type FaqSection = SectionHead & { items: FaqItem[] }
 export type BreakdownItem = { title: string; tags: string[]; desc: string; who: string; turnaround: string; includes: string[] }
 export type PricingInclusion = { id: string; label: string; price: number }
-export type PricingTier = { name: string; badge: string; featured: boolean; pricePrefix: string; discountPercent: number; desc: string; listLabel: string; list: PricingInclusion[]; cta: string }
+export type PricingTier = { name: string; badge: string; featured: boolean; pricePrefix: string; discountPercent: number; useCustomPrice: boolean; customPriceLabel: string; desc: string; listLabel: string; list: PricingInclusion[]; cta: string }
 export type StepItem = { title: string; text: string }
 export type SkillGroup = { title: string; tags: string[] }
 export type StatItem = { num: string; label: string }
@@ -240,7 +246,7 @@ export const defaultSiteContent: SiteContent = {
       items: [
         {
           name: 'Basic Package', badge: 'Most affordable', featured: false,
-          pricePrefix: 'From', discountPercent: 25,
+          pricePrefix: 'From', discountPercent: 25, useCustomPrice: false, customPriceLabel: 'Let\u2019s Talk',
           desc: 'Perfect for short-form content and quick projects (make this longer)',
           listLabel: 'Basic package includes:',
           list: [
@@ -253,7 +259,7 @@ export const defaultSiteContent: SiteContent = {
         },
         {
           name: 'Standard Package', badge: 'Most Popular', featured: true,
-          pricePrefix: 'From', discountPercent: 30,
+          pricePrefix: 'From', discountPercent: 30, useCustomPrice: false, customPriceLabel: 'Let\u2019s Talk',
           desc: 'Most popular \u2013 ideal for most projects',
           listLabel: 'Everything in basic, plus:',
           list: [
@@ -266,7 +272,7 @@ export const defaultSiteContent: SiteContent = {
         },
         {
           name: 'Custom', badge: 'Let\u2019s Talk', featured: false,
-          pricePrefix: 'Starts at', discountPercent: 0,
+          pricePrefix: 'Pricing', discountPercent: 0, useCustomPrice: true, customPriceLabel: 'Custom Quote',
           desc: 'For large-scale or ongoing projects',
           listLabel: 'Basic package includes:',
           list: [
