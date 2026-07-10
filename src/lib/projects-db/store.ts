@@ -1,3 +1,5 @@
+// Full replacement for src/lib/projects-db/store.ts
+
 import 'server-only'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -20,6 +22,7 @@ export type ProjectRow = {
   genre: string | null
   deliverables: string | null
   is_featured: boolean
+  is_hero: boolean
   status: 'draft' | 'scheduled' | 'published' | 'archived'
   sort_order: number
   created_at: string

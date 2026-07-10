@@ -1,3 +1,5 @@
+// Full replacement for src/app/admin/projects/actions.ts
+
 'use server'
 
 import { revalidatePath } from 'next/cache'
@@ -25,6 +27,7 @@ export type ProjectInput = {
   genre: string
   deliverables: string
   is_featured: boolean
+  is_hero: boolean
   status: 'draft' | 'scheduled' | 'published' | 'archived'
   sort_order: number
 }
@@ -61,6 +64,10 @@ export async function saveProject(input: ProjectInput): Promise<SaveState> {
       is_featured: input.is_featured,
       status: input.status,
       sort_order: input.sort_order,
+      // is_hero deliberately NOT set here — see below. Setting is_hero: true
+      // in this same statement could race against the partial unique index
+      // if another project currently holds it; the hero flag is always
+      // written in its own follow-up step instead, atomically when turning on.
     }
 
     const { data, error } = input.id
@@ -70,6 +77,23 @@ export async function saveProject(input: ProjectInput): Promise<SaveState> {
     if (error) {
       if (error.code === '23505') return { ok: false, message: 'That slug is already used by another project.' }
       return { ok: false, message: 'Could not save: ' + error.message }
+    }
+
+    // Hero spotlight: at most one project can hold this at a time (enforced by
+    // a partial unique index — see 0009_hero_project.sql). Turning it ON goes
+    // through set_hero_project(), which atomically clears whichever project
+    // held it before and sets this one, all in a single transaction. Turning
+    // it OFF is a plain field write — no conflict risk when unsetting.
+    if (input.is_hero) {
+      const { error: heroError } = await db.rpc('set_hero_project', { target_id: data.id })
+      if (heroError) {
+        return { ok: false, message: 'Project saved, but could not set as Hero spotlight: ' + heroError.message, id: data.id }
+      }
+    } else {
+      const { error: unsetError } = await db.from('projects').update({ is_hero: false }).eq('id', data.id)
+      if (unsetError) {
+        return { ok: false, message: 'Project saved, but could not update Hero spotlight: ' + unsetError.message, id: data.id }
+      }
     }
 
     revalidatePath('/admin/projects')

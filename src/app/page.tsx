@@ -1,19 +1,30 @@
+// Full replacement for the homepage page.tsx
+
 import Link from 'next/link'
 import { Reveal } from '@/components/reveal'
 import { AudioPlayer } from '@/components/audio-player'
 import { getSiteContent } from '@/lib/content/store'
-import { getFeaturedProjects } from '@/lib/projects'
+import { getFeaturedProjects, getHeroProject } from '@/lib/projects'
+import { resolveLink } from '@/lib/routes'
 import s from './home.module.css'
 
 // Read fresh content each request so admin edits appear immediately.
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [{ home }, featuredProjects] = await Promise.all([
+  const [{ home }, featuredProjects, heroProject] = await Promise.all([
     getSiteContent(),
     getFeaturedProjects(),
+    getHeroProject(),
   ])
   const { hero, logos, whatIDo, featuredWork, meet, testimonials, cta } = home
+
+  // Resolve Content-2.0-authored hrefs against page_routes so renamed slugs
+  // (edited in /admin/routes) keep working without touching this field.
+  const [primaryHref, secondaryHref] = await Promise.all([
+    resolveLink(hero.ctaPrimary.href),
+    resolveLink(hero.ctaSecondary.href),
+  ])
 
   return (
     <main>
@@ -28,11 +39,14 @@ export default async function HomePage() {
             <p className={s.heroEyebrow}>{hero.eyebrow}</p>
             <p className={s.heroBody}>{hero.body}</p>
             <p className={s.featuredLabel}>{hero.featuredLabel}</p>
-            <p className={s.featuredTitle}>{hero.featuredTitle}</p>
-            <AudioPlayer />
+            {/* Title + audio now come from whichever project has is_hero = true
+                (set in Projects admin), falling back to the static Content 2.0
+                field so the section never breaks if no project is flagged. */}
+            <p className={s.featuredTitle}>{heroProject?.title ?? hero.featuredTitle}</p>
+            <AudioPlayer src={heroProject?.audioUrl} />
             <div className={s.heroCtas}>
-              <Link href={hero.ctaPrimary.href} className="btn btnSolid">{hero.ctaPrimary.label}</Link>
-              <Link href={hero.ctaSecondary.href} className="btn btnOutline">{hero.ctaSecondary.label}</Link>
+              <Link href={primaryHref} className="btn btnSolid">{hero.ctaPrimary.label}</Link>
+              <Link href={secondaryHref} className="btn btnOutline">{hero.ctaSecondary.label}</Link>
             </div>
           </div>
           <div className={s.heroPhoto}>Erwin&rsquo;s portrait</div>
@@ -76,7 +90,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* FEATURED WORK — now sourced from the `projects` table (is_featured, up to 3, by sort_order), not the Content 2.0 blob */}
+      {/* FEATURED WORK — sourced from the `projects` table (is_featured, up to 3, by sort_order), not the Content 2.0 blob */}
       <section className={`${s.section} container`}>
         <Reveal>
           <div className={s.workHead}>
@@ -96,8 +110,6 @@ export default async function HomePage() {
                   <h3>{p.title}</h3>
                   <p>{p.desc}</p>
                   <span className={s.workDate}>{p.date}</span>
-                  {/* ASSUMPTION: AudioPlayer accepts a `src` prop — not verified, audio-player.tsx wasn't
-                      provided. If this errors on build, send me that file and I'll fix the prop name. */}
                   <AudioPlayer src={p.audioUrl} />
                   <Link href={`/work/${p.slug}`} className="btn btnSolid" style={{ width: '100%' }}>View Project</Link>
                 </div>

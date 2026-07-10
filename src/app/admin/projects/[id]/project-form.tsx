@@ -1,3 +1,5 @@
+// Full replacement for src/app/admin/projects/[id]/project-form.tsx (or wherever ProjectForm lives)
+
 'use client'
 
 import { useState, useTransition } from 'react'
@@ -44,6 +46,9 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
   const [genre, setGenre] = useState(project?.genre ?? '')
   const [deliverables, setDeliverables] = useState(project?.deliverables ?? '')
   const [isFeatured, setIsFeatured] = useState(project?.is_featured ?? false)
+  // NEW — Hero spotlight. Only one project across the whole site can have this on;
+  // checking it here tells saveProject to atomically clear any other hero project.
+  const [isHero, setIsHero] = useState(project?.is_hero ?? false)
   const [status, setStatus] = useState<Status>((project?.status as Status) ?? 'draft')
   const [sortOrder, setSortOrder] = useState(project?.sort_order?.toString() ?? '0')
 
@@ -76,6 +81,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
         genre,
         deliverables,
         is_featured: isFeatured,
+        is_hero: isHero,
         status,
         sort_order: sortOrder ? Number(sortOrder) : 0,
       })
@@ -122,6 +128,18 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
             <label className={s.field} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
               <input type="checkbox" checked={isFeatured} onChange={(e) => { setIsFeatured(e.target.checked); markDirty() }} />
               <span className={s.label} style={{ margin: 0 }}>Featured on homepage</span>
+            </label>
+          </div>
+
+          <div className={s.row2}>
+            <label className={s.field} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <input type="checkbox" checked={isHero} onChange={(e) => { setIsHero(e.target.checked); markDirty() }} />
+              <span className={s.label} style={{ margin: 0 }}>
+                Use as Hero spotlight
+                <span style={{ display: 'block', fontWeight: 400, opacity: 0.7 }}>
+                  Only one project can be the Hero at a time — enabling this replaces whichever project currently is.
+                </span>
+              </span>
             </label>
           </div>
         </section>

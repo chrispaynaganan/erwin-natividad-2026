@@ -1,3 +1,5 @@
+// Full replacement for src/lib/projects.ts
+
 import 'server-only'
 import { createPublicClient } from '@/lib/supabase/public'
 
@@ -99,6 +101,21 @@ export async function getFeaturedProjects(limit = 3): Promise<Project[]> {
     .limit(limit)
   if (error) throw new Error(error.message)
   return (data ?? []).map(toProject)
+}
+
+// NEW — backs the homepage Hero's single "spotlight" project. Distinct from
+// is_featured (which drives the Featured Work grid): at most one row can ever
+// have is_hero = true, enforced by a partial unique index (0009_hero_project.sql).
+export async function getHeroProject(): Promise<Project | null> {
+  const supabase = createPublicClient()
+  const { data, error } = await supabase
+    .from('projects')
+    .select(COLUMNS)
+    .eq('status', 'published')
+    .eq('is_hero', true)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return data ? toProject(data) : null
 }
 
 export async function getProject(slug: string): Promise<Project | null> {
