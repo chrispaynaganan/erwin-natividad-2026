@@ -65,13 +65,14 @@ export type SiteContent = {
       body: string
       featuredLabel: string
       featuredTitle: string
+      photoUrl: string
       ctaPrimary: LinkItem
       ctaSecondary: LinkItem
     }
     logos: { label: string; items: LogoItem[] }
     whatIDo: SectionHead & { items: ServiceItem[] }
     featuredWork: SectionHead & { viewAll: LinkItem }
-    meet: { title: string; titleGold: string; quote: string; body: string[]; cta: LinkItem }
+    meet: { title: string; titleGold: string; quote: string; body: string[]; photoUrl: string; cta: LinkItem }
     testimonials: SectionHead & { items: Testimonial[] }
     cta: SectionHead & { emailPlaceholder: string; button: LinkItem }
   }
@@ -129,6 +130,7 @@ export const defaultSiteContent: SiteContent = {
       body: 'Hi, I\u2019m a passionate voice over artist and coach who loves helping scripts come alive. With years of experience, I\u2019ve had the joy of working closely with top brands, inspiring storytellers, and up-and-coming voice talents from all over the world. I\u2019m dedicated to bringing out the unique personality in every project and guiding others to find their own authentic voice.',
       featuredLabel: 'Featured',
       featuredTitle: 'Grandma\u2019s Bedtime Stories',
+      photoUrl: '',
       ctaPrimary: { label: 'Work With Me', href: '/work-with-me' },
       ctaSecondary: { label: 'Hear My Demos', href: '/work' },
     },
@@ -168,6 +170,7 @@ export const defaultSiteContent: SiteContent = {
         'With many years of experience in the voice over industry, I\u2019ve had the privilege of working with global brands, independent creators, and aspiring voice artists from around the world. My passion lies in bringing stories to life through voice and helping others discover and refine their unique vocal identity.',
         'Whether it\u2019s a high-energy commercial or an intimate audiobook narration, I approach every project with professionalism and creativity.',
       ],
+      photoUrl: '',
       cta: { label: 'More About Erwin', href: '/about' },
     },
     testimonials: {

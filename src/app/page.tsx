@@ -49,7 +49,13 @@ export default async function HomePage() {
               <Link href={secondaryHref} className="btn btnOutline">{hero.ctaSecondary.label}</Link>
             </div>
           </div>
-          <div className={s.heroPhoto}>Erwin&rsquo;s portrait</div>
+          <div className={s.heroPhoto}>
+            {hero.photoUrl ? (
+              <img src={hero.photoUrl} alt="Erwin Natividad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              'Erwin\u2019s portrait'
+            )}
+          </div>
         </div>
       </section>
 
@@ -126,7 +132,13 @@ export default async function HomePage() {
       {/* MEET ERWIN */}
       <section className={`${s.section} container`}>
         <div className={s.meetGrid}>
-          <Reveal><div className={s.meetPhoto} /></Reveal>
+          <Reveal>
+            <div className={s.meetPhoto}>
+              {meet.photoUrl && (
+                <img src={meet.photoUrl} alt="Erwin Natividad" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
+            </div>
+          </Reveal>
           <Reveal delay={80}>
             <div>
               <h2 className={s.headTitle}>{meet.title} <span className="gold">{meet.titleGold}</span></h2>

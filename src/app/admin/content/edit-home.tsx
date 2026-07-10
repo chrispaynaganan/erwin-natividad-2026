@@ -41,6 +41,8 @@ export function EditHome({ c, edit }: EditorProps) {
               <Field label="Name (line 1)" value={c.home.hero.name1} onChange={(v) => edit((d) => { d.home.hero.name1 = v })} />
               <Field label="Name (gold part)" value={c.home.hero.name2} onChange={(v) => edit((d) => { d.home.hero.name2 = v })} />
             </div>
+            <ImageField label="Portrait photo" folder="hero" value={c.home.hero.photoUrl}
+              onChange={(v) => edit((d) => { d.home.hero.photoUrl = v })} />
             <TagsField label="Tag pills" value={c.home.hero.tags} onChange={(v) => edit((d) => { d.home.hero.tags = v })} />
             <Field label="Eyebrow" value={c.home.hero.eyebrow} onChange={(v) => edit((d) => { d.home.hero.eyebrow = v })} />
             <Field label="Intro paragraph" textarea rows={5} value={c.home.hero.body} onChange={(v) => edit((d) => { d.home.hero.body = v })} />
@@ -139,6 +141,8 @@ export function EditHome({ c, edit }: EditorProps) {
               <Field label="Heading" value={c.home.meet.title} onChange={(v) => edit((d) => { d.home.meet.title = v })} />
               <Field label="Heading (gold part)" value={c.home.meet.titleGold} onChange={(v) => edit((d) => { d.home.meet.titleGold = v })} />
             </div>
+            <ImageField label="Photo" folder="meet" value={c.home.meet.photoUrl}
+              onChange={(v) => edit((d) => { d.home.meet.photoUrl = v })} />
             <Field label="Pull quote" textarea value={c.home.meet.quote} onChange={(v) => edit((d) => { d.home.meet.quote = v })} />
             {c.home.meet.body.map((para, i) => (
               <div key={i} className={s.paraRow}>
