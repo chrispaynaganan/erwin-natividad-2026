@@ -9,22 +9,31 @@ const RANK: Record<AppRole, number> = {
 
 export type SessionProfile = {
   user: { id: string; email?: string }
-  profile: { id: string; role: AppRole; full_name: string | null; avatar_url: string | null }
+  profile: {
+    id: string
+    role: AppRole
+    full_name: string | null
+    avatar_url: string | null
+    bio: string | null
+    notify_new_booking: boolean
+    notify_new_subscriber: boolean
+    notify_new_contact: boolean
+    timezone: string
+    date_format: string
+  }
 }
 
 // Returns the signed-in user + their profile, or null.
 export async function getSessionProfile(): Promise<SessionProfile | null> {
   const supabase = await createClient()
-  const { data: { user }, error: userError } = await supabase.auth.getUser()
-  console.log('[auth] getUser →', user ? `user ${user.email}` : 'NO USER', userError ? `error: ${userError.message}` : '')
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from('profiles')
-    .select('id, role, full_name, avatar_url')
+    .select('id, role, full_name, avatar_url, bio, notify_new_booking, notify_new_subscriber, notify_new_contact, timezone, date_format')
     .eq('id', user.id)
     .single()
-  console.log('[auth] profile →', profile ?? 'NULL', profileError ? `error: ${profileError.message} (code ${profileError.code})` : '')
 
   if (!profile) return null
   return { user: { id: user.id, email: user.email }, profile: profile as SessionProfile['profile'] }
