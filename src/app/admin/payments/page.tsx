@@ -1,8 +1,15 @@
-export default function Page() {
+// src/app/admin/payments/page.tsx
+import { listPayments } from '@/lib/payments-db/store'
+import { PaymentsList } from './payments-list'
+
+export const metadata = { title: 'Payments' }
+
+export default async function PaymentsPage() {
+  const payments = await listPayments()
   return (
     <div>
-      <h1 style={{ fontSize: "var(--text-h2)" }}>Payments</h1>
-      <p style={{ color: "var(--color-text-muted)", marginTop: "0.5rem" }}>Manage payments.</p>
+      <h1>Payments</h1>
+      <PaymentsList payments={payments} />
     </div>
   )
 }
