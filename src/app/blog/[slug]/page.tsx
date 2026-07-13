@@ -1,22 +1,23 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { posts, getPost } from '@/lib/blog'
+import { getPosts, getPost } from '@/lib/blog'
 import { IconArrowLeft } from '@tabler/icons-react'
 import s from './post.module.css'
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const posts = await getPosts()
   return posts.map((p) => ({ slug: p.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const p = getPost(slug)
+  const p = await getPost(slug)
   return { title: p ? p.title : 'Post' }
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const p = getPost(slug)
+  const p = await getPost(slug)
   if (!p) notFound()
 
   return (

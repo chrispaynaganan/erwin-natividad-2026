@@ -7,6 +7,8 @@
 @media (min-width: 680px) { .grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
+.empty { text-align: center; padding: 60px 0; color: var(--text-muted); }
+
 .card { display: flex; flex-direction: column; gap: 12px; background: var(--surface);
   border: 1px solid var(--border); border-radius: 16px; padding: 22px; box-shadow: var(--shadow);
   transition: transform 0.2s ease, border-color 0.2s ease; }

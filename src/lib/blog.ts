@@ -1,6 +1,11 @@
 // Shared blog catalog — used by /blog (listing) and /blog/[slug] (post).
-// Placeholder posts for Erwin to replace. Once Supabase is connected, this
-// can be swapped to read from the `blog_posts` table.
+// Rewritten to read live from `blog_posts` instead of the static placeholder
+// array, mirroring the /work rewiring in §14: same public function names,
+// cookie-free client so generateStaticParams can run at build time.
+import { createPublicClient } from '@/lib/supabase/public'
+// ⚠️ Export name/path assumed by symmetry with createAdminClient in
+// lib/supabase/admin — not yet confirmed against the actual public.ts.
+
 export type Post = {
   slug: string
   title: string
@@ -11,42 +16,75 @@ export type Post = {
   body: string[]
 }
 
-export const posts: Post[] = [
-  {
-    slug: 'finding-your-authentic-voice',
-    title: 'Finding Your Authentic Voice',
-    excerpt: 'Why the goal of voice coaching isn\u2019t to sound like someone else \u2014 it\u2019s to sound unmistakably like you.',
-    date: 'March 2026', readMinutes: 5, category: 'Coaching',
-    body: [
-      'When people start voice coaching, they often arrive with a reference \u2014 a famous narrator, a slick commercial voice, someone they want to sound like. And I get it. But the work I care about most pulls in the opposite direction: toward the voice that is already yours.',
-      'Your authentic voice is the one that shows up when you stop performing and start communicating. It carries your rhythm, your warmth, the small imperfections that make a listener trust you. Coaching doesn\u2019t replace that \u2014 it removes what\u2019s in the way of it.',
-      '[Replace this with Erwin\u2019s own perspective and examples.]',
-    ],
-  },
-  {
-    slug: 'what-makes-a-great-demo-reel',
-    title: 'What Makes a Great Demo Reel',
-    excerpt: 'A demo reel has seconds to make an impression. Here\u2019s how to make every one of them count.',
-    date: 'February 2026', readMinutes: 6, category: 'Demos',
-    body: [
-      'Casting directors and producers listen to a lot of reels. The good news: that means a strong one stands out fast. The bad news: a weak opening loses them just as fast.',
-      'A great reel is short, varied, and front-loaded. Lead with your strongest, most characteristic read. Show range without sprawling. And make sure the production quality never distracts from the voice itself.',
-      '[Replace this with Erwin\u2019s reel-building process and tips.]',
-    ],
-  },
-  {
-    slug: 'setting-up-a-home-studio',
-    title: 'Setting Up a Home Studio That Sounds Professional',
-    excerpt: 'You don\u2019t need a fortune \u2014 you need the right priorities. A practical guide to broadcast-quality sound at home.',
-    date: 'January 2026', readMinutes: 7, category: 'Studio',
-    body: [
-      'The single biggest upgrade most home setups can make isn\u2019t a more expensive microphone \u2014 it\u2019s treating the room. Reflections and noise are what separate \u201Crecorded at home\u201D from \u201Cbroadcast quality.\u201D',
-      'Start with the space: a small, soft, quiet environment beats a big bare one. Then a clean signal chain, consistent mic technique, and disciplined editing. The gear matters less than the habits.',
-      '[Replace this with Erwin\u2019s actual gear recommendations and setup.]',
-    ],
-  },
-]
+type BlogPostRow = {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  body: string | null
+  cover_url: string | null
+  category_id: string | null
+  status: 'draft' | 'scheduled' | 'published' | 'archived'
+  published_at: string | null
+  created_at: string
+}
 
-export function getPost(slug: string) {
-  return posts.find((p) => p.slug === slug)
+// No read_minutes column exists — estimated from word count (~200 wpm).
+function estimateReadMinutes(body: string): number {
+  const words = body.trim().split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.round(words / 200))
+}
+
+// §23 left "is body markdown or HTML?" as an open question. Treating it as
+// plain text, paragraphs split on blank lines — keeps the existing one-<p>-
+// per-array-item rendering unchanged. Revisit if real posts need links/bold/lists.
+function toParagraphs(body: string | null): string[] {
+  if (!body) return []
+  return body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return ''
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+}
+
+// category_id isn't joined to a name — no categories table has been shared
+// yet and §23 deferred that admin surface. Static label until that exists.
+function resolveCategory(_categoryId: string | null): string {
+  return 'Blog'
+}
+
+function toPost(row: BlogPostRow): Post {
+  return {
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt ?? '',
+    date: formatDate(row.published_at ?? row.created_at),
+    readMinutes: estimateReadMinutes(row.body ?? ''),
+    category: resolveCategory(row.category_id),
+    body: toParagraphs(row.body),
+  }
+}
+
+export async function getPosts(): Promise<Post[]> {
+  const db = createPublicClient()
+  const { data, error } = await db
+    .from('blog_posts')
+    .select('id, title, slug, excerpt, body, cover_url, category_id, status, published_at, created_at')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+  if (error) throw new Error(error.message)
+  return (data ?? []).map(toPost)
+}
+
+export async function getPost(slug: string): Promise<Post | undefined> {
+  const db = createPublicClient()
+  const { data, error } = await db
+    .from('blog_posts')
+    .select('id, title, slug, excerpt, body, cover_url, category_id, status, published_at, created_at')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  return data ? toPost(data) : undefined
 }
