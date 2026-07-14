@@ -4,10 +4,27 @@ import { Reveal } from '@/components/reveal'
 import { CtaSection } from '@/components/cta-section'
 import { FaqGrid } from '@/components/faq'
 import { getSiteContent } from '@/lib/content/store'
+import { SITE_URL } from '@/lib/site-url'
 import s from './services.module.css'
 
-export const metadata = { title: 'Services' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata() {
+  const { services } = await getSiteContent()
+  const seo = services.seo
+  const title = seo.metaTitle || 'Services'
+  const description = seo.metaDescription || services.hero.body
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/services`,
+      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl, width: 1200, height: 630 }] } : {}),
+    },
+  }
+}
 
 function formatMoney(n: number): string {
   return Number.isInteger(n) ? String(n) : n.toFixed(2)

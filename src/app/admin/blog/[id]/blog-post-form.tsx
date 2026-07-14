@@ -12,8 +12,18 @@ import s from '@/app/admin/content/content.module.css'
 const STATUSES = ['draft', 'scheduled', 'published', 'archived'] as const
 type Status = (typeof STATUSES)[number]
 
+const TITLE_LIMIT = 60
+const DESC_LIMIT = 160
+
 function slugify(v: string) {
   return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
+function counterColor(len: number, limit: number): string {
+  if (len === 0) return 'var(--text-muted, #6B6862)'
+  if (len > limit) return 'var(--error, #B3261E)'
+  if (len > limit - 10) return '#B8860B'
+  return 'var(--text-muted, #6B6862)'
 }
 
 export function BlogPostForm({ post }: { post: BlogPostRow | null }) {
@@ -29,6 +39,8 @@ export function BlogPostForm({ post }: { post: BlogPostRow | null }) {
   const [body, setBody] = useState(post?.body ?? '')
   const [coverUrl, setCoverUrl] = useState(post?.cover_url ?? '')
   const [status, setStatus] = useState<Status>((post?.status as Status) ?? 'draft')
+  const [metaTitle, setMetaTitle] = useState(post?.meta_title ?? '')
+  const [metaDescription, setMetaDescription] = useState(post?.meta_description ?? '')
 
   function markDirty() { setDirty(true); setMsg(null) }
 
@@ -48,6 +60,8 @@ export function BlogPostForm({ post }: { post: BlogPostRow | null }) {
         body,
         cover_url: coverUrl,
         status,
+        meta_title: metaTitle,
+        meta_description: metaDescription,
       })
       setMsg(res)
       if (res?.ok) {
@@ -92,6 +106,31 @@ export function BlogPostForm({ post }: { post: BlogPostRow | null }) {
           <h2 className={s.cardTitle}>Body</h2>
           <p className={s.hint}>Shown on the full post page at /blog/{slug || 'your-slug'}. Plain text for now \u2014 flag if this should support markdown/rich text instead.</p>
           <Field label="Post body" textarea rows={16} value={body} onChange={(v) => { setBody(v); markDirty() }} />
+        </section>
+
+        <section className={s.card}>
+          <h2 className={s.cardTitle}>Search &amp; Social</h2>
+          <p className={s.hint}>Falls back to the post title/excerpt and cover image above when left blank.</p>
+          <label className={s.field}>
+            <span className={s.label}>
+              Search Title{' '}
+              <span style={{ float: 'right', fontWeight: 400, color: counterColor(metaTitle.length, TITLE_LIMIT) }}>
+                {metaTitle.length}/{TITLE_LIMIT}
+              </span>
+            </span>
+            <input className={s.input} value={metaTitle} placeholder={title}
+              onChange={(e) => { setMetaTitle(e.target.value); markDirty() }} />
+          </label>
+          <label className={s.field}>
+            <span className={s.label}>
+              Search Description{' '}
+              <span style={{ float: 'right', fontWeight: 400, color: counterColor(metaDescription.length, DESC_LIMIT) }}>
+                {metaDescription.length}/{DESC_LIMIT}
+              </span>
+            </span>
+            <textarea className={s.input} rows={3} value={metaDescription} placeholder={excerpt}
+              onChange={(e) => { setMetaDescription(e.target.value); markDirty() }} />
+          </label>
         </section>
       </div>
 

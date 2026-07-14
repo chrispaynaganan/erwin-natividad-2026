@@ -2,14 +2,17 @@
 
 import { useState } from 'react'
 import { Field, ItemShell, AddButton, HeadFields, FaqListEditor, move, type EditorProps } from './fields'
+import { SeoEditor } from './seo-editor'
+import { SITE_URL } from '@/lib/site-url'
 import s from './content.module.css'
 
-type TabKey = 'hero' | 'expect' | 'direct' | 'faqs'
+type TabKey = 'hero' | 'expect' | 'direct' | 'faqs' | 'seo'
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'hero', label: 'Hero' },
   { key: 'expect', label: 'What to Expect' },
   { key: 'direct', label: 'Direct Contact' },
   { key: 'faqs', label: 'Quick Answers' },
+  { key: 'seo', label: 'SEO' },
 ]
 
 export function EditContact({ c, edit }: EditorProps) {
@@ -78,6 +81,17 @@ export function EditContact({ c, edit }: EditorProps) {
             <HeadFields head={ct.faqs} onChange={(h) => edit((d) => { Object.assign(d.contact.faqs, h) })} />
             <FaqListEditor items={ct.faqs.items} onChange={(items) => edit((d) => { d.contact.faqs.items = items })} />
           </section>
+        )}
+
+        {tab === 'seo' && (
+          <SeoEditor
+            value={ct.seo}
+            onChange={(v) => edit((d) => { d.contact.seo = v })}
+            pageUrl={`${SITE_URL}/contact`}
+            fallbackTitle={`${ct.hero.title}${ct.hero.titleGold}`}
+            fallbackDescription={ct.hero.body}
+            folder="seo-contact"
+          />
         )}
       </div>
     </>

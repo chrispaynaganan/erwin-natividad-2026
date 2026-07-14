@@ -12,7 +12,16 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const p = await getPost(slug)
-  return { title: p ? p.title : 'Post' }
+  if (!p) return { title: 'Post' }
+  return {
+    title: p.metaTitle || p.title,
+    description: p.metaDescription || p.excerpt,
+    openGraph: {
+      title: p.metaTitle || p.title,
+      description: p.metaDescription || p.excerpt,
+      ...(p.coverUrl ? { images: [{ url: p.coverUrl, width: 1200, height: 630 }] } : {}),
+    },
+  }
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {

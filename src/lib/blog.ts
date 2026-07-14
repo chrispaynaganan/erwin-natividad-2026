@@ -3,8 +3,6 @@
 // array, mirroring the /work rewiring in §14: same public function names,
 // cookie-free client so generateStaticParams can run at build time.
 import { createPublicClient } from '@/lib/supabase/public'
-// ⚠️ Export name/path assumed by symmetry with createAdminClient in
-// lib/supabase/admin — not yet confirmed against the actual public.ts.
 
 export type Post = {
   slug: string
@@ -14,6 +12,9 @@ export type Post = {
   readMinutes: number
   category: string
   body: string[]
+  coverUrl: string | null
+  metaTitle: string | null
+  metaDescription: string | null
 }
 
 type BlogPostRow = {
@@ -27,17 +28,15 @@ type BlogPostRow = {
   status: 'draft' | 'scheduled' | 'published' | 'archived'
   published_at: string | null
   created_at: string
+  meta_title: string | null
+  meta_description: string | null
 }
 
-// No read_minutes column exists — estimated from word count (~200 wpm).
 function estimateReadMinutes(body: string): number {
   const words = body.trim().split(/\s+/).filter(Boolean).length
   return Math.max(1, Math.round(words / 200))
 }
 
-// §23 left "is body markdown or HTML?" as an open question. Treating it as
-// plain text, paragraphs split on blank lines — keeps the existing one-<p>-
-// per-array-item rendering unchanged. Revisit if real posts need links/bold/lists.
 function toParagraphs(body: string | null): string[] {
   if (!body) return []
   return body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
@@ -48,8 +47,6 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 }
 
-// category_id isn't joined to a name — no categories table has been shared
-// yet and §23 deferred that admin surface. Static label until that exists.
 function resolveCategory(_categoryId: string | null): string {
   return 'Blog'
 }
@@ -63,6 +60,9 @@ function toPost(row: BlogPostRow): Post {
     readMinutes: estimateReadMinutes(row.body ?? ''),
     category: resolveCategory(row.category_id),
     body: toParagraphs(row.body),
+    coverUrl: row.cover_url,
+    metaTitle: row.meta_title,
+    metaDescription: row.meta_description,
   }
 }
 
@@ -70,7 +70,7 @@ export async function getPosts(): Promise<Post[]> {
   const db = createPublicClient()
   const { data, error } = await db
     .from('blog_posts')
-    .select('id, title, slug, excerpt, body, cover_url, category_id, status, published_at, created_at')
+    .select('id, title, slug, excerpt, body, cover_url, category_id, status, published_at, created_at, meta_title, meta_description')
     .eq('status', 'published')
     .order('published_at', { ascending: false })
   if (error) throw new Error(error.message)
@@ -81,7 +81,7 @@ export async function getPost(slug: string): Promise<Post | undefined> {
   const db = createPublicClient()
   const { data, error } = await db
     .from('blog_posts')
-    .select('id, title, slug, excerpt, body, cover_url, category_id, status, published_at, created_at')
+    .select('id, title, slug, excerpt, body, cover_url, category_id, status, published_at, created_at, meta_title, meta_description')
     .eq('slug', slug)
     .eq('status', 'published')
     .maybeSingle()

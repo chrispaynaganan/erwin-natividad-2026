@@ -3,10 +3,29 @@ import { Reveal } from '@/components/reveal'
 import { Journey } from '@/components/journey'
 import { Testimonials } from '@/components/testimonials'
 import { getSiteContent } from '@/lib/content/store'
+import { SITE_URL } from '@/lib/site-url'
 import s from './about.module.css'
 
-export const metadata = { title: 'About' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata() {
+  const { about } = await getSiteContent()
+  const seo = about.seo
+  const fallbackTitle = `${about.heroTitle} ${about.heroTitleGold}`
+  const fallbackDescription = about.journey?.[0] ?? ''
+  const title = seo.metaTitle || fallbackTitle
+  const description = seo.metaDescription || fallbackDescription
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/about`,
+      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl, width: 1200, height: 630 }] } : {}),
+    },
+  }
+}
 
 export default async function AboutPage() {
   const { about } = await getSiteContent()

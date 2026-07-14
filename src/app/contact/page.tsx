@@ -6,10 +6,28 @@ import { Reveal } from '@/components/reveal'
 import { ContactForm } from '@/components/contact-form'
 import { FaqGrid } from '@/components/faq'
 import { getSiteContent } from '@/lib/content/store'
+import { SITE_URL } from '@/lib/site-url'
 import s from './contact.module.css'
 
-export const metadata = { title: 'Contact' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata() {
+  const { contact } = await getSiteContent()
+  const seo = contact.seo
+  const fallbackTitle = `${contact.hero.title} ${contact.hero.titleGold}`
+  const title = seo.metaTitle || fallbackTitle
+  const description = seo.metaDescription || contact.hero.body
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/contact`,
+      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl, width: 1200, height: 630 }] } : {}),
+    },
+  }
+}
 
 // Social URLs stay placeholders until Erwin provides real profiles
 // (same as the footer) — they'll move into editable content with the

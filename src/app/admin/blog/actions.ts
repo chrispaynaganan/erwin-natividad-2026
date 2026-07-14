@@ -14,6 +14,8 @@ export type BlogPostInput = {
   body: string
   cover_url: string
   status: 'draft' | 'scheduled' | 'published' | 'archived'
+  meta_title: string
+  meta_description: string
 }
 
 export async function saveBlogPost(input: BlogPostInput): Promise<SaveState> {
@@ -29,9 +31,6 @@ export async function saveBlogPost(input: BlogPostInput): Promise<SaveState> {
   try {
     const db = createAdminClient()
 
-    // Auto-set published_at the first time a post goes live, and only then —
-    // matches blog_published_idx's sort key (status, published_at desc),
-    // which the public blog listing depends on for ordering.
     let publishedAt: string | null | undefined = undefined
     if (input.status === 'published') {
       if (input.id) {
@@ -49,6 +48,8 @@ export async function saveBlogPost(input: BlogPostInput): Promise<SaveState> {
       body: input.body || null,
       cover_url: input.cover_url || null,
       status: input.status,
+      meta_title: input.meta_title || null,
+      meta_description: input.meta_description || null,
     }
     if (publishedAt !== undefined) row.published_at = publishedAt
 
@@ -64,6 +65,7 @@ export async function saveBlogPost(input: BlogPostInput): Promise<SaveState> {
     revalidatePath('/admin/blog')
     revalidatePath(`/admin/blog/${data.id}`)
     revalidatePath('/blog')
+    revalidatePath(`/blog/${input.slug}`)
     return { ok: true, message: 'Blog post saved.', id: data.id }
   } catch (e) {
     console.error('[saveBlogPost] unexpected error:', e)

@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { ImageField } from '@/components/admin/image-field'
 import type { ServiceItem, Testimonial, LogoItem } from '@/lib/content/site-content'
 import { Field, LinkField, TagsField, ItemShell, AddButton, HeadFields, move, type EditorProps } from './fields'
+import { SeoEditor } from './seo-editor'
+import { SITE_URL } from '@/lib/site-url'
 import { IconTrash } from '@tabler/icons-react'
 import s from './content.module.css'
 
-type TabKey = 'hero' | 'whatido' | 'work' | 'testimonials' | 'logos' | 'meet' | 'cta'
+type TabKey = 'hero' | 'whatido' | 'work' | 'testimonials' | 'logos' | 'meet' | 'cta' | 'seo'
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'hero', label: 'Hero' },
   { key: 'whatido', label: 'What I Do' },
@@ -17,6 +19,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'logos', label: 'Client Logos' },
   { key: 'meet', label: 'Meet Erwin' },
   { key: 'cta', label: 'Call to Action' },
+  { key: 'seo', label: 'SEO' },
 ]
 
 const blankService = (): ServiceItem => ({ title: 'New service', body: '', primary: { label: 'Learn More', href: '/services' }, secondary: { label: '', href: '' } })
@@ -163,6 +166,17 @@ export function EditHome({ c, edit }: EditorProps) {
             <Field label="Email field placeholder" value={c.home.cta.emailPlaceholder} onChange={(v) => edit((d) => { d.home.cta.emailPlaceholder = v })} />
             <LinkField label="Button" value={c.home.cta.button} onChange={(v) => edit((d) => { d.home.cta.button = v })} />
           </section>
+        )}
+
+        {tab === 'seo' && (
+          <SeoEditor
+            value={c.home.seo}
+            onChange={(v) => edit((d) => { d.home.seo = v })}
+            pageUrl={SITE_URL}
+            fallbackTitle={`${c.home.hero.name1}${c.home.hero.name2}`}
+            fallbackDescription={c.home.hero.body}
+            folder="seo-home"
+          />
         )}
       </div>
     </>

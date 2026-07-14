@@ -1,16 +1,30 @@
-// Full replacement for the homepage page.tsx
-
 import Link from 'next/link'
 import { Reveal } from '@/components/reveal'
 import { AudioPlayer } from '@/components/audio-player'
 import { getSiteContent } from '@/lib/content/store'
 import { getFeaturedProjects, getHeroProject } from '@/lib/projects'
 import { resolveLink } from '@/lib/routes'
+import { SITE_URL } from '@/lib/site-url'
 import s from './home.module.css'
-import { HomeCtaForm } from '@/components/home-cta-form'
 
 // Read fresh content each request so admin edits appear immediately.
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata() {
+  const { home } = await getSiteContent()
+  const seo = home.seo
+  const description = seo.metaDescription || home.hero.body
+  return {
+    title: seo.metaTitle || undefined, // falls back to layout.tsx's default title/template when unset
+    description,
+    openGraph: {
+      title: seo.metaTitle || undefined,
+      description,
+      url: SITE_URL,
+      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl, width: 1200, height: 630 }] } : {}),
+    },
+  }
+}
 
 export default async function HomePage() {
   const [{ home }, featuredProjects, heroProject] = await Promise.all([
@@ -197,3 +211,5 @@ export default async function HomePage() {
     </main>
   )
 }
+
+import { HomeCtaForm } from '@/components/home-cta-form'

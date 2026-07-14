@@ -1,37 +1,3 @@
-// =====================================================================
-// SITE CONTENT MODEL
-// Single source of truth for editable content across ALL public pages.
-// Public pages read this (via store.ts, which overlays saved edits from
-// Supabase); the admin Content editor writes it back. Saved blobs from
-// older shapes stay valid — store.ts deep-merges over these defaults, so
-// any field missing from the saved copy falls back to what's here.
-//
-// NOTE (unify-featured-work): `home.featuredWork.items` was removed from
-// this model. The homepage's 3 Featured Work cards now read live from the
-// `projects` table (`is_featured = true`, ordered by sort_order, limit 3
-// — see lib/projects.ts's getFeaturedProjects()) instead of this static
-// blob. `featuredWork.title/titleGold/sub/viewAll` are still edited here
-// since those are just section copy, not project data. Any `items` array
-// left over in an older saved Supabase row is harmless — deepMerge only
-// copies over keys that still exist in the type below.
-//
-// NOTE (pricing-auto-compute): PricingTier's `from`/`price` (manually-typed
-// strings) and `list: string[]` were replaced with a computed model: each
-// inclusion now carries its own price (never shown publicly), and the
-// package's displayed price is derived at render time as
-// sum(list.price) * (1 - discountPercent / 100). `pricePrefix` replaces the
-// old freeform `from` string — it's just the small label above the price
-// ("From", "Starts at", etc.); the dollar amount + "(Save X%)" part is
-// computed, not typed. store.ts normalizes any pre-existing saved data
-// still in the old shape (string list items) into the new object shape.
-//
-// `useCustomPrice` + `customPriceLabel` are the bypass for "price is
-// discussed" tiers (e.g. Custom/Enterprise): when true, the computed total
-// is ignored entirely and `customPriceLabel` (e.g. "Let's Talk") renders in
-// its place. The inclusion checklist still shows either way — what's
-// included is independent of how the price itself is displayed.
-// =====================================================================
-
 export type LinkItem = { label: string; href: string }
 export type ServiceItem = { title: string; body: string; primary: LinkItem; secondary: LinkItem }
 export type WorkItem = { tags: string[]; title: string; body: string; date: string }
@@ -48,6 +14,9 @@ export type SkillGroup = { title: string; tags: string[] }
 export type StatItem = { num: string; label: string }
 export type HighlightItem = { year: string; title: string; text: string }
 export type ExpectItem = { t: string; d: string }
+export type SeoMeta = { metaTitle: string; metaDescription: string; ogImageUrl: string }
+
+export const blankSeo = (): SeoMeta => ({ metaTitle: '', metaDescription: '', ogImageUrl: '' })
 
 export type SiteContent = {
   nav: {
@@ -75,6 +44,7 @@ export type SiteContent = {
     meet: { title: string; titleGold: string; quote: string; body: string[]; photoUrl: string; cta: LinkItem }
     testimonials: SectionHead & { items: Testimonial[] }
     cta: SectionHead & { emailPlaceholder: string; button: LinkItem }
+    seo: SeoMeta
   }
   services: {
     hero: { title: string; titleGold: string; body: string }
@@ -82,6 +52,7 @@ export type SiteContent = {
     pricing: SectionHead & { footnote: string; items: PricingTier[] }
     how: SectionHead & { steps: StepItem[] }
     faqs: FaqSection
+    seo: SeoMeta
   }
   about: {
     heroTitle: string
@@ -95,12 +66,14 @@ export type SiteContent = {
     philosophyLabel: string
     philosophy: string[]
     finalCta: { title: string; body: string; primary: LinkItem; secondary: LinkItem }
+    seo: SeoMeta
   }
   contact: {
     hero: { title: string; titleGold: string; body: string }
     expect: { title: string; items: ExpectItem[] }
     direct: { title: string; email: string; phone: string; location: string; socialLabel: string }
     faqs: FaqSection
+    seo: SeoMeta
   }
   faq: {
     hero: { title: string; titleGold: string; body: string }
@@ -108,9 +81,11 @@ export type SiteContent = {
     projects: { title: string; sub: string; items: FaqItem[] }
     booking: { title: string; sub: string; items: FaqItem[] }
     finalCta: { title: string; titleGold: string; body: string; button: LinkItem }
+    seo: SeoMeta
   }
   blog: {
     hero: { title: string; titleGold: string; body: string }
+    seo: SeoMeta
   }
 }
 
@@ -190,6 +165,7 @@ export const defaultSiteContent: SiteContent = {
       emailPlaceholder: 'Email Address',
       button: { label: 'Get in Touch', href: '/contact' },
     },
+    seo: blankSeo(),
   },
   services: {
     hero: {
@@ -241,11 +217,6 @@ export const defaultSiteContent: SiteContent = {
       titleGold: 'Packages',
       sub: 'Transparent pricing designed to fit projects of all sizes. Custom quotes available for unique requirements.',
       footnote: '$ Prices may vary based on project complexity, word count, and delivery timeline. 50% deposit required before production begins. Final payment due upon delivery.',
-      // Inclusion prices below are placeholder defaults chosen so the DISPLAYED
-      // total matches what the live site already shows ($150 / $350 / $500) —
-      // deploying this shouldn't visibly change the cards until someone edits
-      // inclusion prices in admin. Prices are per-inclusion and never rendered
-      // publicly; only label + checkmark show on the card.
       items: [
         {
           name: 'Basic Package', badge: 'Most affordable', featured: false,
@@ -315,6 +286,7 @@ export const defaultSiteContent: SiteContent = {
         { q: 'What\u2019s your cancellation policy?', a: 'Deposits are non-refundable once work begins, but unused balances can be credited toward future projects within scope.' },
       ],
     },
+    seo: blankSeo(),
   },
   about: {
     heroTitle: 'Know more about',
@@ -367,6 +339,7 @@ export const defaultSiteContent: SiteContent = {
       primary: { label: 'Get in Touch', href: '/contact' },
       secondary: { label: 'View My Work', href: '/work' },
     },
+    seo: blankSeo(),
   },
   contact: {
     hero: {
@@ -401,6 +374,7 @@ export const defaultSiteContent: SiteContent = {
         { q: 'What information should I have ready before reaching out?', a: 'Your script or brief, intended use, target tone, deadline, and any reference samples help me give you an accurate quote.' },
       ],
     },
+    seo: blankSeo(),
   },
   faq: {
     hero: {
@@ -444,6 +418,7 @@ export const defaultSiteContent: SiteContent = {
       body: 'Book a free discovery call and let\u2019s talk it through.',
       button: { label: 'Work With Me', href: '/work-with-me' },
     },
+    seo: blankSeo(),
   },
   blog: {
     hero: {
@@ -451,5 +426,6 @@ export const defaultSiteContent: SiteContent = {
       titleGold: 'Journal',
       body: 'Thoughts on voice, craft, and the business of bringing scripts to life \u2014 plus practical tips for clients and aspiring voice artists.',
     },
+    seo: blankSeo(),
   },
 }

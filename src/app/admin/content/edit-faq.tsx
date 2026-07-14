@@ -2,15 +2,18 @@
 
 import { useState } from 'react'
 import { Field, LinkField, FaqListEditor, type EditorProps } from './fields'
+import { SeoEditor } from './seo-editor'
+import { SITE_URL } from '@/lib/site-url'
 import s from './content.module.css'
 
-type TabKey = 'hero' | 'general' | 'projects' | 'booking' | 'cta'
+type TabKey = 'hero' | 'general' | 'projects' | 'booking' | 'cta' | 'seo'
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'hero', label: 'Hero' },
   { key: 'general', label: 'General' },
   { key: 'projects', label: 'Projects & Delivery' },
   { key: 'booking', label: 'Booking & Payment' },
   { key: 'cta', label: 'Final CTA' },
+  { key: 'seo', label: 'SEO' },
 ]
 
 export function EditFaq({ c, edit }: EditorProps) {
@@ -62,6 +65,17 @@ export function EditFaq({ c, edit }: EditorProps) {
             <Field label="Text" value={f.finalCta.body} onChange={(v) => edit((d) => { d.faq.finalCta.body = v })} />
             <LinkField label="Button" value={f.finalCta.button} onChange={(v) => edit((d) => { d.faq.finalCta.button = v })} />
           </section>
+        )}
+
+        {tab === 'seo' && (
+          <SeoEditor
+            value={f.seo}
+            onChange={(v) => edit((d) => { d.faq.seo = v })}
+            pageUrl={`${SITE_URL}/faq`}
+            fallbackTitle={`${f.hero.title}${f.hero.titleGold}`}
+            fallbackDescription={f.hero.body}
+            folder="seo-faq"
+          />
         )}
       </div>
     </>

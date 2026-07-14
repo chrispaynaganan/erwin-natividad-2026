@@ -2,15 +2,18 @@
 
 import { useState } from 'react'
 import { Field, LinkField, TagsField, LinesField, ItemShell, AddButton, HeadFields, move, type EditorProps } from './fields'
+import { SeoEditor } from './seo-editor'
+import { SITE_URL } from '@/lib/site-url'
 import s from './content.module.css'
 
-type TabKey = 'hero' | 'skills' | 'stats' | 'highlights' | 'philosophy'
+type TabKey = 'hero' | 'skills' | 'stats' | 'highlights' | 'philosophy' | 'seo'
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'hero', label: 'Hero & Journey' },
   { key: 'skills', label: 'Skills' },
   { key: 'stats', label: 'Milestones' },
   { key: 'highlights', label: 'Career Highlights' },
   { key: 'philosophy', label: 'Philosophy & CTA' },
+  { key: 'seo', label: 'SEO' },
 ]
 
 export function EditAbout({ c, edit }: EditorProps) {
@@ -109,6 +112,17 @@ export function EditAbout({ c, edit }: EditorProps) {
             <LinkField label="Primary button" value={ab.finalCta.primary} onChange={(v) => edit((d) => { d.about.finalCta.primary = v })} />
             <LinkField label="Secondary button" value={ab.finalCta.secondary} onChange={(v) => edit((d) => { d.about.finalCta.secondary = v })} />
           </section>
+        )}
+
+        {tab === 'seo' && (
+          <SeoEditor
+            value={ab.seo}
+            onChange={(v) => edit((d) => { d.about.seo = v })}
+            pageUrl={`${SITE_URL}/about`}
+            fallbackTitle={`${ab.heroTitle}${ab.heroTitleGold}`}
+            fallbackDescription={ab.journey?.[0] ?? ''}
+            folder="seo-about"
+          />
         )}
       </div>
     </>

@@ -10,6 +10,7 @@ const items: Item[] = [
   { href: '/admin/content', label: 'Content', min: 'editor', group: 'Site' },
   { href: '/admin/bookings', label: 'Bookings', min: 'editor', group: 'Site' },
   { href: '/admin/subscribers', label: 'Subscribers', min: 'editor', group: 'Site' },
+  { href: '/admin/seo', label: 'SEO Health', min: 'editor', group: 'Site' },
   { href: '/admin/blog', label: 'Blog', min: 'editor', group: 'Content' },
   { href: '/admin/episodes', label: 'Episodes', min: 'editor', group: 'Content' },
   { href: '/admin/shows', label: 'Shows', min: 'editor', group: 'Content' },
@@ -26,10 +27,6 @@ export function AdminSidebar({ role }: { role: AppRole }) {
   const groups = Array.from(new Set(visible.map((i) => i.group)))
 
   return (
-    // Pinned to the viewport with its own scrollbar: the main content scrolls,
-    // the sidebar stays. `sticky + top:0 + height:100vh` keeps it in normal
-    // flow (so the flex layout is unchanged) while `overflow-y: auto` lets the
-    // nav scroll internally if it's ever taller than the screen.
     <aside
       style={{
         width: 220,

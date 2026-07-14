@@ -4,15 +4,18 @@ import { useState } from 'react'
 import type { BreakdownItem, PricingTier } from '@/lib/content/site-content'
 import { Field, TagsField, LinesField, ItemShell, AddButton, HeadFields, FaqListEditor, move, type EditorProps } from './fields'
 import { InclusionsField } from './inclusions-field'
+import { SeoEditor } from './seo-editor'
+import { SITE_URL } from '@/lib/site-url'
 import s from './content.module.css'
 
-type TabKey = 'hero' | 'breakdown' | 'pricing' | 'how' | 'faqs'
+type TabKey = 'hero' | 'breakdown' | 'pricing' | 'how' | 'faqs' | 'seo'
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'hero', label: 'Hero' },
   { key: 'breakdown', label: 'Services Breakdown' },
   { key: 'pricing', label: 'Pricing' },
   { key: 'how', label: 'How It Works' },
   { key: 'faqs', label: 'Quick Answers' },
+  { key: 'seo', label: 'SEO' },
 ]
 
 const blankBreakdown = (): BreakdownItem => ({ title: 'New service', tags: [], desc: '', who: '', turnaround: '', includes: [] })
@@ -153,6 +156,17 @@ export function EditServices({ c, edit }: EditorProps) {
             <HeadFields head={sv.faqs} onChange={(h) => edit((d) => { Object.assign(d.services.faqs, h) })} />
             <FaqListEditor items={sv.faqs.items} onChange={(items) => edit((d) => { d.services.faqs.items = items })} />
           </section>
+        )}
+
+        {tab === 'seo' && (
+          <SeoEditor
+            value={sv.seo}
+            onChange={(v) => edit((d) => { d.services.seo = v })}
+            pageUrl={`${SITE_URL}/services`}
+            fallbackTitle={`${sv.hero.title}${sv.hero.titleGold}`}
+            fallbackDescription={sv.hero.body}
+            folder="seo-services"
+          />
         )}
       </div>
     </>

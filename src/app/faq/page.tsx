@@ -2,10 +2,28 @@ import Link from 'next/link'
 import { Reveal } from '@/components/reveal'
 import { FaqGrid } from '@/components/faq'
 import { getSiteContent } from '@/lib/content/store'
+import { SITE_URL } from '@/lib/site-url'
 import s from './faq.module.css'
 
-export const metadata = { title: 'FAQ' }
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata() {
+  const { faq } = await getSiteContent()
+  const seo = faq.seo
+  const fallbackTitle = `${faq.hero.title} ${faq.hero.titleGold}`
+  const title = seo.metaTitle || fallbackTitle
+  const description = seo.metaDescription || faq.hero.body
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/faq`,
+      ...(seo.ogImageUrl ? { images: [{ url: seo.ogImageUrl, width: 1200, height: 630 }] } : {}),
+    },
+  }
+}
 
 export default async function FaqPage() {
   const { faq } = await getSiteContent()

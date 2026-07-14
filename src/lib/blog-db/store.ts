@@ -14,6 +14,8 @@ export type BlogPostRow = {
   published_at: string | null
   created_at: string
   updated_at: string
+  meta_title: string | null
+  meta_description: string | null
 }
 
 // Admin-side reads: service-role, same rationale as episodes/shows/projects —
