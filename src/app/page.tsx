@@ -7,6 +7,7 @@ import { getSiteContent } from '@/lib/content/store'
 import { getFeaturedProjects, getHeroProject } from '@/lib/projects'
 import { resolveLink } from '@/lib/routes'
 import s from './home.module.css'
+import { HomeCtaForm } from '@/components/home-cta-form'
 
 // Read fresh content each request so admin edits appear immediately.
 export const dynamic = 'force-dynamic'
@@ -185,10 +186,12 @@ export default async function HomePage() {
         <Reveal>
           <h2 className={s.headTitle}>{cta.title} <span className="gold">{cta.titleGold}</span></h2>
           <p className={s.headSub}>{cta.sub}</p>
-          <form className={s.ctaForm}>
-            <input className={s.ctaInput} type="email" placeholder={cta.emailPlaceholder} aria-label={cta.emailPlaceholder} />
-            <Link href={cta.button.href} className="btn btnSolid">{cta.button.label}</Link>
-          </form>
+          <HomeCtaForm
+            emailPlaceholder={cta.emailPlaceholder}
+            buttonLabel={cta.button.label}
+            inputClassName={s.ctaInput}
+            formClassName={s.ctaForm}
+          />
         </Reveal>
       </section>
     </main>

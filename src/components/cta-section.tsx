@@ -1,5 +1,6 @@
-import Link from 'next/link'
+// src/components/cta-section.tsx
 import { getSiteContent } from '@/lib/content/store'
+import { CtaForm } from './cta-form'
 
 // Shared call-to-action (services + blog pages). Reads the same editable
 // content as the homepage CTA — edit it under Content → Home → Call to Action.
@@ -12,11 +13,7 @@ export async function CtaSection() {
         {cta.title} <span className="gold">{cta.titleGold}</span>
       </h2>
       <p style={{ color: 'var(--text-muted)', marginTop: 10 }}>{cta.sub}</p>
-      <form style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 24, maxWidth: 520 }}>
-        <input type="email" placeholder={cta.emailPlaceholder} aria-label={cta.emailPlaceholder}
-          style={{ flex: 1, minWidth: 220, padding: '12px 16px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text)', font: 'inherit' }} />
-        <Link href={cta.button.href} className="btn btnSolid">{cta.button.label}</Link>
-      </form>
+      <CtaForm emailPlaceholder={cta.emailPlaceholder} buttonLabel={cta.button.label} />
     </section>
   )
 }
