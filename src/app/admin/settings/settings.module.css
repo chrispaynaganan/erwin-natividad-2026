@@ -1,25 +1,18 @@
 /* src/app/admin/settings/settings.module.css
-   Updated to use the CONFIRMED real global variable names (seen directly in
-   admin-sidebar.tsx: --border, --surface, --accent, --text-muted, --text,
-   --btn-fg, --accent-soft — no "color-" prefix). Hex fallbacks kept as a
-   safety net for any name not yet confirmed (e.g. --bg, --surface-2). */
+   Variable names confirmed directly against globals.css — no fallbacks needed. */
 
 .card {
-  background: var(--surface, #FFFFFF);
-  border: 1px solid var(--border, #E7E5E0);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
   margin-top: 24px;
-}
-:global([data-theme='dark']) .card {
-  background: var(--surface, #181816);
-  border-color: var(--border, #2A2A27);
 }
 
 .label {
   display: block;
   font-size: 14px;
-  color: var(--text-muted, #6B6862);
+  color: var(--text-muted);
   margin-bottom: 6px;
 }
 
@@ -27,9 +20,9 @@
   width: 100%;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid var(--border, #E7E5E0);
-  background: var(--bg, #FCFCFB);
-  color: var(--text, #161513);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
   font: inherit;
 }
 
@@ -38,13 +31,13 @@
 
 .hr {
   border: none;
-  border-top: 1px solid var(--border, #E7E5E0);
+  border-top: 1px solid var(--border);
   margin: 20px 0;
 }
 
 .statusOk {
   margin-top: 12px;
-  color: var(--accent, #B48F19);
+  color: var(--accent);
   font-size: 14px;
 }
 
@@ -55,7 +48,7 @@
 }
 
 .hint {
-  color: var(--text-muted, #6B6862);
+  color: var(--text-muted);
   font-size: 14px;
 }
 

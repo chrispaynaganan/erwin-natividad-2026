@@ -1,16 +1,13 @@
 /* src/app/admin/blog/blog.module.css
-   Updated to use the CONFIRMED real global variable names (seen directly in
-   admin-sidebar.tsx: --border, --surface, --accent, --text-muted, --text,
-   --btn-fg, --accent-soft — no "color-" prefix). Hex fallbacks kept as a
-   safety net for any name not yet confirmed. */
+   Variable names confirmed directly against globals.css — no fallbacks needed. */
 
 .wrap { display: flex; flex-direction: column; gap: 24px; }
 
 .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .h1 { font-size: 28px; margin: 0; }
-.sub { color: var(--text-muted, #6B6862); margin: 4px 0 0; }
+.sub { color: var(--text-muted); margin: 4px 0 0; }
 
-.empty { color: var(--text-muted, #6B6862); padding: 24px 0; }
+.empty { color: var(--text-muted); padding: 24px 0; }
 
 .list { display: flex; flex-direction: column; gap: 12px; }
 
@@ -20,8 +17,8 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  background: var(--surface, #FFFFFF);
-  border: 1px solid var(--border, #E7E5E0);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px 20px;
 }
@@ -29,7 +26,7 @@
 .rowMain { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .rowTitle { font-weight: 600; text-decoration: none; color: inherit; }
 .rowTitle:hover { text-decoration: underline; }
-.rowMeta { font-size: 13px; color: var(--text-muted, #6B6862); margin-top: 2px; }
+.rowMeta { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
 .rowActions { display: flex; gap: 8px; flex-shrink: 0; }
 
@@ -40,13 +37,13 @@
   letter-spacing: 0.02em;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--surface-2, #F4F3F0);
-  color: var(--text-muted, #6B6862);
+  background: var(--surface-2);
+  color: var(--text-muted);
   flex-shrink: 0;
   white-space: nowrap;
 }
 
 .badge_published {
-  background: var(--tag-bg, #DDC883);
-  color: var(--tag-text, #8E6C00);
+  background: var(--tag-bg);
+  color: var(--tag-text);
 }
