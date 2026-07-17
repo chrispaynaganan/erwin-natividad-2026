@@ -5,6 +5,8 @@ import { getEpisodesForShow } from '@/lib/episodes'
 import { PodcastEpisodeList } from '@/components/podcast-episode-list'
 import s from '../podcasts.module.css'
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   const shows = await getShows()
   return shows.map((s) => ({ showSlug: s.slug }))

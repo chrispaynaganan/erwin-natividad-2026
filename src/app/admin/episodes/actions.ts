@@ -59,13 +59,21 @@ export async function saveEpisode(input: EpisodeInput): Promise<SaveState> {
       : await db.from('episodes').insert(row).select('id').single()
 
     if (error) {
-      // Unique violation on (show_id, slug) is the most likely real-world case.
       if (error.code === '23505') return { ok: false, message: 'That slug is already used by another episode in this show.' }
       return { ok: false, message: 'Could not save: ' + error.message }
     }
 
     revalidatePath('/admin/episodes')
     revalidatePath(`/admin/episodes/${data.id}`)
+
+    // Public-facing show page — episodes render inside their parent show's
+    // page, not their own route, so we need that show's slug to revalidate
+    // the right place. /podcasts itself doesn't list episodes directly, but
+    // revalidating it too is cheap insurance in case that ever changes.
+    const { data: show } = await db.from('shows').select('slug').eq('id', input.show_id).maybeSingle()
+    revalidatePath('/podcasts')
+    if (show?.slug) revalidatePath(`/podcasts/${show.slug}`)
+
     return { ok: true, message: 'Episode saved.', id: data.id }
   } catch (e) {
     console.error('[saveEpisode] unexpected error:', e)
@@ -80,8 +88,21 @@ export async function deleteEpisode(id: string): Promise<SaveState> {
     return { ok: false, message: 'You don\u2019t have permission to delete episodes.' }
   }
   const db = createAdminClient()
+
+  // Need the parent show's slug BEFORE deleting the episode row.
+  const { data: existing } = await db.from('episodes').select('show_id').eq('id', id).maybeSingle()
+  let showSlug: string | null = null
+  if (existing?.show_id) {
+    const { data: show } = await db.from('shows').select('slug').eq('id', existing.show_id).maybeSingle()
+    showSlug = show?.slug ?? null
+  }
+
   const { error } = await db.from('episodes').delete().eq('id', id)
   if (error) return { ok: false, message: 'Could not delete: ' + error.message }
+
   revalidatePath('/admin/episodes')
+  revalidatePath('/podcasts')
+  if (showSlug) revalidatePath(`/podcasts/${showSlug}`)
+
   return { ok: true, message: 'Episode deleted.' }
 }

@@ -3,6 +3,7 @@ import { CtaSection } from '@/components/cta-section'
 import { getShows } from '@/lib/shows'
 import s from './podcasts.module.css'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Podcasts' }
 
 export default async function PodcastsPage() {

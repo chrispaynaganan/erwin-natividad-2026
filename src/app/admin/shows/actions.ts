@@ -49,6 +49,14 @@ export async function saveShow(input: ShowInput): Promise<SaveState> {
     revalidatePath('/admin/shows')
     revalidatePath('/admin/episodes')
     revalidatePath(`/admin/shows/${data.id}`)
+
+    // Public-facing pages — this was missing entirely before. Both listing
+    // and detail need it: a title/description/cover edit on an existing
+    // published show, or a draft flipping to published, wouldn't otherwise
+    // invalidate anything a visitor sees.
+    revalidatePath('/podcasts')
+    revalidatePath(`/podcasts/${row.slug}`)
+
     return { ok: true, message: 'Show saved.', id: data.id }
   } catch (e) {
     console.error('[saveShow] unexpected error:', e)
@@ -64,14 +72,20 @@ export async function deleteShow(id: string): Promise<SaveState> {
   }
   try {
     const db = createAdminClient()
+
+    // Need the slug BEFORE deleting, or we can't revalidate its public page.
+    const { data: existing } = await db.from('shows').select('slug').eq('id', id).maybeSingle()
+
     const { error } = await db.from('shows').delete().eq('id', id)
     if (error) {
-      // shows.episodes has ON DELETE CASCADE — this is more likely a
-      // permissions issue than an FK conflict, but surface it either way.
       return { ok: false, message: 'Could not delete: ' + error.message }
     }
     revalidatePath('/admin/shows')
     revalidatePath('/admin/episodes')
+
+    revalidatePath('/podcasts')
+    if (existing?.slug) revalidatePath(`/podcasts/${existing.slug}`)
+
     return { ok: true, message: 'Show deleted.' }
   } catch (e) {
     return { ok: false, message: 'Unexpected error while deleting: ' + (e instanceof Error ? e.message : String(e)) }
