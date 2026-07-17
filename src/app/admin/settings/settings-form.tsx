@@ -230,7 +230,7 @@ function AppearanceComingSoon() {
       <h2 style={{ marginTop: 0 }}>Appearance</h2>
       <p className={s.hint}>
         Theme is currently a per-browser preference (the moon/sun toggle, saved to localStorage). A saved
-        default here is coming once we\u2019ve seen ThemeToggle and the root layout\u2019s no-flash init script \u2014
+        default here is coming once we&rsquo;ve seen ThemeToggle and the root layout&rsquo;s no-flash init script &mdash;
         wiring it in blind risks breaking that.
       </p>
     </section>
