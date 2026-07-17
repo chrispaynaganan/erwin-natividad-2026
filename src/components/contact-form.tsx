@@ -24,13 +24,13 @@ export function ContactForm() {
         </label>
         <label className={s.field}>
           <span className={s.label}>Phone Number</span>
-          <input name="phone" placeholder="john@example.com" className={s.input} />
+          <input name="phone" type="tel" placeholder="(555) 123-4567" className={s.input} />
         </label>
       </div>
 
       <label className={s.field}>
         <span className={s.label}>Inquiry <span className={s.req}>*</span></span>
-        <input name="inquiry" placeholder="Type of Inquiry" className={s.input} />
+        <input name="inquiry" required placeholder="Type of Inquiry" className={s.input} />
       </label>
 
       <label className={s.field}>
