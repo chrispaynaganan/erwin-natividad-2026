@@ -8,6 +8,7 @@ import { ThemeToggle } from './theme-toggle'
 const nav = [
   { href: '/services', label: 'Services' },
   { href: '/work', label: 'Projects' },
+  { href: '/podcasts', label: 'Podcasts' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]
@@ -15,7 +16,6 @@ const nav = [
 export type HeaderBranding = { logoLight: string; logoDark: string; ctaLabel: string; ctaHref: string }
 const DEFAULT_BRANDING: HeaderBranding = { logoLight: '/logo-light.png', logoDark: '/logo-dark.png', ctaLabel: 'Work With Me', ctaHref: '/work-with-me' }
 
-// Theme-aware logo (knocked-out PNGs in /public). Light logo on light bg, dark on dark.
 function Logo({ light, dark }: { light: string; dark: string }) {
   return (
     <Link href="/" aria-label="Erwin Natividad — home" style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -31,12 +31,10 @@ export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderB
   const pathname = usePathname()
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
 
-  // Sliding active-nav indicator
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([])
   const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 })
   const [animate, setAnimate] = useState(false)
 
-  // Position the indicator under the active item; fade it out when none is active.
   useEffect(() => {
     const place = () => {
       const idx = nav.findIndex((i) => isActive(i.href))
@@ -50,13 +48,11 @@ export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderB
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
-  // Skip the transition on first paint (so it doesn't slide in on load).
   useEffect(() => {
     const id = requestAnimationFrame(() => setAnimate(true))
     return () => cancelAnimationFrame(id)
   }, [])
 
-  // Frosted-glass background once the page is scrolled.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
     onScroll()
@@ -69,7 +65,6 @@ export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderB
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60, gap: 16 }}>
         <Logo light={branding.logoLight} dark={branding.logoDark} />
 
-        {/* Desktop nav — borderless segmented container with a sliding indicator */}
         <nav className="enNavDesktop" style={{ display: 'none', position: 'relative', gap: 2, padding: 3, borderRadius: 'var(--radius-sm)', background: 'var(--surface-2)' }}>
           <span aria-hidden className="enNavIndicator" style={{
             left: indicator.left, width: indicator.width, opacity: indicator.opacity,
@@ -95,7 +90,6 @@ export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderB
         </div>
       </div>
 
-      {/* Mobile dropdown */}
       {open && (
         <div className="container" style={{ paddingBottom: 16, display: 'grid', gap: 4 }}>
           {nav.map((i) => (

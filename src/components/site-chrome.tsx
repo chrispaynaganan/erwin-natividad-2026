@@ -2,8 +2,9 @@
 import { usePathname } from 'next/navigation'
 import { SiteHeader, type HeaderBranding } from './site-header'
 import { SiteFooter } from './site-footer'
+import { PodcastPlayerProvider } from './podcast-player-provider'
+import { PodcastMiniPlayer } from './podcast-mini-player'
 
-// Routes that should render WITHOUT the public header/footer.
 const BARE_PREFIXES = [
   '/admin',
   '/account',
@@ -11,23 +12,25 @@ const BARE_PREFIXES = [
   '/login',
   '/forgot-password',
   '/reset-password',
-  '/auth', // /auth/callback
+  '/auth',
 ]
 
-// Wraps every page. Public routes get the site header + footer; the routes
-// above render bare (the admin panel has its own shell). No files move —
-// this replaces the unconditional header/footer in the root layout.
 export function SiteChrome({ branding, children }: { branding: HeaderBranding; children: React.ReactNode }) {
   const pathname = usePathname()
   const bare = BARE_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + '/'))
 
   if (bare) return <>{children}</>
 
+  // PodcastPlayerProvider wraps the whole public tree so the <audio> element
+  // and playback state survive navigating between /podcasts pages (and even
+  // away from /podcasts entirely — mirrors Apple Podcasts' "keep playing
+  // while you browse elsewhere" behavior).
   return (
-    <>
+    <PodcastPlayerProvider>
       <SiteHeader branding={branding} />
       {children}
       <SiteFooter />
-    </>
+      <PodcastMiniPlayer />
+    </PodcastPlayerProvider>
   )
 }
