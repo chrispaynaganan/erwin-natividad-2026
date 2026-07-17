@@ -30,3 +30,9 @@ export async function updateSubscriberStatus(id: string, status: SubscriberStatu
   const { error } = await db.from('newsletter_subscribers').update(patch).eq('id', id)
   if (error) throw new Error(error.message)
 }
+
+export async function deleteSubscriber(id: string) {
+  const db = createAdminClient()
+  const { error } = await db.from('newsletter_subscribers').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+}

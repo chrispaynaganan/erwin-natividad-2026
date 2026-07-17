@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useMemo, startTransition } from 'react'
-import { setSubscriberStatus } from './actions'
+import { setSubscriberStatus, removeSubscriber } from './actions'
 import type { SubscriberRow, SubscriberStatus } from '@/lib/subscribers-db/store'
 
 const STATUS_OPTIONS: SubscriberStatus[] = ['pending', 'subscribed', 'unsubscribed', 'bounced']
@@ -11,6 +11,7 @@ export function SubscribersList({ subscribers }: { subscribers: SubscriberRow[] 
   const [rows, setRows] = useState(subscribers)
   const [statusFilter, setStatusFilter] = useState<SubscriberStatus | 'all'>('all')
   const [search, setSearch] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const filtered = useMemo(() => rows.filter((r) =>
     (statusFilter === 'all' || r.status === statusFilter) &&
@@ -22,6 +23,19 @@ export function SubscribersList({ subscribers }: { subscribers: SubscriberRow[] 
     setRows((cur) => cur.map((r) => (r.id === id ? { ...r, status } : r)))
     startTransition(() => {
       setSubscriberStatus(id, status).then((res) => {
+        if (!res.ok) { setRows(prev); console.error(res.error) }
+      })
+    })
+  }
+
+  function handleDelete(id: string, email: string) {
+    if (!window.confirm(`Remove ${email} permanently? This can't be undone.`)) return
+    const prev = rows
+    setDeletingId(id)
+    setRows((cur) => cur.filter((r) => r.id !== id))
+    startTransition(() => {
+      removeSubscriber(id).then((res) => {
+        setDeletingId(null)
         if (!res.ok) { setRows(prev); console.error(res.error) }
       })
     })
@@ -53,7 +67,7 @@ export function SubscribersList({ subscribers }: { subscribers: SubscriberRow[] 
         <button type="button" className="btn btnOutline" onClick={exportCsv}>Export CSV</button>
       </div>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead><tr><th>Email</th><th>Status</th><th>Source</th><th>Subscribed</th><th>Joined</th></tr></thead>
+        <thead><tr><th>Email</th><th>Status</th><th>Source</th><th>Subscribed</th><th>Joined</th><th></th></tr></thead>
         <tbody>
           {filtered.map((r) => (
             <tr key={r.id} style={{ borderTop: '1px solid var(--border, #E7E5E0)' }}>
@@ -66,9 +80,19 @@ export function SubscribersList({ subscribers }: { subscribers: SubscriberRow[] 
               <td>{r.source ?? '—'}</td>
               <td>{r.subscribed_at ? new Date(r.subscribed_at).toLocaleDateString() : '—'}</td>
               <td>{new Date(r.created_at).toLocaleDateString()}</td>
+              <td>
+                <button
+                  type="button"
+                  className="btn btnOutline"
+                  disabled={deletingId === r.id}
+                  onClick={() => handleDelete(r.id, r.email)}
+                >
+                  {deletingId === r.id ? 'Removing…' : 'Delete'}
+                </button>
+              </td>
             </tr>
           ))}
-          {filtered.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted, #6B6862)' }}>No subscribers match this filter.</td></tr>}
+          {filtered.length === 0 && <tr><td colSpan={6} style={{ textAlign: 'center', padding: 24, color: 'var(--text-muted, #6B6862)' }}>No subscribers match this filter.</td></tr>}
         </tbody>
       </table>
     </div>
