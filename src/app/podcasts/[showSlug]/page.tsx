@@ -25,10 +25,6 @@ export default async function ShowDetail({ params }: { params: Promise<{ showSlu
   if (!show) notFound()
   const episodes = await getEpisodesForShow(show.id)
 
-  const featured = show.featuredEpisodeId
-    ? episodes.find((e) => e.id === show.featuredEpisodeId) ?? episodes[0]
-    : episodes[0]
-
   return (
     <main className="container" style={{ paddingTop: 32, paddingBottom: 64 }}>
       <nav className={s.breadcrumb} aria-label="Breadcrumb">
@@ -42,8 +38,8 @@ export default async function ShowDetail({ params }: { params: Promise<{ showSlu
         <div>
           <h1 className={s.showHeaderTitle}>{show.title}</h1>
           {show.description && <p className={s.showHeaderDesc}>{show.description}</p>}
-          {episodes.length > 0 && featured && (
-            <ShowPlayPill episode={featured} showTitle={show.title} showSlug={show.slug} episodes={episodes} />
+          {show.introAudioUrl && (
+            <ShowPlayPill introAudioUrl={show.introAudioUrl} introDurationSecs={show.introDurationSecs} />
           )}
         </div>
       </div>

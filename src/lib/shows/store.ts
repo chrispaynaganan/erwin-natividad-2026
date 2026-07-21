@@ -9,7 +9,8 @@ export type Show = {
   cover_url: string | null
   status: 'draft' | 'scheduled' | 'published' | 'archived'
   sort_order: number
-  featured_episode_id: string | null
+  intro_audio_url: string | null
+  intro_duration_secs: number | null
   created_at: string
   updated_at: string
 }

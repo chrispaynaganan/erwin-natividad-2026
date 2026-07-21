@@ -14,7 +14,8 @@ export type ShowInput = {
   cover_url: string
   status: 'draft' | 'scheduled' | 'published' | 'archived'
   sort_order: number
-  featured_episode_id: string | null
+  intro_audio_url: string | null
+  intro_duration_secs: number | null
 }
 
 export async function saveShow(input: ShowInput): Promise<SaveState> {
@@ -36,7 +37,8 @@ export async function saveShow(input: ShowInput): Promise<SaveState> {
       cover_url: input.cover_url || null,
       status: input.status,
       sort_order: input.sort_order,
-      featured_episode_id: input.featured_episode_id || null,
+      intro_audio_url: input.intro_audio_url || null,
+      intro_duration_secs: input.intro_duration_secs ?? null,
     }
 
     const { data, error } = input.id
@@ -51,6 +53,11 @@ export async function saveShow(input: ShowInput): Promise<SaveState> {
     revalidatePath('/admin/shows')
     revalidatePath('/admin/episodes')
     revalidatePath(`/admin/shows/${data.id}`)
+
+    // Public-facing pages — this was missing entirely before. Both listing
+    // and detail need it: a title/description/cover edit on an existing
+    // published show, or a draft flipping to published, wouldn't otherwise
+    // invalidate anything a visitor sees.
     revalidatePath('/podcasts')
     revalidatePath(`/podcasts/${row.slug}`)
 
@@ -69,15 +76,20 @@ export async function deleteShow(id: string): Promise<SaveState> {
   }
   try {
     const db = createAdminClient()
+
+    // Need the slug BEFORE deleting, or we can't revalidate its public page.
     const { data: existing } = await db.from('shows').select('slug').eq('id', id).maybeSingle()
+
     const { error } = await db.from('shows').delete().eq('id', id)
     if (error) {
       return { ok: false, message: 'Could not delete: ' + error.message }
     }
     revalidatePath('/admin/shows')
     revalidatePath('/admin/episodes')
+
     revalidatePath('/podcasts')
     if (existing?.slug) revalidatePath(`/podcasts/${existing.slug}`)
+
     return { ok: true, message: 'Show deleted.' }
   } catch (e) {
     return { ok: false, message: 'Unexpected error while deleting: ' + (e instanceof Error ? e.message : String(e)) }

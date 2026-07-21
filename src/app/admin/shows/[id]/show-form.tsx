@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { IconDeviceFloppy, IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
 import { Field } from '@/app/admin/content/fields'
 import { ImageField } from '@/components/admin/image-field'
+import { AudioField, type AudioValue } from '@/components/admin/audio-field'
 import { saveShow, type SaveState } from '../actions'
 import type { Show } from '@/lib/shows/store'
-import type { Episode } from '@/lib/episodes/store'
 import s from '@/app/admin/content/content.module.css'
 
 const STATUSES = ['draft', 'scheduled', 'published', 'archived'] as const
@@ -17,7 +17,7 @@ function slugify(v: string) {
   return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-export function ShowForm({ show, episodes }: { show: Show | null; episodes: Episode[] }) {
+export function ShowForm({ show }: { show: Show | null }) {
   const router = useRouter()
   const [pending, start] = useTransition()
   const [msg, setMsg] = useState<SaveState>(null)
@@ -30,7 +30,15 @@ export function ShowForm({ show, episodes }: { show: Show | null; episodes: Epis
   const [coverUrl, setCoverUrl] = useState(show?.cover_url ?? '')
   const [status, setStatus] = useState<Status>((show?.status as Status) ?? 'draft')
   const [sortOrder, setSortOrder] = useState(show?.sort_order?.toString() ?? '0')
-  const [featuredEpisodeId, setFeaturedEpisodeId] = useState(show?.featured_episode_id ?? '')
+
+  // Seeded from the show's existing intro fields — AudioField's `url` isn't
+  // meaningful for a brand-new upload until one is chosen, but for an
+  // already-saved show we already have a playable public URL to show.
+  const [introAudio, setIntroAudio] = useState<AudioValue | null>(
+    show?.intro_audio_url
+      ? { path: show.intro_audio_url, url: show.intro_audio_url, durationSecs: show.intro_duration_secs ?? 0, fileName: 'Show intro' }
+      : null
+  )
 
   function markDirty() { setDirty(true); setMsg(null) }
 
@@ -50,7 +58,8 @@ export function ShowForm({ show, episodes }: { show: Show | null; episodes: Epis
         cover_url: coverUrl,
         status,
         sort_order: sortOrder ? Number(sortOrder) : 0,
-        featured_episode_id: featuredEpisodeId || null,
+        intro_audio_url: introAudio?.url ?? null,
+        intro_duration_secs: introAudio?.durationSecs ?? null,
       })
       setMsg(res)
       if (res?.ok) {
@@ -88,29 +97,22 @@ export function ShowForm({ show, episodes }: { show: Show | null; episodes: Epis
           </div>
 
           <Field label="Description" textarea rows={4} value={description} onChange={(v) => { setDescription(v); markDirty() }} />
-
-          {show && (
-            <label className={s.field}>
-              <span className={s.label}>Featured episode (shown as the play pill on the show page)</span>
-              <select
-                className={s.input}
-                value={featuredEpisodeId}
-                onChange={(e) => { setFeaturedEpisodeId(e.target.value); markDirty() }}
-              >
-                <option value="">Latest episode (automatic)</option>
-                {episodes.map((ep) => (
-                  <option key={ep.id} value={ep.id}>
-                    {ep.episode_number != null ? `#${ep.episode_number} — ` : ''}{ep.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
         </section>
 
         <section className={s.card}>
           <h2 className={s.cardTitle}>Cover Art</h2>
           <ImageField label="Show cover" folder="shows" bucket="show-art" value={coverUrl} onChange={(v) => { setCoverUrl(v); markDirty() }} />
+        </section>
+
+        <section className={s.card}>
+          <h2 className={s.cardTitle}>Show Intro</h2>
+          <AudioField
+            label="Show intro (plays from the show page — not tied to an episode)"
+            bucket="show-intro-audio"
+            folder="shows"
+            value={introAudio}
+            onChange={(v) => { setIntroAudio(v); markDirty() }}
+          />
         </section>
       </div>
 

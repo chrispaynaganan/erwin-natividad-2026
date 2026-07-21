@@ -11,8 +11,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 //   so the browser does the transcoding before the file is ever sent.
 // - Bucket-aware: `episode-audio` is PRIVATE (premium gating — see doc 02,
 //   "Premium audio never leaks"), so only a Storage path is returned there,
-//   never a public URL. `project-audio` (portfolio demos) is PUBLIC — anyone
-//   should be able to play a demo — so a public URL is returned for it.
+//   never a public URL. `project-audio` (portfolio demos) and
+//   `show-intro-audio` (show intro clips — no premium gating, meant to play
+//   for anyone) are PUBLIC — a public URL is returned for both.
 export const runtime = 'nodejs'
 
 const MAX_BYTES = 200 * 1024 * 1024 // generous cap for long-form episodes — confirm this matches each bucket's own file_size_limit
@@ -20,6 +21,7 @@ const MAX_BYTES = 200 * 1024 * 1024 // generous cap for long-form episodes — c
 const AUDIO_BUCKETS: Record<string, { public: boolean }> = {
   'episode-audio': { public: false },
   'project-audio': { public: true },
+  'show-intro-audio': { public: true },
 }
 
 export async function POST(req: Request) {

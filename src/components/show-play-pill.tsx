@@ -1,7 +1,6 @@
 'use client'
+import { useRef, useState, useEffect } from 'react'
 import { IconPlayerPlay, IconPlayerPause } from '@tabler/icons-react'
-import type { PublicEpisode } from '@/lib/episodes'
-import { usePodcastPlayer } from './podcast-player-provider'
 import s from '@/app/podcasts/podcasts.module.css'
 
 const fmt = (secs: number) => {
@@ -10,47 +9,56 @@ const fmt = (secs: number) => {
   return `${m}m`
 }
 
-// Small inline play pill shown under a show's description — plays the
-// show's latest episode, and reflects live progress if it's already the
-// episode currently loaded in the persistent mini-player.
+// Standalone play pill for a show's intro clip — deliberately NOT wired
+// into the episode player context (usePodcastPlayer). This is a separate,
+// short-lived clip, not part of the episode queue, so it shouldn't
+// interact with the persistent mini-player's prev/next or override
+// whatever episode is currently playing there. It just owns its own
+// <audio> element and local state.
 export function ShowPlayPill({
-  episode,
-  showTitle,
-  showSlug,
-  episodes,
+  introAudioUrl,
+  introDurationSecs,
 }: {
-  episode: PublicEpisode
-  showTitle: string
-  showSlug: string
-  episodes: PublicEpisode[]
+  introAudioUrl: string
+  introDurationSecs: number | null
 }) {
-  const { nowPlaying, playing, current, duration, loading, play, toggle } = usePodcastPlayer()
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [playing, setPlaying] = useState(false)
+  const [current, setCurrent] = useState(0)
+  const [duration, setDuration] = useState(introDurationSecs ?? 0)
 
-  const isActive = nowPlaying?.episode.id === episode.id
-  const isActivePlaying = isActive && playing
-  const progress = isActive && duration ? (current / duration) * 100 : 0
-  const label = isActive && duration ? fmt(duration - current) : fmt(episode.durationSecs ?? 0)
+  useEffect(() => {
+    // Pause and reset if this pill unmounts (e.g. navigating away).
+    return () => { audioRef.current?.pause() }
+  }, [])
 
-  const handleClick = () => {
-    if (isActive) toggle()
-    else play(episode, showTitle, showSlug, episodes)
+  const toggle = () => {
+    const a = audioRef.current
+    if (!a) return
+    if (playing) a.pause(); else a.play()
+    setPlaying((p) => !p)
   }
 
+  const progress = duration ? (current / duration) * 100 : 0
+  const label = duration ? fmt(duration - current) : ''
+
   return (
-    <button type="button" className={s.showPlayPill} onClick={handleClick} disabled={isActive && loading}>
+    <button type="button" className={s.showPlayPill} onClick={toggle}>
       <span className={s.showPlayBtn}>
-        {isActive && loading ? (
-          <span className={s.showPlaySpinner} />
-        ) : isActivePlaying ? (
-          <IconPlayerPause size={16} stroke={2} />
-        ) : (
-          <IconPlayerPlay size={16} stroke={2} />
-        )}
+        {playing ? <IconPlayerPause size={16} stroke={2} /> : <IconPlayerPlay size={16} stroke={2} />}
       </span>
       <span className={s.showPlayTrack}>
         <span className={s.showPlayFill} style={{ width: `${progress}%` }} />
       </span>
       {label && <span className={s.showPlayDuration}>{label}</span>}
+
+      <audio
+        ref={audioRef}
+        src={introAudioUrl}
+        onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onEnded={() => { setPlaying(false); setCurrent(0) }}
+      />
     </button>
   )
 }
