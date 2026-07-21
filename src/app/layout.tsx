@@ -1,46 +1,43 @@
-import { getSessionProfile, hasMinRole } from '@/lib/auth'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
-import { SignOutButton } from '@/components/signout-button'
-import { AdminLogin } from '@/components/admin/admin-login'
-import { AdminMain } from '@/components/admin/admin-main'
-import s from './admin-shell.module.css'
+import type { Metadata } from 'next'
+import './globals.css'
+import { SiteChrome } from '@/components/site-chrome'
+import { getSiteContent } from '@/lib/content/store'
 
-export const metadata = { robots: { index: false, follow: false } }
+export const metadata: Metadata = {
+  title: { default: 'Erwin Natividad — Voiceover Artist & Voice Coach', template: '%s · Erwin Natividad' },
+  description: 'Voiceover artist and voice coach helping scripts come alive.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  openGraph: {
+    title: 'Erwin Natividad — Voiceover Artist & Voice Coach',
+    description: 'Voiceover artist and voice coach helping scripts come alive.',
+    type: 'website',
+    siteName: 'Erwin Natividad',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Erwin Natividad — Voiceover Artist & Voice Coach',
+    description: 'Voiceover artist and voice coach helping scripts come alive.',
+  },
+}
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSessionProfile()
+const themeInit = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.dataset.theme=t;}catch(e){document.documentElement.dataset.theme='light';}})();`
 
-  if (!session) {
-    return <AdminLogin />
-  }
-
-  if (!hasMinRole(session.profile.role, 'viewer')) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '2rem', background: 'var(--bg)', color: 'var(--text)' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1>No admin access</h1>
-          <p style={{ color: 'var(--text-muted)', margin: '0.75rem 0 1.25rem' }}>
-            This account isn&rsquo;t authorized for the admin panel.
-          </p>
-          <SignOutButton />
-        </div>
-      </div>
-    )
-  }
-
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { nav } = await getSiteContent()
   return (
-    <div className={s.shell}>
-      <AdminSidebar role={session.profile.role} />
-      <div className={s.body}>
-        <header className={s.header}>
-          <span className={s.who}>
-            Signed in as {session.profile.full_name ?? 'staff'} · <span className={s.role}>{session.profile.role}</span>
-          </span>
-          <SignOutButton />
-        </header>
-        <AdminMain>{children}</AdminMain>
-        <footer className={s.footer}>Erwin Natividad · admin v0.1.0</footer>
-      </div>
-    </div>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Stack+Sans+Headline:wght@200..700&display=swap"
+        />
+      </head>
+      <body>
+        <SiteChrome branding={nav}>{children}</SiteChrome>
+      </body>
+    </html>
   )
 }
