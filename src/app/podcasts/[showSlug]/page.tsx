@@ -41,7 +41,7 @@ export default async function ShowDetail({ params }: { params: Promise<{ showSlu
       </div>
 
       <h2 className={s.episodesHeading}>Episodes</h2>
-      <PodcastEpisodeList episodes={episodes} showTitle={show.title} />
+      <PodcastEpisodeList episodes={episodes} showTitle={show.title} showSlug={show.slug} />
     </main>
   )
 }

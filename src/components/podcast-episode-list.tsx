@@ -13,7 +13,15 @@ const fmt = (secs: number | null) => {
 }
 const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString() : '')
 
-export function PodcastEpisodeList({ episodes, showTitle }: { episodes: PublicEpisode[]; showTitle: string }) {
+export function PodcastEpisodeList({
+  episodes,
+  showTitle,
+  showSlug,
+}: {
+  episodes: PublicEpisode[]
+  showTitle: string
+  showSlug: string
+}) {
   const [query, setQuery] = useState('')
   const { nowPlaying, playing, play } = usePodcastPlayer()
 
@@ -42,7 +50,7 @@ export function PodcastEpisodeList({ episodes, showTitle }: { episodes: PublicEp
                   type="button"
                   className={s.episodePlayBtn}
                   aria-label={isActivePlaying ? 'Pause' : 'Play'}
-                  onClick={() => play(ep, showTitle)}
+                  onClick={() => play(ep, showTitle, showSlug, episodes)}
                 >
                   {ep.isPremium ? <IconLock size={17} stroke={1.75} /> : isActivePlaying ? <IconPlayerPause size={17} stroke={1.75} /> : <IconPlayerPlay size={17} stroke={1.75} />}
                 </button>
