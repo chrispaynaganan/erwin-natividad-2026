@@ -7,48 +7,73 @@
 
 /* Page-level tabs (Home / Services / About / ...) */
 .pageTabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-.pageTab { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: transparent;
-  color: var(--text-muted); font: inherit; font-size: 0.875rem; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
-.pageTab:hover { color: var(--text); }
+.pageTab {
+  padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border); background: transparent;
+  color: var(--text-muted); font: inherit; font-size: 0.875rem; cursor: pointer;
+  transition: background 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease, transform 0.15s ease;
+}
+.pageTab:hover { color: var(--text); transform: translateY(-1px); }
 .pageTabActive { background: var(--accent-soft); color: var(--btn-fg); border-color: transparent; font-weight: 600; }
 
-/* Section-level tabs within a page */
-.tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; }
-.tab { padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid transparent; background: transparent;
-  color: var(--text-muted); font: inherit; font-size: 0.875rem; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
+/* Section-level tabs within a page — sliding underline instead of an
+   instant background swap */
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 20px; position: relative; }
+.tab {
+  padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid transparent; background: transparent;
+  color: var(--text-muted); font: inherit; font-size: 0.875rem; cursor: pointer;
+  transition: background 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
+}
 .tab:hover { background: var(--surface-2); color: var(--text); }
 .tabActive { background: var(--surface-2); color: var(--text); border-color: var(--border); font-weight: 600; }
 
 .panel { margin-bottom: 96px; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+}
+.card:hover { transform: translateY(-2px); border-color: var(--accent-soft); box-shadow: 0 4px 8px rgba(0,0,0,0.06), 0 16px 32px rgba(0,0,0,0.08); }
+[data-theme="dark"] .card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.3), 0 16px 32px rgba(0,0,0,0.35); }
 .card + .card { margin-top: 16px; }
 .cardTitle { font-size: 1.05rem; font-weight: 600; margin-bottom: 18px; }
 
 .field { display: block; margin-bottom: 14px; }
 .label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
-.input { width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-  background: var(--bg); color: var(--text); font: inherit; font-size: 0.9rem; }
-.input:focus { outline: none; border-color: var(--accent-soft); }
+.input {
+  width: 100%; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--bg); color: var(--text); font: inherit; font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.input:focus { outline: none; border-color: var(--accent-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-soft) 18%, transparent); }
 textarea.input { resize: vertical; line-height: 1.5; }
 
 .row2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 680px) { .row2 { grid-template-columns: 1fr 1fr; } }
 
 .items { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
-.itemCard { border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--surface-2); }
+.itemCard {
+  border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--surface-2);
+  transition: border-color 0.2s ease;
+}
+.itemCard:hover { border-color: var(--accent-soft); }
 .itemHead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .itemTitle { font-weight: 600; font-size: 0.95rem; }
 .itemActions { display: flex; gap: 6px; }
 
-.iconBtn, .iconBtnDanger { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; }
-.iconBtn:hover { color: var(--text); }
-.iconBtn:disabled { opacity: 0.4; cursor: not-allowed; }
-.iconBtnDanger:hover { color: #C0392B; border-color: #C0392B; }
+.iconBtn, .iconBtnDanger {
+  width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.iconBtn:hover { color: var(--text); transform: scale(1.06); }
+.iconBtn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.iconBtnDanger:hover { color: #C0392B; border-color: #C0392B; transform: scale(1.06); }
 
-.addBtn { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 4px;
+.addBtn {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; margin-top: 4px;
   padding: 9px 14px; border-radius: var(--radius-sm); border: 1px dashed var(--border); background: transparent;
-  color: var(--text); font: inherit; font-size: 0.875rem; cursor: pointer; }
+  color: var(--text); font: inherit; font-size: 0.875rem; cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
 .addBtn:hover { border-color: var(--accent-soft); color: var(--accent-soft); }
 
 .hint { font-size: 0.82rem; color: var(--text-muted); margin: -4px 0 14px; line-height: 1.5; }
@@ -56,12 +81,42 @@ textarea.input { resize: vertical; line-height: 1.5; }
 .paraRow > label { flex: 1; }
 .paraRow > button { margin-top: 26px; }
 
-.saveBar { position: fixed; left: 220px; right: 0; bottom: 0; z-index: 30;
+.saveBar {
+  position: fixed; left: 220px; right: 0; bottom: 0; z-index: 30;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 14px 2rem; background: var(--surface); border-top: 1px solid var(--border); }
+  padding: 14px 2rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-top: 1px solid var(--border);
+}
+[data-theme="dark"] .saveBar { background: rgba(24, 24, 22, 0.85); }
 @media (max-width: 760px) { .saveBar { left: 0; } }
+
 .saveStatus { font-size: 0.85rem; min-height: 20px; }
-.saveBtn { gap: 8px; }
-.ok { display: inline-flex; align-items: center; gap: 6px; color: #2E7D32; }
-.err { display: inline-flex; align-items: center; gap: 6px; color: #C0392B; }
+.saveBtn {
+  gap: 8px;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+.saveBtn:active:not(:disabled) { transform: scale(0.96); }
+
+/* Signature moment: the success/error line doesn't just appear — it
+   springs in, so saving reads as one fluid gesture rather than a text
+   swap. */
+.ok, .err {
+  display: inline-flex; align-items: center; gap: 6px;
+  animation: saveResultIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ok { color: #2E7D32; }
+.err { color: #C0392B; }
+@keyframes saveResultIn {
+  0% { opacity: 0; transform: scale(0.85) translateY(4px); }
+  100% { opacity: 1; transform: none; }
+}
 .hintInline { color: var(--text-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pageTab, .tab, .card, .input, .iconBtn, .iconBtnDanger, .addBtn, .saveBtn { transition: none; }
+  .card:hover { transform: none; }
+  .ok, .err { animation: none; }
+}

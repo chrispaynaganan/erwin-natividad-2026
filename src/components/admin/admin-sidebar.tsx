@@ -1,7 +1,9 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { AppRole } from '@/lib/auth'
+import s from './admin-sidebar.module.css'
 
 type Item = { href: string; label: string; min: AppRole; group: string }
 
@@ -25,38 +27,50 @@ export function AdminSidebar({ role }: { role: AppRole }) {
   const pathname = usePathname()
   const visible = items.filter((i) => RANK[role] >= RANK[i.min])
   const groups = Array.from(new Set(visible.map((i) => i.group)))
+  const navRef = useRef<HTMLElement>(null)
+  const [indicator, setIndicator] = useState<{ top: number; height: number } | null>(null)
+
+  const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname.startsWith(href))
+
+  // Measure the active link's position within the scrollable nav so the
+  // gold indicator can glide to it, rather than jumping between groups.
+  useLayoutEffect(() => {
+    const nav = navRef.current
+    if (!nav) return
+    const activeEl = nav.querySelector<HTMLElement>('[data-active="true"]')
+    if (activeEl) {
+      setIndicator({ top: activeEl.offsetTop, height: activeEl.offsetHeight })
+    } else {
+      setIndicator(null)
+    }
+  }, [pathname])
 
   return (
-    <aside
-      style={{
-        width: 220,
-        flexShrink: 0,
-        borderRight: '1px solid var(--border)',
-        background: 'var(--surface)',
-        position: 'sticky',
-        top: 0,
-        alignSelf: 'flex-start',
-        height: '100vh',
-        overflowY: 'auto',
-        padding: '20px 0',
-      }}
-    >
-      <div style={{ padding: '0 20px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--accent)', color: 'var(--btn-fg)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.9rem' }}>en</span>
-        <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Admin</span>
+    <aside className={s.sidebar}>
+      <div className={s.brand}>
+        <span className={s.mark}>en</span>
+        <span className={s.brandLabel}>Admin</span>
       </div>
-      <nav>
+      <nav ref={navRef} className={s.nav}>
+        {indicator && (
+          <span
+            className={s.indicator}
+            style={{ transform: `translateY(${indicator.top}px)`, height: indicator.height }}
+            aria-hidden
+          />
+        )}
         {groups.map((g) => (
-          <div key={g} style={{ marginBottom: 14 }}>
-            <p style={{ padding: '0 20px', fontSize: '0.68rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 6 }}>{g}</p>
+          <div key={g} className={s.group}>
+            <p className={s.groupLabel}>{g}</p>
             {visible.filter((i) => i.group === g).map((i) => {
-              const active = pathname === i.href || (i.href !== '/admin' && pathname.startsWith(i.href))
+              const active = isActive(i.href)
               return (
-                <Link key={i.href} href={i.href}
-                  style={{ display: 'block', margin: '0 10px', padding: '8px 12px', borderRadius: 8, fontSize: '0.875rem',
-                    color: active ? 'var(--btn-fg)' : 'var(--text)',
-                    background: active ? 'var(--accent-soft)' : 'transparent',
-                    fontWeight: active ? 600 : 400 }}>
+                <Link
+                  key={i.href}
+                  href={i.href}
+                  data-active={active || undefined}
+                  className={`${s.link} ${active ? s.linkActive : ''}`}
+                >
                   {i.label}
                 </Link>
               )

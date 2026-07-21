@@ -1,0 +1,23 @@
+.shell { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); }
+.body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+/* Frosted glass header — same visual language as the podcast mini-player,
+   so admin and public site read as one product rather than two. */
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 2rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  position: sticky; top: 0; z-index: 20;
+}
+[data-theme="dark"] .header { background: rgba(24, 24, 22, 0.72); }
+
+.who { font-size: 0.85rem; color: var(--text-muted); }
+.role { color: var(--accent-soft); font-weight: 600; }
+
+.footer {
+  padding: 0.85rem 2rem; border-top: 1px solid var(--border);
+  color: var(--text-muted); font-size: 0.78rem;
+}

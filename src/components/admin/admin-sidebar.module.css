@@ -1,0 +1,61 @@
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.brand { padding: 0 20px 18px; display: flex; align-items: center; gap: 10px; }
+.mark {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--accent); color: var(--btn-fg);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9rem;
+}
+.brandLabel { font-weight: 600; font-size: 0.95rem; }
+
+.nav { position: relative; }
+
+/* The sliding indicator glides between links instead of the background
+   snapping instantly — the one place in the sidebar where motion carries
+   the brand's gold accent forward. */
+.indicator {
+  position: absolute;
+  left: 10px; right: 10px;
+  background: var(--accent-soft);
+  border-radius: 8px;
+  z-index: 0;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group { margin-bottom: 14px; position: relative; }
+.groupLabel {
+  padding: 0 20px; font-size: 0.68rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;
+}
+
+.link {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin: 0 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text);
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+.link:hover { color: var(--accent-soft); transform: translateX(2px); }
+.linkActive { color: var(--btn-fg); font-weight: 600; }
+.linkActive:hover { color: var(--btn-fg); transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator { transition: none; }
+  .link { transition: none; }
+}
