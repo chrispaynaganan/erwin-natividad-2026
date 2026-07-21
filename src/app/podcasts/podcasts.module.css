@@ -44,3 +44,20 @@
 .episodeBadge { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-text); }
 .episodeDesc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-top: 4px; }
 .episodeSub { display: flex; gap: 8px; color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; }
+
+.showPlayPill {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: var(--surface-2); border: none; border-radius: 999px;
+  padding: 8px 18px 8px 8px; margin-top: 18px; cursor: pointer;
+}
+.showPlayPill:disabled { cursor: default; opacity: 0.7; }
+.showPlayBtn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--text); color: var(--surface-2);
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+[data-theme="dark"] .showPlayBtn { background: var(--btn-bg); color: var(--btn-fg); }
+.showPlayTrack { width: 90px; height: 4px; border-radius: 999px; background: var(--border); overflow: hidden; }
+.showPlayFill { display: block; height: 100%; background: var(--text); border-radius: 999px; }
+.showPlayDuration { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; }
+.showPlaySpinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--surface-2); border-top-color: transparent; animation: pmpSpin 0.7s linear infinite; }

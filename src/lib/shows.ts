@@ -7,17 +7,22 @@ export type PublicShow = {
   slug: string
   description: string | null
   coverUrl: string | null
+  featuredEpisodeId: string | null
 }
 
-const COLUMNS = 'id, title, slug, description, cover_url'
+const COLUMNS = 'id, title, slug, description, cover_url, featured_episode_id'
 
 function toShow(row: any): PublicShow {
-  return { id: row.id, title: row.title, slug: row.slug, description: row.description, coverUrl: row.cover_url }
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    description: row.description,
+    coverUrl: row.cover_url,
+    featuredEpisodeId: row.featured_episode_id,
+  }
 }
 
-// Cookie-free anon client, same rationale as lib/projects.ts — works at both
-// build time and request time, and `shows` RLS already restricts to
-// published rows for anon reads, so this is a straightforward public read.
 export async function getShows(): Promise<PublicShow[]> {
   const supabase = createPublicClient()
   const { data, error } = await supabase

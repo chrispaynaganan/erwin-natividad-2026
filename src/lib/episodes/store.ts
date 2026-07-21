@@ -23,11 +23,6 @@ export type Episode = {
 
 export type Show = { id: string; title: string; slug: string }
 
-// Reads use the service-role client, same as lib/content/store.ts. These
-// pages already sit behind the /admin layout's staff gate, so this mirrors
-// the existing pattern rather than depending on `authenticated`'s table
-// grants on `episodes`/`shows` — which we haven't separately verified, and
-// today's whole debugging session was about exactly that kind of gap.
 export async function listEpisodes(): Promise<Episode[]> {
   const db = createAdminClient()
   const { data, error } = await db
@@ -49,6 +44,20 @@ export async function getEpisode(id: string): Promise<Episode | null> {
 export async function listShows(): Promise<Show[]> {
   const db = createAdminClient()
   const { data, error } = await db.from('shows').select('id, title, slug').order('title')
+  if (error) throw new Error(error.message)
+  return data ?? []
+}
+
+// Used by the Show admin form's "Featured episode" picker — same ordering
+// as listEpisodes so the dropdown reads newest-first.
+export async function listEpisodesForShow(showId: string): Promise<Episode[]> {
+  const db = createAdminClient()
+  const { data, error } = await db
+    .from('episodes')
+    .select('*')
+    .eq('show_id', showId)
+    .order('season', { ascending: false, nullsFirst: false })
+    .order('episode_number', { ascending: false, nullsFirst: false })
   if (error) throw new Error(error.message)
   return data ?? []
 }
