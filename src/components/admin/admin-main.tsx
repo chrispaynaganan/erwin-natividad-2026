@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
-import s from './admin-shell.module.css'
+import s from './admin-main.module.css'
 
 // Keys on the route so each admin page fades/slides in on navigation —
 // one quiet, consistent transition rather than a jump cut between pages.
