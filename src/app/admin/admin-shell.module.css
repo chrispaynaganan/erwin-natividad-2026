@@ -17,6 +17,19 @@
 .who { font-size: 0.85rem; color: var(--text-muted); }
 .role { color: var(--accent-soft); font-weight: 600; }
 
+.pageIn {
+  animation: pageIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageIn { animation: none; }
+}
+
 .footer {
   padding: 0.85rem 2rem; border-top: 1px solid var(--border);
   color: var(--text-muted); font-size: 0.78rem;
