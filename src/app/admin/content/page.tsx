@@ -1,4 +1,3 @@
-import { requireRole } from '@/lib/auth/guards';
 import { getSiteContent } from '@/lib/content/store'
 import { ContentEditor } from './content-editor'
 
