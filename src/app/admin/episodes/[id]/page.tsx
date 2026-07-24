@@ -4,11 +4,16 @@ import { EpisodeForm } from './episode-form'
 
 export const metadata = { title: 'Edit episode' }
 
-export default async function EpisodeEditPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const shows = await listShows()
+export default async function EpisodeEditPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ show?: string }>
+}) {
+  const [{ id }, { show }, shows] = await Promise.all([params, searchParams, listShows()])
   const episode = id === 'new' ? null : await getEpisode(id)
   if (id !== 'new' && !episode) notFound()
 
-  return <EpisodeForm episode={episode} shows={shows} />
+  return <EpisodeForm episode={episode} shows={shows} initialShowId={show} />
 }

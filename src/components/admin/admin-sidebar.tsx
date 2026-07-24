@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import type { AppRole } from '@/lib/auth'
 import s from './admin-sidebar.module.css'
 
-type Item = { href: string; label: string; min: AppRole; group: string }
+type Item = { href: string; label: string; min: AppRole; group: string; match?: string[] }
 
 const items: Item[] = [
   { href: '/admin', label: 'Dashboard', min: 'viewer', group: 'Overview' },
@@ -14,8 +14,7 @@ const items: Item[] = [
   { href: '/admin/subscribers', label: 'Subscribers', min: 'editor', group: 'Site' },
   { href: '/admin/seo', label: 'SEO Health', min: 'editor', group: 'Site' },
   { href: '/admin/blog', label: 'Blog', min: 'editor', group: 'Content' },
-  { href: '/admin/episodes', label: 'Episodes', min: 'editor', group: 'Content' },
-  { href: '/admin/shows', label: 'Shows', min: 'editor', group: 'Content' },
+  { href: '/admin/shows', label: 'Podcasts', min: 'editor', group: 'Content', match: ['/admin/episodes'] },
   { href: '/admin/projects', label: 'Projects', min: 'editor', group: 'Content' },
   { href: '/admin/payments', label: 'Payments', min: 'admin', group: 'Admin' },
   { href: '/admin/settings', label: 'Settings', min: 'admin', group: 'Admin' },
@@ -30,7 +29,12 @@ export function AdminSidebar({ role }: { role: AppRole }) {
   const navRef = useRef<HTMLElement>(null)
   const [indicator, setIndicator] = useState<{ top: number; height: number } | null>(null)
 
-  const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname.startsWith(href))
+  // Podcasts owns two route trees now (/admin/shows and /admin/episodes/[id]),
+  // so an item can claim extra prefixes via `match`.
+  const isActive = (item: Item) => {
+    const prefixes = [item.href, ...(item.match ?? [])]
+    return prefixes.some((p) => pathname === p || (p !== '/admin' && pathname.startsWith(p)))
+  }
 
   // Measure the active link's position within the scrollable nav so the
   // gold indicator can glide to it, rather than jumping between groups.
@@ -63,7 +67,7 @@ export function AdminSidebar({ role }: { role: AppRole }) {
           <div key={g} className={s.group}>
             <p className={s.groupLabel}>{g}</p>
             {visible.filter((i) => i.group === g).map((i) => {
-              const active = isActive(i.href)
+              const active = isActive(i)
               return (
                 <Link
                   key={i.href}

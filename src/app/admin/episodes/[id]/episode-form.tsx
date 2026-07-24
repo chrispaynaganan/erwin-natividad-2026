@@ -17,13 +17,13 @@ function slugify(v: string) {
   return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-export function EpisodeForm({ episode, shows }: { episode: Episode | null; shows: Show[] }) {
+export function EpisodeForm({ episode, shows, initialShowId }: { episode: Episode | null; shows: Show[]; initialShowId?: string }) {
   const router = useRouter()
   const [pending, start] = useTransition()
   const [msg, setMsg] = useState<SaveState>(null)
   const [dirty, setDirty] = useState(false)
 
-  const [showId, setShowId] = useState(episode?.show_id ?? shows[0]?.id ?? '')
+  const [showId, setShowId] = useState(episode?.show_id ?? initialShowId ?? shows[0]?.id ?? '')
   const [title, setTitle] = useState(episode?.title ?? '')
   const [slug, setSlug] = useState(episode?.slug ?? '')
   const [slugTouched, setSlugTouched] = useState(!!episode)
