@@ -2,13 +2,15 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { IconDeviceFloppy, IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
+import Link from 'next/link'
+import { IconDeviceFloppy, IconCircleCheck, IconAlertTriangle, IconArrowLeft } from '@tabler/icons-react'
 import { Field } from '@/app/admin/content/fields'
 import { ImageField } from '@/components/admin/image-field'
 import { AudioField, type AudioValue } from '@/components/admin/audio-field'
 import { saveShow, type SaveState } from '../actions'
 import type { Show } from '@/lib/shows/store'
 import s from '@/app/admin/content/content.module.css'
+import p from '@/app/admin/shows/podcasts.module.css'
 
 const STATUSES = ['draft', 'scheduled', 'published', 'archived'] as const
 type Status = (typeof STATUSES)[number]
@@ -48,6 +50,12 @@ export function ShowForm({ show }: { show: Show | null }) {
     if (!slugTouched) setSlug(slugify(v))
   }
 
+  // Guarded navigation: leaving mid-edit silently discards work otherwise.
+  function leave(href: string) {
+    if (dirty && !confirm('You have unsaved changes. Leave without saving?')) return
+    router.push(href)
+  }
+
   function save() {
     start(async () => {
       const res = await saveShow({
@@ -71,11 +79,20 @@ export function ShowForm({ show }: { show: Show | null }) {
 
   return (
     <div className={s.wrap}>
+      <nav className={p.crumbs} aria-label="Breadcrumb">
+        <Link href="/admin/shows" className={p.crumbLink}>Podcasts</Link>
+        <span className={p.crumbSep} aria-hidden>/</span>
+        <span className={p.crumbCurrent}>{show ? show.title : 'New show'}</span>
+      </nav>
+
       <header className={s.head}>
         <div>
           <h1 className={s.h1}>{show ? 'Edit Show' : 'New Show'}</h1>
           <p className={s.sub}>{show ? show.title : 'Create a show, then episodes can be attached to it.'}</p>
         </div>
+        <button type="button" className={p.backLink} onClick={() => leave('/admin/shows')}>
+          <IconArrowLeft size={15} stroke={1.8} /> Back to Podcasts
+        </button>
       </header>
 
       <div className={s.panel}>

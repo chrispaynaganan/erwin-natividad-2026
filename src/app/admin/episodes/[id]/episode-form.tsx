@@ -2,26 +2,56 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { IconDeviceFloppy, IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
+import Link from 'next/link'
+import {
+  IconDeviceFloppy, IconCircleCheck, IconAlertTriangle,
+  IconChevronLeft, IconChevronRight,
+} from '@tabler/icons-react'
 import { Field } from '@/app/admin/content/fields'
 import { ImageField } from '@/components/admin/image-field'
 import { AudioField, type AudioValue } from '@/components/admin/audio-field'
+import { TabRow } from '@/app/admin/content/section-tabs'
 import { saveEpisode, type SaveState } from '../actions'
 import type { Episode, Show } from '@/lib/episodes/store'
 import s from '@/app/admin/content/content.module.css'
+import p from '@/app/admin/shows/podcasts.module.css'
 
 const STATUSES = ['draft', 'scheduled', 'published', 'archived'] as const
 type Status = (typeof STATUSES)[number]
+
+type TabKey = 'details' | 'audio' | 'notes'
+const TABS: { key: TabKey; label: string }[] = [
+  { key: 'details', label: 'Details' },
+  { key: 'audio', label: 'Audio & Cover Art' },
+  { key: 'notes', label: 'Show Notes & Transcript' },
+]
+
+type Sibling = { id: string; title: string } | null
 
 function slugify(v: string) {
   return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
-export function EpisodeForm({ episode, shows, initialShowId }: { episode: Episode | null; shows: Show[]; initialShowId?: string }) {
+export function EpisodeForm({
+  episode,
+  shows,
+  initialShowId,
+  prev = null,
+  next = null,
+  position = null,
+}: {
+  episode: Episode | null
+  shows: Show[]
+  initialShowId?: string
+  prev?: Sibling
+  next?: Sibling
+  position?: { current: number; total: number } | null
+}) {
   const router = useRouter()
   const [pending, start] = useTransition()
   const [msg, setMsg] = useState<SaveState>(null)
   const [dirty, setDirty] = useState(false)
+  const [tab, setTab] = useState<TabKey>('details')
 
   const [showId, setShowId] = useState(episode?.show_id ?? initialShowId ?? shows[0]?.id ?? '')
   const [title, setTitle] = useState(episode?.title ?? '')
@@ -47,6 +77,18 @@ export function EpisodeForm({ episode, shows, initialShowId }: { episode: Episod
     setTitle(v)
     markDirty()
     if (!slugTouched) setSlug(slugify(v))
+  }
+
+  // Tabs can hide the field that's blocking a save, so each tab reports its own
+  // state: red when something required is missing or contradictory.
+  const detailsHealth = !title.trim() || !slug.trim() || !showId ? 'error' : 'ok'
+  const audioHealth = status === 'published' && !audio ? 'error' : 'ok'
+
+  const showTitle = shows.find((sh) => sh.id === showId)?.title
+
+  function leave(href: string) {
+    if (dirty && !confirm('You have unsaved changes. Leave without saving?')) return
+    router.push(href)
   }
 
   function save() {
@@ -78,59 +120,120 @@ export function EpisodeForm({ episode, shows, initialShowId }: { episode: Episod
 
   return (
     <div className={s.wrap}>
+      <nav className={p.crumbs} aria-label="Breadcrumb">
+        <Link href="/admin/shows" className={p.crumbLink}>Podcasts</Link>
+        {showTitle && (
+          <>
+            <span className={p.crumbSep} aria-hidden>/</span>
+            <Link href={`/admin/shows/${showId}`} className={p.crumbLink}>{showTitle}</Link>
+          </>
+        )}
+        <span className={p.crumbSep} aria-hidden>/</span>
+        <span className={p.crumbCurrent}>{episode ? episode.title : 'New episode'}</span>
+      </nav>
+
       <header className={s.head}>
         <div>
           <h1 className={s.h1}>{episode ? 'Edit Episode' : 'New Episode'}</h1>
           <p className={s.sub}>{episode ? episode.title : 'Fill in the details, then save as a draft or publish.'}</p>
         </div>
+
+        {episode && (prev || next) && (
+          <div className={p.pager}>
+            <button
+              type="button"
+              className={p.pagerBtn}
+              disabled={!prev}
+              onClick={() => prev && leave(`/admin/episodes/${prev.id}`)}
+              title={prev ? prev.title : 'No earlier episode'}
+            >
+              <IconChevronLeft size={15} stroke={1.8} />
+              <span className={p.pagerLabel}>{prev ? prev.title : 'Previous'}</span>
+            </button>
+            {position && <span className={p.pagerCount}>{position.current} of {position.total}</span>}
+            <button
+              type="button"
+              className={p.pagerBtn}
+              disabled={!next}
+              onClick={() => next && leave(`/admin/episodes/${next.id}`)}
+              title={next ? next.title : 'No later episode'}
+            >
+              <span className={p.pagerLabel}>{next ? next.title : 'Next'}</span>
+              <IconChevronRight size={15} stroke={1.8} />
+            </button>
+          </div>
+        )}
       </header>
 
+      <TabRow
+        groupLabel="Section"
+        variant="section"
+        active={tab}
+        onSelect={(k) => setTab(k as TabKey)}
+        tabs={[
+          { key: 'details', label: 'Details', health: detailsHealth },
+          { key: 'audio', label: 'Audio & Cover Art', health: audioHealth },
+          { key: 'notes', label: 'Show Notes & Transcript' },
+        ]}
+      />
+
       <div className={s.panel}>
-        <section className={s.card}>
-          <h2 className={s.cardTitle}>Details</h2>
-          <div className={s.row2}>
-            <label className={s.field}>
-              <span className={s.label}>Show</span>
-              <select className={s.input} value={showId} onChange={(e) => { setShowId(e.target.value); markDirty() }}>
-                {shows.length === 0 && <option value="">No shows yet</option>}
-                {shows.map((sh) => <option key={sh.id} value={sh.id}>{sh.title}</option>)}
-              </select>
+        {tab === 'details' && (
+          <section className={s.card}>
+            <h2 className={s.cardTitle}>Details</h2>
+            <div className={s.row2}>
+              <label className={s.field}>
+                <span className={s.label}>Show</span>
+                <select className={s.input} value={showId} onChange={(e) => { setShowId(e.target.value); markDirty() }}>
+                  {shows.length === 0 && <option value="">No shows yet</option>}
+                  {shows.map((sh) => <option key={sh.id} value={sh.id}>{sh.title}</option>)}
+                </select>
+              </label>
+              <label className={s.field}>
+                <span className={s.label}>Status</span>
+                <select className={s.input} value={status} onChange={(e) => { setStatus(e.target.value as Status); markDirty() }}>
+                  {STATUSES.map((st) => <option key={st} value={st}>{st}</option>)}
+                </select>
+              </label>
+            </div>
+
+            <Field label="Title" value={title} onChange={onTitleChange} />
+            <Field label="Slug" value={slug} onChange={(v) => { setSlug(slugify(v)); setSlugTouched(true); markDirty() }} placeholder="episode-slug" />
+
+            <div className={s.row2}>
+              <Field label="Season" value={season} onChange={(v) => { setSeason(v.replace(/[^0-9]/g, '')); markDirty() }} placeholder="1" />
+              <Field label="Episode number" value={episodeNumber} onChange={(v) => { setEpisodeNumber(v.replace(/[^0-9]/g, '')); markDirty() }} placeholder="1" />
+            </div>
+
+            <Field label="Description" textarea rows={3} value={description} onChange={(v) => { setDescription(v); markDirty() }} />
+
+            <label className={s.field} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <input type="checkbox" checked={isPremium} onChange={(e) => { setIsPremium(e.target.checked); markDirty() }} />
+              <span className={s.label} style={{ margin: 0 }}>Premium (requires an active membership to play)</span>
             </label>
-            <label className={s.field}>
-              <span className={s.label}>Status</span>
-              <select className={s.input} value={status} onChange={(e) => { setStatus(e.target.value as Status); markDirty() }}>
-                {STATUSES.map((st) => <option key={st} value={st}>{st}</option>)}
-              </select>
-            </label>
-          </div>
+          </section>
+        )}
 
-          <Field label="Title" value={title} onChange={onTitleChange} />
-          <Field label="Slug" value={slug} onChange={(v) => { setSlug(slugify(v)); setSlugTouched(true); markDirty() }} placeholder="episode-slug" />
+        {tab === 'audio' && (
+          <section className={s.card}>
+            <h2 className={s.cardTitle}>Audio & Cover Art</h2>
+            {audioHealth === 'error' && (
+              <p className={s.hint} style={{ color: '#C0392B' }}>
+                This episode is published but has no audio file, so nothing will play on the site.
+              </p>
+            )}
+            <AudioField label="Episode audio" value={audio} onChange={(v) => { setAudio(v); markDirty() }} />
+            <ImageField label="Cover art" folder="episodes" bucket="episode-art" value={coverUrl} onChange={(v) => { setCoverUrl(v); markDirty() }} />
+          </section>
+        )}
 
-          <div className={s.row2}>
-            <Field label="Season" value={season} onChange={(v) => { setSeason(v.replace(/[^0-9]/g, '')); markDirty() }} placeholder="1" />
-            <Field label="Episode number" value={episodeNumber} onChange={(v) => { setEpisodeNumber(v.replace(/[^0-9]/g, '')); markDirty() }} placeholder="1" />
-          </div>
-
-          <Field label="Description" textarea rows={3} value={description} onChange={(v) => { setDescription(v); markDirty() }} />
-
-          <label className={s.field} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" checked={isPremium} onChange={(e) => { setIsPremium(e.target.checked); markDirty() }} />
-            <span className={s.label} style={{ margin: 0 }}>Premium (requires an active membership to play)</span>
-          </label>
-        </section>
-
-        <section className={s.card}>
-          <h2 className={s.cardTitle}>Audio & Cover Art</h2>
-          <AudioField label="Episode audio" value={audio} onChange={(v) => { setAudio(v); markDirty() }} />
-          <ImageField label="Cover art" folder="episodes" bucket="episode-art" value={coverUrl} onChange={(v) => { setCoverUrl(v); markDirty() }} />
-        </section>
-
-        <section className={s.card}>
-          <h2 className={s.cardTitle}>Show Notes & Transcript</h2>
-          <Field label="Show notes" textarea rows={6} value={showNotes} onChange={(v) => { setShowNotes(v); markDirty() }} />
-          <Field label="Transcript" textarea rows={10} value={transcript} onChange={(v) => { setTranscript(v); markDirty() }} />
-        </section>
+        {tab === 'notes' && (
+          <section className={s.card}>
+            <h2 className={s.cardTitle}>Show Notes & Transcript</h2>
+            <Field label="Show notes" textarea rows={8} value={showNotes} onChange={(v) => { setShowNotes(v); markDirty() }} />
+            <Field label="Transcript" textarea rows={14} value={transcript} onChange={(v) => { setTranscript(v); markDirty() }} />
+          </section>
+        )}
       </div>
 
       <div className={s.saveBar}>
@@ -141,6 +244,9 @@ export function EpisodeForm({ episode, shows, initialShowId }: { episode: Episod
             </span>
           )}
           {!msg && dirty && <span className={s.hintInline}>Unsaved changes</span>}
+          {!msg && !dirty && detailsHealth === 'error' && (
+            <span className={s.hintInline}>Title, slug and show are required</span>
+          )}
         </div>
         <button type="button" className={`btn btnSolid ${s.saveBtn}`} onClick={save} disabled={pending || !dirty || !showId}>
           <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving\u2026' : 'Save episode'}

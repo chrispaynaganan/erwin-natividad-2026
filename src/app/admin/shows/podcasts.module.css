@@ -74,3 +74,38 @@
 .del:disabled { opacity: 0.4; cursor: not-allowed; }
 
 @media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+
+/* Breadcrumbs + pager, shared by the show and episode forms */
+
+.crumbs {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;
+}
+.crumbLink { color: var(--text-muted); text-decoration: none; }
+.crumbLink:hover { color: var(--accent-soft); }
+.crumbSep { opacity: 0.45; }
+.crumbCurrent { color: var(--text); }
+
+.pager { display: flex; align-items: center; gap: 8px; flex: none; }
+.pagerBtn {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 200px;
+  padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text); font: inherit; font-size: 0.8rem; cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.pagerBtn:hover:not(:disabled) { border-color: var(--accent-soft); color: var(--accent-soft); }
+.pagerBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+.pagerLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pagerCount { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+
+.backLink {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem;
+  color: var(--text-muted); text-decoration: none; padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.backLink:hover { border-color: var(--accent-soft); color: var(--accent-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  .pagerBtn, .backLink { transition: none; }
+}
