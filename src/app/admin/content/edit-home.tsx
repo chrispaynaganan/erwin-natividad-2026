@@ -7,6 +7,7 @@ import type { ServiceItem, Testimonial, LogoItem } from '@/lib/content/site-cont
 import { Field, LinkField, TagsField, ItemShell, AddButton, HeadFields, move, type EditorProps } from './fields'
 import { SeoEditor } from './seo-editor'
 import { SITE_URL } from '@/lib/site-url'
+import { TabRow, seoHealth } from './section-tabs'
 import { IconTrash } from '@tabler/icons-react'
 import s from './content.module.css'
 
@@ -30,11 +31,16 @@ export function EditHome({ c, edit }: EditorProps) {
   const [tab, setTab] = useState<TabKey>('hero')
   return (
     <>
-      <nav className={s.tabs}>
-        {TABS.map((t) => (
-          <button key={t.key} type="button" onClick={() => setTab(t.key)} className={tab === t.key ? `${s.tab} ${s.tabActive}` : s.tab}>{t.label}</button>
-        ))}
-      </nav>
+      <TabRow
+        groupLabel="Section"
+        variant="section"
+        active={tab}
+        onSelect={(k) => setTab(k as TabKey)}
+        tabs={TABS.map((t) => ({
+          ...t,
+          health: t.key === 'seo' ? seoHealth(c.home.seo) : undefined,
+        }))}
+      />
 
       <div className={s.panel}>
         {tab === 'hero' && (

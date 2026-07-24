@@ -11,6 +11,9 @@ import { EditAbout } from './edit-about'
 import { EditContact } from './edit-contact'
 import { EditFaq } from './edit-faq'
 import { EditNav } from './edit-nav'
+import { SeoEditor } from './seo-editor'
+import { SITE_URL } from '@/lib/site-url'
+import { TabRow, seoHealth, type TabDef } from './section-tabs'
 import s from './content.module.css'
 
 export type PageKey = 'home' | 'services' | 'about' | 'contact' | 'faq' | 'blog' | 'nav'
@@ -45,6 +48,13 @@ export function ContentEditor({ initial, initialPage = 'home' }: { initial: Site
     })
   }
 
+  // Navigation has no public URL, so no SEO block and no dot.
+  const pageTabs: TabDef[] = PAGES.map((p) => ({
+    key: p.key,
+    label: p.label,
+    health: p.key === 'nav' ? undefined : seoHealth((c as Record<string, any>)[p.key]?.seo),
+  }))
+
   return (
     <div className={s.wrap}>
       <header className={s.head}>
@@ -55,12 +65,13 @@ export function ContentEditor({ initial, initialPage = 'home' }: { initial: Site
         <a className={s.viewLink} href="/" target="_blank" rel="noreferrer">View site <IconExternalLink size={15} stroke={1.75} /></a>
       </header>
 
-      <nav className={s.pageTabs} aria-label="Pages">
-        {PAGES.map((p) => (
-          <button key={p.key} type="button" onClick={() => setPage(p.key)}
-            className={page === p.key ? `${s.pageTab} ${s.pageTabActive}` : s.pageTab}>{p.label}</button>
-        ))}
-      </nav>
+      <TabRow
+        groupLabel="Page"
+        variant="page"
+        tabs={pageTabs}
+        active={page}
+        onSelect={(k) => setPage(k as PageKey)}
+      />
 
       {page === 'home' && <EditHome c={c} edit={edit} />}
       {page === 'services' && <EditServices c={c} edit={edit} />}
@@ -73,13 +84,22 @@ export function ContentEditor({ initial, initialPage = 'home' }: { initial: Site
         <div className={s.panel}>
           <section className={s.card}>
             <h2 className={s.cardTitle}>Blog — Hero</h2>
-            <p className={s.hint}>The heading and intro of the blog listing page. Posts themselves are managed under Blog in the sidebar (coming soon).</p>
+            <p className={s.hint}>The heading and intro of the blog listing page. Individual posts are managed under Blog in the sidebar.</p>
             <div className={s.row2}>
               <Field label="Heading" value={c.blog.hero.title} onChange={(v) => edit((d) => { d.blog.hero.title = v })} />
               <Field label="Heading (gold part)" value={c.blog.hero.titleGold} onChange={(v) => edit((d) => { d.blog.hero.titleGold = v })} />
             </div>
             <Field label="Intro paragraph" textarea value={c.blog.hero.body} onChange={(v) => edit((d) => { d.blog.hero.body = v })} />
           </section>
+
+          <SeoEditor
+            value={c.blog.seo}
+            onChange={(v) => edit((d) => { d.blog.seo = v })}
+            pageUrl={`${SITE_URL}/blog`}
+            fallbackTitle={`${c.blog.hero.title} ${c.blog.hero.titleGold}`}
+            fallbackDescription={c.blog.hero.body}
+            folder="seo-blog"
+          />
         </div>
       )}
 
