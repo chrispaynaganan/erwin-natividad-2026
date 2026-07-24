@@ -13,7 +13,7 @@ import { EditFaq } from './edit-faq'
 import { EditNav } from './edit-nav'
 import s from './content.module.css'
 
-type PageKey = 'home' | 'services' | 'about' | 'contact' | 'faq' | 'blog' | 'nav'
+export type PageKey = 'home' | 'services' | 'about' | 'contact' | 'faq' | 'blog' | 'nav'
 const PAGES: { key: PageKey; label: string }[] = [
   { key: 'home', label: 'Home' },
   { key: 'services', label: 'Services' },
@@ -24,9 +24,9 @@ const PAGES: { key: PageKey; label: string }[] = [
   { key: 'nav', label: 'Navigation' },
 ]
 
-export function ContentEditor({ initial }: { initial: SiteContent }) {
+export function ContentEditor({ initial, initialPage = 'home' }: { initial: SiteContent; initialPage?: PageKey }) {
   const [c, setC] = useState<SiteContent>(initial)
-  const [page, setPage] = useState<PageKey>('home')
+  const [page, setPage] = useState<PageKey>(initialPage)
   const [dirty, setDirty] = useState(false)
   const [msg, setMsg] = useState<SaveState>(null)
   const [pending, start] = useTransition()
