@@ -1,49 +1,169 @@
-import { getSiteContent } from '@/lib/content/store'
-import { listBlogPosts } from '@/lib/blog-db/store'
+import Link from 'next/link';
+import { getSiteContent } from '@/lib/content/store';
+import { listBlogPosts } from '@/lib/blog-db/store';
+import styles from './seo-health.module.css';
 
-export const metadata = { title: 'SEO Health' }
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
+export const metadata = { title: 'SEO health' };
+
+const TITLE_LIMIT = 60;
+const DESC_LIMIT = 160;
+
+const PAGES = [
+  { key: 'home', label: 'Home' },
+  { key: 'services', label: 'Services' },
+  { key: 'about', label: 'About' },
+  { key: 'contact', label: 'Contact' },
+  { key: 'faq', label: 'FAQ' },
+];
+
+type Cell = { status: 'set' | 'default' | 'warning'; label: string; detail?: string };
+
+type Row = {
+  key: string;
+  label: string;
+  href: string;
+  note?: string;
+  nested?: boolean;
+  title: Cell;
+  description: Cell;
+  image: Cell;
+};
+
+// Empty is not an error — it means the page inherits the site default.
+// Only an over-limit value gets flagged, because that one gets truncated.
+function cell(value: string | undefined, limit?: number): Cell {
+  const text = (value ?? '').trim();
+  if (!text) return { status: 'default', label: 'Default' };
+  if (limit && text.length > limit) {
+    return { status: 'warning', label: 'Too long', detail: `${text.length} characters` };
+  }
+  return { status: 'set', label: 'Set', detail: text };
+}
+
+function Status({ cell }: { cell: Cell }) {
+  return (
+    <span className={`${styles.status} ${styles[cell.status]}`} title={cell.detail}>
+      {cell.label}
+    </span>
+  );
+}
 
 export default async function SeoHealthPage() {
-  const content = await getSiteContent()
-  const posts = await listBlogPosts()
 
-  const pageRows = (['home', 'services', 'about', 'contact', 'faq'] as const).map((key) => ({
-    label: key[0].toUpperCase() + key.slice(1),
-    hasTitle: !!content[key].seo.metaTitle,
-    hasDescription: !!content[key].seo.metaDescription,
-    hasImage: !!content[key].seo.ogImageUrl,
-    editHref: `/admin/content?page=${key}`,
-  }))
+  const [content, posts] = await Promise.all([
+    getSiteContent(),
+    listBlogPosts().catch(() => []),
+  ]);
 
-  const postRows = posts.map((p) => ({
-    label: `Blog: ${p.title}`,
-    hasTitle: !!p.meta_title,
-    hasDescription: !!p.meta_description,
-    hasImage: !!p.cover_url,
-    editHref: `/admin/blog/${p.id}`,
-  }))
+  const seoFor = (key: string) =>
+    ((content as any)?.[key]?.seo ?? {}) as Record<string, string>;
 
-  const rows = [...pageRows, ...postRows]
+  const rows: Row[] = PAGES.map(({ key, label }) => {
+    const seo = seoFor(key);
+    return {
+      key,
+      label,
+      href: `/admin/content/${key}#seo`,
+      title: cell(seo.metaTitle, TITLE_LIMIT),
+      description: cell(seo.metaDescription, DESC_LIMIT),
+      image: cell(seo.ogImageUrl),
+    };
+  });
+
+  const needsWork = posts.filter((p) => !p.meta_title || !p.meta_description);
+  const blogSeo = seoFor('blog');
+
+  rows.push({
+    key: 'blog',
+    label: 'Blog',
+    href: '/admin/blog',
+    note: posts.length
+      ? `${needsWork.length} of ${posts.length} posts need metadata`
+      : 'No posts yet',
+    title: cell(blogSeo.metaTitle, TITLE_LIMIT),
+    description: cell(blogSeo.metaDescription, DESC_LIMIT),
+    image: cell(blogSeo.ogImageUrl),
+  });
+
+  // Only posts needing attention are listed. This list shrinks as you fix them.
+  for (const post of needsWork) {
+    rows.push({
+      key: `post-${post.id}`,
+      label: post.title ?? post.slug,
+      href: `/admin/blog/${post.id}#seo`,
+      nested: true,
+      title: cell(post.meta_title ?? undefined, TITLE_LIMIT),
+      description: cell(post.meta_description ?? undefined, DESC_LIMIT),
+      image: cell(undefined),
+    });
+  }
+
+  const pageRows = rows.filter((r) => !r.nested);
+  const total = pageRows.length;
+  const setCount = (field: 'title' | 'description' | 'image') =>
+    pageRows.filter((r) => r[field].status === 'set').length;
+
+  const metrics: [string, number][] = [
+    ['Search titles', setCount('title')],
+    ['Descriptions', setCount('description')],
+    ['Share images', setCount('image')],
+  ];
 
   return (
-    <div>
-      <h1>SEO Health</h1>
-      <p>Which pages and posts have a search title, description, and share image set. A blank cell just falls back to the page&rsquo;s default — not urgent, just a punch list.</p>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 16 }}>
-        <thead><tr><th style={{ textAlign: 'left' }}>Page</th><th>Title</th><th>Description</th><th>Image</th><th></th></tr></thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.label} style={{ borderTop: '1px solid var(--border, #E7E5E0)' }}>
-              <td>{r.label}</td>
-              <td style={{ textAlign: 'center' }}>{r.hasTitle ? '✅' : '⚠️'}</td>
-              <td style={{ textAlign: 'center' }}>{r.hasDescription ? '✅' : '⚠️'}</td>
-              <td style={{ textAlign: 'center' }}>{r.hasImage ? '✅' : '⚠️'}</td>
-              <td><a href={r.editHref}>Edit</a></td>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>SEO health</h1>
+        <p className={styles.subtitle}>
+          Pages without custom metadata fall back to site defaults. That&rsquo;s
+          fine &mdash; this is just what&rsquo;s set.
+        </p>
+      </header>
+
+      <div className={styles.metrics}>
+        {metrics.map(([label, value]) => (
+          <div key={label} className={styles.metric}>
+            <span className={styles.metricLabel}>{label}</span>
+            <span className={styles.metricValue}>
+              {value}
+              <span className={styles.metricTotal}>of {total}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.tableWrap}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th className={styles.pageCol}>Page</th>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Image</th>
+              <th className={styles.actionCol} />
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={row.key}
+                className={row.nested ? `${styles.row} ${styles.nested}` : styles.row}
+              >
+                <td className={styles.pageCell}>
+                  <span className={styles.pageLabel}>{row.label}</span>
+                  {row.note ? <span className={styles.pageHint}>{row.note}</span> : null}
+                </td>
+                <td><Status cell={row.title} /></td>
+                <td><Status cell={row.description} /></td>
+                <td><Status cell={row.image} /></td>
+                <td className={styles.actionCell}>
+                  <Link href={row.href} className={styles.edit}>Edit</Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  )
+  );
 }
