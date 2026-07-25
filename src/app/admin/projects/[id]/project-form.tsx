@@ -114,7 +114,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
           <Field label="Short description (shown on the card)" textarea rows={2} value={description} onChange={(v) => { setDescription(v); markDirty() }} />
 
           <div className={s.row2}>
-            <Field label="Date (shown on card + as \u201CCompleted\u201D on detail page)" value={dateLabel} onChange={(v) => { setDateLabel(v); markDirty() }} placeholder="March 2026" />
+            <Field label="Date (shown on card + as “Completed” on detail page)" value={dateLabel} onChange={(v) => { setDateLabel(v); markDirty() }} placeholder="March 2026" />
             <Field label="Sort order (lower shows first)" value={sortOrder} onChange={(v) => { setSortOrder(v.replace(/[^0-9-]/g, '')); markDirty() }} placeholder="0" />
           </div>
 
@@ -147,7 +147,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
         <section className={s.card}>
           <h2 className={s.cardTitle}>Demo Audio & Cover Art</h2>
           <AudioField label="Demo audio" folder="projects" bucket="project-audio" value={audio} onChange={(v) => { setAudio(v); markDirty() }}
-            hint="Public demo audio \u2014 converted to AAC (.m4a) in your browser before upload, then playable by anyone." />
+            hint="Public demo audio — converted to AAC (.m4a) in your browser before upload, then playable by anyone." />
           <ImageField label="Cover art" folder="projects" bucket="site-media" value={coverUrl} onChange={(v) => { setCoverUrl(v); markDirty() }} />
         </section>
 
@@ -161,7 +161,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
             <Field label="Recording studio" value={studio} onChange={(v) => { setStudio(v); markDirty() }} />
           </div>
           <div className={s.row2}>
-            <Field label="Length (descriptive, e.g. \u201C9 hours total\u201D)" value={lengthLabel} onChange={(v) => { setLengthLabel(v); markDirty() }} />
+            <Field label="Length (descriptive, e.g. “9 hours total”)" value={lengthLabel} onChange={(v) => { setLengthLabel(v); markDirty() }} />
             <Field label="Age range" value={ageRange} onChange={(v) => { setAgeRange(v); markDirty() }} placeholder="25-45" />
           </div>
           <div className={s.row2}>
@@ -182,7 +182,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
           {!msg && dirty && <span className={s.hintInline}>Unsaved changes</span>}
         </div>
         <button type="button" className={`btn btnSolid ${s.saveBtn}`} onClick={save} disabled={pending || !dirty || !title.trim()}>
-          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving\u2026' : 'Save project'}
+          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving…' : 'Save project'}
         </button>
       </div>
     </div>

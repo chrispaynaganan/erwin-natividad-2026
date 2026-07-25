@@ -36,7 +36,7 @@ export async function saveProject(input: ProjectInput): Promise<SaveState> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to edit projects.' }
+    return { ok: false, message: 'You don’t have permission to edit projects.' }
   }
 
   if (!input.title.trim()) return { ok: false, message: 'Title is required.' }
@@ -111,7 +111,7 @@ export async function deleteProject(id: string): Promise<SaveState> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to delete projects.' }
+    return { ok: false, message: 'You don’t have permission to delete projects.' }
   }
   try {
     const db = createAdminClient()

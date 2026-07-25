@@ -104,7 +104,7 @@ export function BlogPostForm({ post }: { post: BlogPostRow | null }) {
 
         <section className={s.card}>
           <h2 className={s.cardTitle}>Body</h2>
-          <p className={s.hint}>Shown on the full post page at /blog/{slug || 'your-slug'}. Plain text for now \u2014 flag if this should support markdown/rich text instead.</p>
+          <p className={s.hint}>Shown on the full post page at /blog/{slug || 'your-slug'}. Plain text for now — flag if this should support markdown/rich text instead.</p>
           <Field label="Post body" textarea rows={16} value={body} onChange={(v) => { setBody(v); markDirty() }} />
         </section>
 
@@ -144,7 +144,7 @@ export function BlogPostForm({ post }: { post: BlogPostRow | null }) {
           {!msg && dirty && <span className={s.hintInline}>Unsaved changes</span>}
         </div>
         <button type="button" className={`btn btnSolid ${s.saveBtn}`} onClick={save} disabled={pending || !dirty || !title.trim()}>
-          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving\u2026' : 'Save post'}
+          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving…' : 'Save post'}
         </button>
       </div>
     </div>

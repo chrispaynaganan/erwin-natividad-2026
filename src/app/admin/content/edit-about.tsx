@@ -86,7 +86,7 @@ export function EditAbout({ c, edit }: EditorProps) {
             <Field label="Section title" value={ab.highlightsTitle} onChange={(v) => edit((d) => { d.about.highlightsTitle = v })} />
             <div className={s.items}>
               {ab.highlights.map((h, i) => (
-                <ItemShell key={i} title={`${h.year} \u2014 ${h.title}` || `Highlight ${i + 1}`} i={i} count={ab.highlights.length}
+                <ItemShell key={i} title={`${h.year} — ${h.title}` || `Highlight ${i + 1}`} i={i} count={ab.highlights.length}
                   onUp={() => edit((d) => move(d.about.highlights, i, -1))}
                   onDown={() => edit((d) => move(d.about.highlights, i, 1))}
                   onRemove={() => edit((d) => { d.about.highlights.splice(i, 1) })}>

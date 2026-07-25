@@ -13,7 +13,7 @@ export async function savePageRoute(id: string, slug: string): Promise<SaveState
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to edit page URLs.' }
+    return { ok: false, message: 'You don’t have permission to edit page URLs.' }
   }
 
   const cleanSlug = slug.toLowerCase().trim().replace(/^\/+|\/+$/g, '')

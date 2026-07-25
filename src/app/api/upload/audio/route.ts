@@ -39,7 +39,7 @@ export async function POST(req: Request) {
   if (!bucketConfig) return NextResponse.json({ error: 'Unknown audio bucket.' }, { status: 400 })
   if (!(file instanceof File)) return NextResponse.json({ error: 'No file received.' }, { status: 400 })
   if (!/\.m4a$/i.test(file.name) && file.type !== 'audio/mp4') {
-    return NextResponse.json({ error: 'Expected an AAC (.m4a) file \u2014 conversion should happen before upload.' }, { status: 400 })
+    return NextResponse.json({ error: 'Expected an AAC (.m4a) file — conversion should happen before upload.' }, { status: 400 })
   }
   if (file.size > MAX_BYTES) return NextResponse.json({ error: 'Audio file is too large (max 200 MB).' }, { status: 400 })
 

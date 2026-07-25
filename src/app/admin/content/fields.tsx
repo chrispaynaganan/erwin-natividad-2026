@@ -34,8 +34,8 @@ export function Field({ label, value, onChange, textarea, rows, placeholder }: {
 export function LinkField({ label, value, onChange }: { label: string; value: LinkItem; onChange: (v: LinkItem) => void }) {
   return (
     <div className={s.row2}>
-      <Field label={`${label} \u2014 text`} value={value.label} onChange={(label2) => onChange({ ...value, label: label2 })} />
-      <Field label={`${label} \u2014 link`} value={value.href} onChange={(href) => onChange({ ...value, href })} placeholder="/work-with-me" />
+      <Field label={`${label} — text`} value={value.label} onChange={(label2) => onChange({ ...value, label: label2 })} />
+      <Field label={`${label} — link`} value={value.href} onChange={(href) => onChange({ ...value, href })} placeholder="/work-with-me" />
     </div>
   )
 }

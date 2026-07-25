@@ -89,11 +89,11 @@ export function EditHome({ c, edit }: EditorProps) {
           <section className={s.card}>
             <h2 className={s.cardTitle}>Featured Work</h2>
             <HeadFields head={c.home.featuredWork} onChange={(h) => edit((d) => { Object.assign(d.home.featuredWork, h) })} />
-            <LinkField label={'\u201CView all\u201D button'} value={c.home.featuredWork.viewAll} onChange={(v) => edit((d) => { d.home.featuredWork.viewAll = v })} />
+            <LinkField label={'“View all” button'} value={c.home.featuredWork.viewAll} onChange={(v) => edit((d) => { d.home.featuredWork.viewAll = v })} />
             <p className={s.hint}>
-              The 3 project cards shown on the homepage are no longer managed here — they\u2019re pulled
+              The 3 project cards shown on the homepage are no longer managed here — they’re pulled
               live from <strong>Projects admin</strong>. Mark up to three projects as <strong>Featured</strong>{' '}
-              there and they\u2019ll appear on the homepage automatically, ordered by each project\u2019s sort order.
+              there and they’ll appear on the homepage automatically, ordered by each project’s sort order.
             </p>
             <Link href="/admin/projects" className="btn btnOutline">Go to Projects admin</Link>
           </section>

@@ -86,15 +86,15 @@ export function AudioField({ label, value, onChange, folder = 'episodes', bucket
         <button type="button" onClick={() => inputRef.current?.click()} disabled={busy}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 9, border: '1px solid var(--border)', background: 'var(--surface-2)', color: 'var(--text)', font: 'inherit', fontSize: '0.82rem', cursor: busy ? 'wait' : 'pointer' }}>
           {busy ? <IconLoader2 size={15} stroke={1.75} className="spin" /> : <IconUpload size={15} stroke={1.75} />}
-          {stage === 'converting' && `Converting\u2026 ${Math.round(progress * 100)}%`}
-          {stage === 'uploading' && 'Uploading\u2026'}
+          {stage === 'converting' && `Converting… ${Math.round(progress * 100)}%`}
+          {stage === 'uploading' && 'Uploading…'}
           {stage === 'idle' && (value ? 'Replace audio' : 'Upload audio')}
         </button>
         <input ref={inputRef} type="file" accept="audio/*" onChange={onFile} style={{ display: 'none' }} />
       </div>
 
       <span style={{ display: 'block', fontSize: '0.75rem', color: err ? '#C0392B' : 'var(--text-muted)', marginTop: 6 }}>
-        {err ?? hint ?? 'Any audio file works \u2014 it\u2019s converted to AAC (.m4a) in your browser before upload. First conversion loads a ~25MB engine, so it may take a moment.'}
+        {err ?? hint ?? 'Any audio file works — it’s converted to AAC (.m4a) in your browser before upload. First conversion loads a ~25MB engine, so it may take a moment.'}
       </span>
       <style>{`.spin { animation: enspin 0.9s linear infinite; } @keyframes enspin { to { transform: rotate(360deg); } }`}</style>
     </div>

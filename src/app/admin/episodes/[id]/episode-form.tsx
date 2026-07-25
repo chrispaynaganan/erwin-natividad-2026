@@ -249,7 +249,7 @@ export function EpisodeForm({
           )}
         </div>
         <button type="button" className={`btn btnSolid ${s.saveBtn}`} onClick={save} disabled={pending || !dirty || !showId}>
-          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving\u2026' : 'Save episode'}
+          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving…' : 'Save episode'}
         </button>
       </div>
     </div>

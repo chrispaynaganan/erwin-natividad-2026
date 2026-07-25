@@ -16,7 +16,7 @@ export async function saveSiteContent(content: SiteContent): Promise<SaveState> 
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to edit content.' }
+    return { ok: false, message: 'You don’t have permission to edit content.' }
   }
 
   try {
@@ -30,11 +30,11 @@ export async function saveSiteContent(content: SiteContent): Promise<SaveState> 
     // Push the change to every public page that reads this content.
     for (const p of CONTENT_PATHS) revalidatePath(p)
     revalidatePath('/', 'layout')
-    return { ok: true, message: 'Saved \u2014 your changes are now live on the site.' }
+    return { ok: true, message: 'Saved — your changes are now live on the site.' }
   } catch {
     return {
       ok: false,
-      message: 'Saving needs Supabase connected (and the migration run). Your edits are still here on screen \u2014 connect the database to make them stick.',
+      message: 'Saving needs Supabase connected (and the migration run). Your edits are still here on screen — connect the database to make them stick.',
     }
   }
 }

@@ -57,7 +57,7 @@ function Row({ post }: { post: BlogPostRow }) {
       <div className={s.rowActions}>
         <Link href={`/admin/blog/${post.id}`} className="btn btnOutline">Edit</Link>
         <button type="button" className="btn btnOutline" onClick={onDelete} disabled={pending}>
-          {pending ? 'Deleting\u2026' : confirming ? 'Confirm delete?' : 'Delete'}
+          {pending ? 'Deleting…' : confirming ? 'Confirm delete?' : 'Delete'}
         </button>
       </div>
     </div>

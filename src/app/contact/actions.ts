@@ -26,7 +26,7 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
       referral_source: 'contact_form',
     })
     if (error) return { ok: false, message: 'Something went wrong sending your message. Please try again or email directly.' }
-    return { ok: true, message: 'Thanks! Your message is in — I\u2019ll get back to you within 24\u201348 hours.' }
+    return { ok: true, message: 'Thanks! Your message is in — I’ll get back to you within 24–48 hours.' }
   } catch {
     return { ok: false, message: 'Something went wrong. Please try again or email directly.' }
   }

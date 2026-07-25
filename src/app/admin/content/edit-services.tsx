@@ -19,7 +19,7 @@ const TABS: { key: TabKey; label: string }[] = [
 ]
 
 const blankBreakdown = (): BreakdownItem => ({ title: 'New service', tags: [], desc: '', who: '', turnaround: '', includes: [] })
-const blankTier = (): PricingTier => ({ name: 'New package', badge: '', featured: false, pricePrefix: 'From', discountPercent: 0, useCustomPrice: false, customPriceLabel: 'Let\u2019s Talk', desc: '', listLabel: 'Includes:', list: [], cta: 'Book' })
+const blankTier = (): PricingTier => ({ name: 'New package', badge: '', featured: false, pricePrefix: 'From', discountPercent: 0, useCustomPrice: false, customPriceLabel: 'Let’s Talk', desc: '', listLabel: 'Includes:', list: [], cta: 'Book' })
 
 export function EditServices({ c, edit }: EditorProps) {
   const [tab, setTab] = useState<TabKey>('hero')
@@ -58,10 +58,10 @@ export function EditServices({ c, edit }: EditorProps) {
                   <TagsField label="Tag pills" value={it.tags} onChange={(v) => edit((d) => { d.services.breakdown.items[i].tags = v })} />
                   <Field label="Description" textarea value={it.desc} onChange={(v) => edit((d) => { d.services.breakdown.items[i].desc = v })} />
                   <div className={s.row2}>
-                    <Field label={'Who it\u2019s for'} textarea rows={2} value={it.who} onChange={(v) => edit((d) => { d.services.breakdown.items[i].who = v })} />
+                    <Field label={'Who it’s for'} textarea rows={2} value={it.who} onChange={(v) => edit((d) => { d.services.breakdown.items[i].who = v })} />
                     <Field label="Turnaround time" value={it.turnaround} onChange={(v) => edit((d) => { d.services.breakdown.items[i].turnaround = v })} />
                   </div>
-                  <LinesField label={'What\u2019s included'} value={it.includes} onChange={(v) => edit((d) => { d.services.breakdown.items[i].includes = v })} />
+                  <LinesField label={'What’s included'} value={it.includes} onChange={(v) => edit((d) => { d.services.breakdown.items[i].includes = v })} />
                 </ItemShell>
               ))}
               <AddButton label="Add service" onClick={() => edit((d) => { d.services.breakdown.items.push(blankBreakdown()) })} />
@@ -98,7 +98,7 @@ export function EditServices({ c, edit }: EditorProps) {
                       </label>
                     </div>
                     {it.useCustomPrice ? (
-                      <Field label={'Custom price text (shown instead of a computed price, e.g. \u201CLet\u2019s Talk\u201D)'} value={it.customPriceLabel} onChange={(v) => edit((d) => { d.services.pricing.items[i].customPriceLabel = v })} placeholder="Let\u2019s Talk" />
+                      <Field label={'Custom price text (shown instead of a computed price, e.g. “Let’s Talk”)'} value={it.customPriceLabel} onChange={(v) => edit((d) => { d.services.pricing.items[i].customPriceLabel = v })} placeholder="Let’s Talk" />
                     ) : (
                       <Field label="Discount % (0 = no discount shown)" value={String(it.discountPercent)} onChange={(v) => edit((d) => { d.services.pricing.items[i].discountPercent = Number(v.replace(/[^0-9.]/g, '')) || 0 })} placeholder="10" />
                     )}

@@ -59,14 +59,14 @@ export function ImageField({ label, value, onChange, folder = 'misc', bucket = '
         <button type="button" onClick={() => inputRef.current?.click()} disabled={busy}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 9, border: '1px solid var(--border)', background: 'var(--surface-2)', color: 'var(--text)', font: 'inherit', fontSize: '0.82rem', cursor: busy ? 'wait' : 'pointer' }}>
           {busy ? <IconLoader2 size={15} stroke={1.75} className="spin" /> : <IconUpload size={15} stroke={1.75} />}
-          {busy ? 'Uploading\u2026' : 'Upload image'}
+          {busy ? 'Uploading…' : 'Upload image'}
         </button>
         <input ref={inputRef} type="file" accept="image/*" onChange={onFile} style={{ display: 'none' }} />
 
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={'\u2026or paste an image URL'}
+          placeholder={'…or paste an image URL'}
           style={{ flex: 1, minWidth: 200, padding: '9px 12px', borderRadius: 9, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', font: 'inherit', fontSize: '0.85rem' }}
         />
       </div>

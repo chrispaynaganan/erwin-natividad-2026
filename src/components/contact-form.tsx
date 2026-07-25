@@ -42,7 +42,7 @@ export function ContactForm() {
       {state && <p className={state.ok ? s.success : s.error}>{state.message}</p>}
 
       <button type="submit" className="btn btnSolid" disabled={pending} style={{ width: '100%', marginTop: 6 }}>
-        <IconSend size={17} stroke={1.75} /> {pending ? 'Sending\u2026' : 'Let\u2019s Talk'}
+        <IconSend size={17} stroke={1.75} /> {pending ? 'Sending…' : 'Let’s Talk'}
       </button>
     </form>
   )

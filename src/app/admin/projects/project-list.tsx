@@ -9,7 +9,7 @@ export function ProjectList({ projects }: { projects: ProjectRow[] }) {
   const [pending, start] = useTransition()
 
   function onDelete(id: string, title: string) {
-    if (!confirm(`Delete "${title}"? This can\u2019t be undone.`)) return
+    if (!confirm(`Delete "${title}"? This can’t be undone.`)) return
     start(() => {
       deleteProject(id).then((res) => {
         if (res && !res.ok) alert(res.message)
@@ -18,7 +18,7 @@ export function ProjectList({ projects }: { projects: ProjectRow[] }) {
   }
 
   if (projects.length === 0) {
-    return <p style={{ color: 'var(--color-text-muted)' }}>No projects yet \u2014 create your first one.</p>
+    return <p style={{ color: 'var(--color-text-muted)' }}>No projects yet — create your first one.</p>
   }
 
   return (

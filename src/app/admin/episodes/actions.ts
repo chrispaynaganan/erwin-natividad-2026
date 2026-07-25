@@ -28,7 +28,7 @@ export async function saveEpisode(input: EpisodeInput): Promise<SaveState> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to edit episodes.' }
+    return { ok: false, message: 'You don’t have permission to edit episodes.' }
   }
 
   if (!input.title.trim()) return { ok: false, message: 'Title is required.' }
@@ -85,7 +85,7 @@ export async function deleteEpisode(id: string): Promise<SaveState> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to delete episodes.' }
+    return { ok: false, message: 'You don’t have permission to delete episodes.' }
   }
   const db = createAdminClient()
 

@@ -9,9 +9,9 @@ export const metadata = {
 
 const steps = [
   { t: 'Tell me about your project', d: 'Fill out the short form — your goals, the challenge, and a rough timeline.' },
-  { t: 'I review and reach out', d: 'I\u2019ll email you within 24\u201348 hours to confirm a call time that works for us both.' },
-  { t: 'We have a discovery call', d: 'A relaxed conversation about your goals, scope, and whether we\u2019re the right fit. No pressure.' },
-  { t: 'You get a tailored plan', d: 'If it\u2019s a match, I\u2019ll send a clear quote and next steps. Only then do we talk numbers.' },
+  { t: 'I review and reach out', d: 'I’ll email you within 24–48 hours to confirm a call time that works for us both.' },
+  { t: 'We have a discovery call', d: 'A relaxed conversation about your goals, scope, and whether we’re the right fit. No pressure.' },
+  { t: 'You get a tailored plan', d: 'If it’s a match, I’ll send a clear quote and next steps. Only then do we talk numbers.' },
 ]
 
 export default function WorkWithMePage() {

@@ -98,7 +98,7 @@ export function ProjectsExplorer({ projects, categories }: { projects: Project[]
                 <div className={s.filterOpts}>
                   <Opt val="newest" label="Newest" on={sort === 'newest'} set={() => { setSort(sort === 'newest' ? 'none' : 'newest'); setVisible(PAGE) }} />
                   <Opt val="oldest" label="Oldest" on={sort === 'oldest'} set={() => { setSort(sort === 'oldest' ? 'none' : 'oldest'); setVisible(PAGE) }} />
-                  <Opt val="az" label="A \u2013 Z" on={sort === 'az'} set={() => { setSort(sort === 'az' ? 'none' : 'az'); setVisible(PAGE) }} />
+                  <Opt val="az" label="A – Z" on={sort === 'az'} set={() => { setSort(sort === 'az' ? 'none' : 'az'); setVisible(PAGE) }} />
                 </div>
               </div>
 
@@ -107,7 +107,7 @@ export function ProjectsExplorer({ projects, categories }: { projects: Project[]
                 <div className={s.filterOpts}>
                   <Opt val="any" label="Any" on={duration === 'any'} set={() => { setDuration('any'); setVisible(PAGE) }} />
                   <Opt val="lt5" label="Under 5 min" on={duration === 'lt5'} set={() => { setDuration('lt5'); setVisible(PAGE) }} />
-                  <Opt val="5to6" label="5 \u2013 6 min" on={duration === '5to6'} set={() => { setDuration('5to6'); setVisible(PAGE) }} />
+                  <Opt val="5to6" label="5 – 6 min" on={duration === '5to6'} set={() => { setDuration('5to6'); setVisible(PAGE) }} />
                   <Opt val="gt6" label="Over 6 min" on={duration === 'gt6'} set={() => { setDuration('gt6'); setVisible(PAGE) }} />
                 </div>
               </div>

@@ -37,8 +37,8 @@ export function ShowList({
 
   function onDeleteShow(id: string, title: string, count: number) {
     const warning = count
-      ? `Delete "${title}"? This will also delete its ${count} episode${count === 1 ? '' : 's'}. This can\u2019t be undone.`
-      : `Delete "${title}"? This can\u2019t be undone.`
+      ? `Delete "${title}"? This will also delete its ${count} episode${count === 1 ? '' : 's'}. This can’t be undone.`
+      : `Delete "${title}"? This can’t be undone.`
     if (!confirm(warning)) return
     start(() => {
       deleteShow(id).then((res) => { if (res && !res.ok) alert(res.message) })
@@ -46,7 +46,7 @@ export function ShowList({
   }
 
   function onDeleteEpisode(id: string, title: string) {
-    if (!confirm(`Delete "${title}"? This can\u2019t be undone.`)) return
+    if (!confirm(`Delete "${title}"? This can’t be undone.`)) return
     start(() => {
       deleteEpisode(id).then((res) => { if (res && !res.ok) alert(res.message) })
     })

@@ -24,7 +24,7 @@ const fmtDateTime = (iso: string) =>
   new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
 
 const fmtPreferred = (r: BookingRow) =>
-  [r.preferred_date, r.preferred_time, r.timezone].filter(Boolean).join(' \u00b7 ') || '\u2014'
+  [r.preferred_date, r.preferred_time, r.timezone].filter(Boolean).join(' \u00b7 ') || '—'
 
 export function BookingsManager({ initial, weeklyCap, canEditCap }: {
   initial: BookingRow[]; weeklyCap: number; canEditCap: boolean
@@ -167,7 +167,7 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
           ))}
           <span className={s.searchWrap}>
             <IconSearch size={15} stroke={1.75} className={s.searchIcon} />
-            <input className={s.search} placeholder={'Search name, email, company\u2026'} value={query}
+            <input className={s.search} placeholder={'Search name, email, company…'} value={query}
               onChange={(e) => setQuery(e.target.value)} aria-label="Search bookings" />
           </span>
         </div>
@@ -177,7 +177,7 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
         <p className={s.empty}>
           {tab === 'active' && 'No active requests right now. New submissions from the contact and Work With Me forms will appear here.'}
           {tab === 'waitlist' && 'The waitlist is empty.'}
-          {tab === 'archive' && 'Nothing archived yet \u2014 completed and cancelled requests end up here.'}
+          {tab === 'archive' && 'Nothing archived yet — completed and cancelled requests end up here.'}
         </p>
       ) : (
         <div className={s.list}>
@@ -214,7 +214,7 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
                     </button>
                   )}
 
-                  <a className={s.replyBtn} href={`mailto:${r.email}?subject=${encodeURIComponent('Re: your request \u2014 Erwin Natividad')}`}>
+                  <a className={s.replyBtn} href={`mailto:${r.email}?subject=${encodeURIComponent('Re: your request — Erwin Natividad')}`}>
                     <IconMail size={16} stroke={1.75} /> Reply
                   </a>
                 </div>
@@ -222,24 +222,24 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
                 {open && (
                   <div className={s.detail}>
                     <div className={s.detailGrid}>
-                      <div><span className={s.dLabel}>Company</span><span className={s.dValue}>{r.company || '\u2014'}</span></div>
+                      <div><span className={s.dLabel}>Company</span><span className={s.dValue}>{r.company || '—'}</span></div>
                       <div><span className={s.dLabel}>Preferred time</span><span className={s.dValue}>{fmtPreferred(r)}</span></div>
                       <div>
                         <span className={s.dLabel}>Phone</span>
                         <span className={s.dValue}>{r.phone
                           ? <a className={s.dLink} href={`tel:${r.phone}`}><IconPhone size={14} stroke={1.75} /> {r.phone}</a>
-                          : '\u2014'}</span>
+                          : '—'}</span>
                       </div>
                       <div>
                         <span className={s.dLabel}>Website</span>
                         <span className={s.dValue}>{r.website
                           ? <a className={s.dLink} href={r.website} target="_blank" rel="noreferrer"><IconWorld size={14} stroke={1.75} /> {r.website}</a>
-                          : '\u2014'}</span>
+                          : '—'}</span>
                       </div>
                     </div>
                     <div className={s.message}>
                       <span className={s.dLabel}>Message</span>
-                      <p className={s.messageText}>{r.message || '\u2014'}</p>
+                      <p className={s.messageText}>{r.message || '—'}</p>
                     </div>
                   </div>
                 )}

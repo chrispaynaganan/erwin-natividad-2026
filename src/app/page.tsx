@@ -72,7 +72,7 @@ export default async function HomePage() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: 'inherit' }}
               />
             ) : (
-              'Erwin\u2019s portrait'
+              'Erwin’s portrait'
             )}
           </div>
         </div>

@@ -143,7 +143,7 @@ export function ShowForm({ show }: { show: Show | null }) {
           {!msg && dirty && <span className={s.hintInline}>Unsaved changes</span>}
         </div>
         <button type="button" className={`btn btnSolid ${s.saveBtn}`} onClick={save} disabled={pending || !dirty || !title.trim()}>
-          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving\u2026' : 'Save show'}
+          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving…' : 'Save show'}
         </button>
       </div>
     </div>

@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     }
   } catch (e) {
     console.error('[upload] conversion failed:', e)
-    return NextResponse.json({ error: 'Could not process this image \u2014 is the file valid?' }, { status: 422 })
+    return NextResponse.json({ error: 'Could not process this image — is the file valid?' }, { status: 422 })
   }
 
   const path = `${folder}/${crypto.randomUUID()}.${ext}`

@@ -67,7 +67,7 @@ function normalizePricing(content: SiteContent): SiteContent {
       discountPercent: typeof tier.discountPercent === 'number' ? tier.discountPercent : 0,
       pricePrefix: typeof tier.pricePrefix === 'string' ? tier.pricePrefix : (typeof tier.from === 'string' ? tier.from : 'From'),
       useCustomPrice: typeof tier.useCustomPrice === 'boolean' ? tier.useCustomPrice : false,
-      customPriceLabel: typeof tier.customPriceLabel === 'string' ? tier.customPriceLabel : 'Let\u2019s Talk',
+      customPriceLabel: typeof tier.customPriceLabel === 'string' ? tier.customPriceLabel : 'Let’s Talk',
     }
   })
 

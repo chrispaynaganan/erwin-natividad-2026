@@ -73,7 +73,7 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
 
   function savePassword() {
     if (newPassword !== confirmPassword) {
-      setPasswordMsg({ ok: false, message: 'Passwords don\u2019t match.' })
+      setPasswordMsg({ ok: false, message: 'Passwords don’t match.' })
       return
     }
     startPassword(async () => {
@@ -91,7 +91,7 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
         <label className={s.label}>Full name</label>
         <input className={s.input} value={fullName} onChange={(e) => setFullName(e.target.value)} />
         <button type="button" className="btn btnSolid" style={{ marginTop: 10 }} onClick={saveName} disabled={savingName}>
-          {savingName ? 'Saving\u2026' : 'Save name'}
+          {savingName ? 'Saving…' : 'Save name'}
         </button>
         <StatusLine msg={nameMsg} />
       </div>
@@ -102,7 +102,7 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
         <label className={s.label}>Email address</label>
         <input className={s.input} type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
         <button type="button" className="btn btnOutline" style={{ marginTop: 10 }} onClick={saveEmail} disabled={savingEmail}>
-          {savingEmail ? 'Sending\u2026' : 'Update email'}
+          {savingEmail ? 'Sending…' : 'Update email'}
         </button>
         <StatusLine msg={emailMsg} />
       </div>
@@ -120,7 +120,7 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
         </div>
       </div>
       <button type="button" className="btn btnOutline" onClick={savePassword} disabled={savingPassword || !newPassword}>
-        {savingPassword ? 'Updating\u2026' : 'Update password'}
+        {savingPassword ? 'Updating…' : 'Update password'}
       </button>
       <StatusLine msg={passwordMsg} />
     </section>
@@ -152,7 +152,7 @@ function NotificationsSection({ profile }: { profile: Profile }) {
     <section className={s.card}>
       <h2 style={{ marginTop: 0 }}>Notifications</h2>
       <p className={s.hint} style={{ marginTop: -8, marginBottom: 16 }}>
-        Email alerts require Resend to be configured (RESEND_API_KEY / BOOKING_NOTIFY_EMAIL) — these toggles are ready for when that\u2019s set up.
+        Email alerts require Resend to be configured (RESEND_API_KEY / BOOKING_NOTIFY_EMAIL) — these toggles are ready for when that’s set up.
       </p>
 
       <label className={s.checkboxRow}>
@@ -169,7 +169,7 @@ function NotificationsSection({ profile }: { profile: Profile }) {
       </label>
 
       <button type="button" className="btn btnSolid" onClick={save} disabled={pending}>
-        {pending ? 'Saving\u2026' : 'Save notifications'}
+        {pending ? 'Saving…' : 'Save notifications'}
       </button>
       <StatusLine msg={msg} />
     </section>
@@ -214,10 +214,10 @@ function DefaultsSection({ profile }: { profile: Profile }) {
         </div>
       </div>
       <p className={s.hint} style={{ marginBottom: 16 }}>
-        Saved here for now — other admin pages (Bookings, Episodes, etc.) don\u2019t read this yet; wiring each of those up is a separate follow-up.
+        Saved here for now — other admin pages (Bookings, Episodes, etc.) don’t read this yet; wiring each of those up is a separate follow-up.
       </p>
       <button type="button" className="btn btnSolid" onClick={save} disabled={pending}>
-        {pending ? 'Saving\u2026' : 'Save defaults'}
+        {pending ? 'Saving…' : 'Save defaults'}
       </button>
       <StatusLine msg={msg} />
     </section>

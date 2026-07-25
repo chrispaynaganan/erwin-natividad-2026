@@ -15,7 +15,7 @@ export async function setBookingStatus(id: string, status: BookingStatus): Promi
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to manage bookings.' }
+    return { ok: false, message: 'You don’t have permission to manage bookings.' }
   }
   if (!BOOKING_STATUSES.includes(status)) {
     return { ok: false, message: 'Invalid status.' }
@@ -38,7 +38,7 @@ export async function promoteFromWaitlist(id: string): Promise<ActionResult> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to manage bookings.' }
+    return { ok: false, message: 'You don’t have permission to manage bookings.' }
   }
 
   const supabase = await createClient()
@@ -63,7 +63,7 @@ async function notifyPromotion(row: BookingRow) {
   const to = process.env.BOOKING_NOTIFY_EMAIL
   const from = process.env.BOOKING_FROM_EMAIL || 'Erwin Natividad <onboarding@resend.dev>'
   if (!key || !to) {
-    console.warn('[bookings] Promotion email skipped \u2014 set RESEND_API_KEY and BOOKING_NOTIFY_EMAIL to enable.')
+    console.warn('[bookings] Promotion email skipped — set RESEND_API_KEY and BOOKING_NOTIFY_EMAIL to enable.')
     return
   }
   const when = [row.preferred_date, row.preferred_time, row.timezone].filter(Boolean).join(' \u00b7 ') || 'No preference given'
@@ -72,19 +72,19 @@ async function notifyPromotion(row: BookingRow) {
 
 Name:       ${row.full_name}
 Email:      ${row.email}
-Company:    ${row.company || '\u2014'}
-Looking for: ${row.service_interest || '\u2014'}
+Company:    ${row.company || '—'}
+Looking for: ${row.service_interest || '—'}
 Preferred:  ${when}
 Received:   ${new Date(row.created_at).toLocaleString('en-US')}
 
 ${row.message || ''}
 
-\u2014 Promoted from the admin panel. Reply directly to reach ${row.full_name}.`
+— Promoted from the admin panel. Reply directly to reach ${row.full_name}.`
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from, to, reply_to: row.email, subject: `Waitlist promoted \u2014 ${row.full_name}`, text: body }),
+      body: JSON.stringify({ from, to, reply_to: row.email, subject: `Waitlist promoted — ${row.full_name}`, text: body }),
     })
     if (!res.ok) console.error('[bookings] Resend responded', res.status, await res.text())
   } catch (e) {

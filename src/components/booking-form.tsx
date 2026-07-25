@@ -5,7 +5,7 @@ import { submitBooking, type BookingState } from '@/app/work-with-me/actions'
 import s from '@/app/work-with-me/work-with-me.module.css'
 
 const projectTypes = ['Voice Over Recording', 'Voice Coaching', 'Demo Reel Production', 'Script Consultation', 'Not sure yet / Other']
-const budgets = ['Not sure yet', 'Under $250', '$250 \u2013 $500', '$500 \u2013 $1,000', '$1,000+']
+const budgets = ['Not sure yet', 'Under $250', '$250 – $500', '$500 – $1,000', '$1,000+']
 const times = ['Flexible', 'Morning', 'Afternoon', 'Evening']
 
 export function BookingForm() {
@@ -89,7 +89,7 @@ export function BookingForm() {
       {state && <p className={state.ok ? s.success : s.error}>{state.message}</p>}
 
       <button type="submit" className="btn btnSolid" disabled={pending} style={{ width: '100%', marginTop: 6 }}>
-        <IconCalendarEvent size={17} stroke={1.75} /> {pending ? 'Sending\u2026' : 'Request My Call'}
+        <IconCalendarEvent size={17} stroke={1.75} /> {pending ? 'Sending…' : 'Request My Call'}
       </button>
       <p className={s.fine}>This sends a request, not a confirmed booking &mdash; and you won&rsquo;t be charged anything.</p>
     </form>

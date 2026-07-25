@@ -22,7 +22,7 @@ export async function saveBlogPost(input: BlogPostInput): Promise<SaveState> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to edit blog posts.' }
+    return { ok: false, message: 'You don’t have permission to edit blog posts.' }
   }
 
   if (!input.title.trim()) return { ok: false, message: 'Title is required.' }
@@ -77,7 +77,7 @@ export async function deleteBlogPost(id: string): Promise<SaveState> {
   try {
     await requireRole('editor')
   } catch {
-    return { ok: false, message: 'You don\u2019t have permission to delete blog posts.' }
+    return { ok: false, message: 'You don’t have permission to delete blog posts.' }
   }
   try {
     const db = createAdminClient()

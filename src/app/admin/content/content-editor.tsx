@@ -114,7 +114,7 @@ export function ContentEditor({ initial, initialPage = 'home' }: { initial: Site
           {!msg && dirty && <span className={s.hintInline}>Unsaved changes</span>}
         </div>
         <button type="button" className={`btn btnSolid ${s.saveBtn}`} onClick={save} disabled={pending || !dirty}>
-          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving\u2026' : 'Save changes'}
+          <IconDeviceFloppy size={16} stroke={1.75} /> {pending ? 'Saving…' : 'Save changes'}
         </button>
       </div>
     </div>
