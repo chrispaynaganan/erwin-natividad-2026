@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { IconTrash, IconPlus, IconArrowUp, IconArrowDown } from '@tabler/icons-react'
 import type { SiteContent, LinkItem, SectionHead, FaqItem } from '@/lib/content/site-content'
 import s from './content.module.css'
@@ -40,13 +41,55 @@ export function LinkField({ label, value, onChange }: { label: string; value: Li
   )
 }
 
-export function TagsField({ label, value, onChange }: { label: string; value: string[]; onChange: (v: string[]) => void }) {
+const parseTags = (raw: string) => raw.split(',').map((t) => t.trim()).filter(Boolean)
+
+/**
+ * Comma-separated tag editor.
+ *
+ * The previous version derived the input's value straight from the array on
+ * every render: `value.join(', ')` in, `split/trim/filter` out. Typing a comma
+ * produced an empty trailing element that `filter(Boolean)` dropped, so the
+ * comma disappeared as you typed it — and `trim()` then ate the following
+ * space. The array round-trip was rewriting the field mid-keystroke.
+ *
+ * Now the raw text is held locally and only normalised on blur. The parent
+ * still gets parsed tags on every change, so dirty-tracking is unaffected.
+ */
+export function TagsField({ label, value, onChange, placeholder }: {
+  label: string; value: string[]; onChange: (v: string[]) => void; placeholder?: string
+}) {
+  const [draft, setDraft] = useState(() => value.join(', '))
+  const [focused, setFocused] = useState(false)
+  const canonical = value.join(', ')
+
+  // Re-sync only when the value changes from outside (switching pages, undo)
+  // and never while the field has focus.
+  useEffect(() => {
+    if (!focused) setDraft(canonical)
+  }, [canonical, focused])
+
   return (
-    <Field
-      label={`${label} (comma-separated)`}
-      value={value.join(', ')}
-      onChange={(raw) => onChange(raw.split(',').map((t) => t.trim()).filter(Boolean))}
-    />
+    <label className={s.field}>
+      <span className={s.label}>{label} (comma-separated)</span>
+      <input
+        className={s.input}
+        value={draft}
+        placeholder={placeholder ?? 'Commercial, Narration, eLearning'}
+        onFocus={() => setFocused(true)}
+        onChange={(e) => { setDraft(e.target.value); onChange(parseTags(e.target.value)) }}
+        onBlur={(e) => {
+          setFocused(false)
+          const tags = parseTags(e.target.value)
+          onChange(tags)
+          setDraft(tags.join(', '))
+        }}
+      />
+      {value.length > 0 && (
+        <span className={s.chips}>
+          {value.map((t, i) => <span key={`${t}-${i}`} className={s.chip}>{t}</span>)}
+        </span>
+      )}
+    </label>
   )
 }
 

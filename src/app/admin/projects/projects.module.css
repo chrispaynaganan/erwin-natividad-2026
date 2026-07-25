@@ -1,0 +1,78 @@
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; }
+.sub { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; max-width: 62ch; }
+
+.crumbs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+.crumbLink { color: var(--text-muted); text-decoration: none; }
+.crumbLink:hover { color: var(--accent-soft); }
+.crumbSep { opacity: 0.45; }
+.crumbCurrent { color: var(--text); }
+
+.backLink {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; white-space: nowrap;
+  color: var(--text-muted); text-decoration: none; padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  font: inherit; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease;
+}
+.backLink:hover { border-color: var(--accent-soft); color: var(--accent-soft); }
+
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.metric { display: flex; flex-direction: column; gap: 2px; padding: 0.875rem 1rem; border-radius: 8px; background: var(--surface-2); }
+.metricLabel { font-size: 0.8125rem; color: var(--text-muted); }
+.metricValue { font-size: 1.5rem; font-weight: 500; color: var(--text); line-height: 1.2; }
+.metricTotal { font-size: 0.875rem; font-weight: 400; color: var(--text-muted); margin-left: 5px; }
+
+.notice { font-size: 0.8125rem; margin: -6px 0 16px; display: flex; align-items: center; gap: 6px; }
+.noticeWarn { color: #C2620F; }
+[data-theme="dark"] .noticeWarn { color: #E89A4F; }
+
+.empty { color: var(--text-muted); font-size: 0.9rem; padding: 24px 0; }
+
+.tableWrap { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.8125rem; }
+.table th {
+  text-align: left; font-weight: 500; color: var(--text-muted);
+  padding: 10px 8px; border-bottom: 1px solid var(--border);
+}
+.table th:first-child, .titleCell { padding-left: 16px; }
+.titleCol { width: 40%; }
+.actionCol { width: 12%; }
+
+.row td { padding: 11px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.row:last-child td { border-bottom: none; }
+.row:hover { background: var(--surface-2); }
+
+.title { display: block; color: var(--text); text-decoration: none; }
+.row:hover .title { color: var(--accent-soft); }
+.meta { display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+.pill {
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap;
+}
+.published { color: #2E7D32; background: rgba(46,125,50,0.1); border-color: rgba(46,125,50,0.25); }
+.draft { color: var(--text-muted); background: var(--surface-2); border-color: var(--border); }
+.scheduled { color: #C2620F; background: rgba(194,98,15,0.1); border-color: rgba(194,98,15,0.25); }
+.archived { color: var(--text-muted); background: transparent; border-color: var(--border); }
+[data-theme="dark"] .published { color: #97C459; background: rgba(151,196,89,0.12); }
+[data-theme="dark"] .scheduled { color: #E89A4F; background: rgba(232,154,79,0.12); }
+
+.flag { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; color: var(--accent-soft); }
+.flagOff { color: var(--text-muted); }
+.overflow { color: #C2620F; }
+[data-theme="dark"] .overflow { color: #E89A4F; }
+
+.del {
+  background: none; border: 1px solid transparent; border-radius: 6px; cursor: pointer;
+  font: inherit; font-size: 0.8rem; color: var(--text-muted); padding: 4px 8px;
+}
+.del:hover { color: #C0392B; border-color: #C0392B; }
+.del:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.actionCell { text-align: right; padding-right: 16px; }
+
+@media (prefers-reduced-motion: reduce) { .backLink { transition: none; } }
+@media (max-width: 720px) {
+  .table { table-layout: auto; }
+  .table th:nth-child(4), .row td:nth-child(4) { display: none; }
+}

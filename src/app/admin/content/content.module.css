@@ -147,3 +147,10 @@ textarea.input { resize: vertical; line-height: 1.5; }
 .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.75rem; color: var(--text-muted); }
 .legendItem { display: inline-flex; align-items: center; gap: 5px; }
 .legendItem .dot { margin-left: 0; }
+
+/* Parsed-tag preview under TagsField — confirms how the commas split. */
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.chip {
+  font-size: 0.72rem; padding: 2px 8px; border-radius: 999px;
+  color: var(--tag-text); background: var(--tag-bg); border: 1px solid var(--tag-border);
+}
