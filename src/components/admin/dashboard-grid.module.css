@@ -1,0 +1,209 @@
+.wrap {
+  margin-top: 24px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.addMenuWrap {
+  position: relative;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addBtn:hover:not(:disabled) { border-color: var(--text-muted); }
+.addBtn:disabled { opacity: 0.5; cursor: default; }
+
+.addMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  min-width: 200px;
+  padding: 6px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.addMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+.addMenuItem:hover { background: var(--surface-2); }
+
+.addMenuEmpty {
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Static (pre-mount) fallback grid — visually similar to the real grid at
+   its default layout, just without drag/resize wiring yet. */
+.staticGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.staticGrid .card { height: 100%; }
+
+.grid {
+  position: relative;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 18px;
+  border-radius: var(--radius, 16px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dragHandle {
+  display: flex;
+  color: var(--text-muted);
+  cursor: grab;
+  flex-shrink: 0;
+}
+.dragHandle:active { cursor: grabbing; }
+
+.cardIcon {
+  display: flex;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.removeBtn:hover { background: var(--surface-2); color: #B3261E; }
+
+.cardBody {
+  flex: 1;
+  margin-top: 12px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.description {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.noAccess {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.metricGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 64px;
+}
+
+.metricValue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.metricLabel {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent-soft);
+  flex-shrink: 0;
+}
+.cardLink:hover { color: var(--accent); }
+
+/* react-grid-layout's default resize handle is a bare corner triangle glyph
+   with no theming — restyle it to match the site instead of overriding just
+   its color. */
+:global(.react-resizable-handle) {
+  opacity: 0.5;
+}
+:global(.react-grid-item:hover .react-resizable-handle) {
+  opacity: 1;
+}
+:global(.react-grid-item.react-grid-placeholder) {
+  background: var(--accent) !important;
+  opacity: 0.15 !important;
+  border-radius: var(--radius, 16px) !important;
+}
