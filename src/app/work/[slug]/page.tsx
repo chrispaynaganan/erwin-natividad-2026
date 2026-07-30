@@ -9,7 +9,7 @@ import { IconCalendar, IconBriefcase, IconChevronLeft, IconChevronRight, IconArr
 // module (per the "site-url.ts" references elsewhere in the project, e.g.
 // the SEO editor). If it's actually a function there, change the line below
 // to `const siteUrl = getSiteUrl()` (or whatever the real export is called).
-import { siteUrl } from '@/lib/site-url'
+import { SITE_URL } from '@/lib/site-url'
 import s from './detail.module.css'
 
 export async function generateStaticParams() {
@@ -50,7 +50,7 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
 
           <div className={s.titleRow}>
             <h1 className={s.title}>{p.title}</h1>
-            <ShareButton url={`${siteUrl}/work/${p.slug}`} title={p.title} />
+            <ShareButton url={`${SITE_URL}/work/${p.slug}`} title={p.title} />
           </div>
 
           <p className={s.summary}>{p.desc}</p>
