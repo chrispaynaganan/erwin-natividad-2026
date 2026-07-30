@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import type { SessionProfile } from '@/lib/auth'
 import type { ThemeMode } from '@/lib/content/site-content'
-import { saveProfile, updateEmail, updatePassword, saveThemeMode, type SaveState } from './actions'
+import { saveProfile, updateEmail, updatePassword, saveThemeMode, saveCalendlyUrl, type SaveState } from './actions'
 import s from './settings.module.css'
 
 type Profile = SessionProfile['profile']
@@ -31,7 +31,9 @@ function StatusLine({ msg }: { msg: SaveState }) {
   return <p className={msg.ok ? s.statusOk : s.statusErr}>{msg.message}</p>
 }
 
-export function SettingsForm({ email, profile, themeMode }: { email: string; profile: Profile; themeMode: ThemeMode }) {
+export function SettingsForm({
+  email, profile, themeMode, calendlyUrl,
+}: { email: string; profile: Profile; themeMode: ThemeMode; calendlyUrl: string }) {
   const [active, setActive] = useState<Tab>('Profile')
 
   return (
@@ -53,7 +55,7 @@ export function SettingsForm({ email, profile, themeMode }: { email: string; pro
 
       {active === 'Profile' && <ProfileSection email={email} profile={profile} />}
       {active === 'Notifications' && <NotificationsSection profile={profile} />}
-      {active === 'Defaults' && <DefaultsSection profile={profile} />}
+      {active === 'Defaults' && <DefaultsSection profile={profile} calendlyUrl={calendlyUrl} />}
       {active === 'Appearance' && <AppearanceSection themeMode={themeMode} />}
     </>
   )
@@ -197,11 +199,15 @@ function NotificationsSection({ profile }: { profile: Profile }) {
   )
 }
 
-function DefaultsSection({ profile }: { profile: Profile }) {
+function DefaultsSection({ profile, calendlyUrl }: { profile: Profile; calendlyUrl: string }) {
   const [timezone, setTimezone] = useState(profile.timezone)
   const [dateFormat, setDateFormat] = useState(profile.date_format)
   const [pending, start] = useTransition()
   const [msg, setMsg] = useState<SaveState>(null)
+
+  const [calendly, setCalendly] = useState(calendlyUrl)
+  const [savingCalendly, startCalendly] = useTransition()
+  const [calendlyMsg, setCalendlyMsg] = useState<SaveState>(null)
 
   function save() {
     start(async () => {
@@ -214,6 +220,12 @@ function DefaultsSection({ profile }: { profile: Profile }) {
         notify_new_contact: profile.notify_new_contact,
       })
       setMsg(res)
+    })
+  }
+
+  function saveCalendly() {
+    startCalendly(async () => {
+      setCalendlyMsg(await saveCalendlyUrl(calendly))
     })
   }
 
@@ -241,6 +253,27 @@ function DefaultsSection({ profile }: { profile: Profile }) {
         {pending ? 'Saving…' : 'Save defaults'}
       </button>
       <StatusLine msg={msg} />
+
+      <hr className={s.hr} />
+
+      <div className={s.field}>
+        <label className={s.label}>Discovery Call link (Calendly)</label>
+        <input
+          className={s.input}
+          value={calendly}
+          onChange={(e) => setCalendly(e.target.value)}
+          placeholder="https://calendly.com/your-handle/discovery-call"
+        />
+        <p className={s.hint} style={{ marginTop: 6 }}>
+          This is the scheduling widget shown on the public Work With Me page. The weekly booking
+          limit itself is set separately, directly on this event in Calendly (Availability →
+          Limit the frequency of bookings) — changing this link doesn’t affect that limit.
+        </p>
+        <button type="button" className="btn btnSolid" style={{ marginTop: 10 }} onClick={saveCalendly} disabled={savingCalendly}>
+          {savingCalendly ? 'Saving…' : 'Save Calendly link'}
+        </button>
+        <StatusLine msg={calendlyMsg} />
+      </div>
     </section>
   )
 }

@@ -1,5 +1,6 @@
 import { Reveal } from '@/components/reveal'
 import CalendlyEmbed from '@/components/calendly-embed'
+import { createPublicClient } from '@/lib/supabase/public'
 import s from './work-with-me.module.css'
 
 export const metadata = {
@@ -14,7 +15,19 @@ const steps = [
   { t: 'You get a tailored plan', d: 'If it’s a match, I’ll send a clear quote and next steps. Only then do we talk numbers.' },
 ]
 
-export default function WorkWithMePage() {
+// Editable in /admin/settings (Defaults tab) → settings.calendly_url. Falls
+// back to NEXT_PUBLIC_CALENDLY_URL so local dev / a fresh deploy still works
+// before an admin has set it through the dashboard.
+async function getCalendlyUrl(): Promise<string | undefined> {
+  const supabase = createPublicClient()
+  const { data } = await supabase.from('settings').select('value').eq('key', 'calendly_url').maybeSingle()
+  const fromDb = typeof data?.value === 'string' ? data.value.trim() : ''
+  return fromDb || process.env.NEXT_PUBLIC_CALENDLY_URL
+}
+
+export default async function WorkWithMePage() {
+  const calendlyUrl = await getCalendlyUrl()
+
   return (
     <main>
       <section className={`${s.hero} container`}>
@@ -25,7 +38,7 @@ export default function WorkWithMePage() {
 
       <section className="container">
         <div className={s.layout}>
-          <Reveal><CalendlyEmbed /></Reveal>
+          <Reveal><CalendlyEmbed url={calendlyUrl} /></Reveal>
 
           <aside className={s.side}>
             <Reveal delay={60}>

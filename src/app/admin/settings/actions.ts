@@ -94,3 +94,29 @@ export async function saveThemeMode(mode: ThemeMode): Promise<SaveState> {
   revalidatePath('/admin/settings')
   return { ok: true, message: 'Appearance updated.' }
 }
+
+// Discovery Call Calendly link (Defaults tab). Plain key/value row in
+// `settings` — same simple pattern as booking_provider / the old
+// discovery_weekly_cap, rather than the structured SITE_CONTENT_KEY blob
+// themeMode lives in, since this is closer to a single config value than
+// editable page copy. is_public stays true (set at seed time) so the
+// public /work-with-me page can read it straight through the anon client.
+export async function saveCalendlyUrl(url: string): Promise<SaveState> {
+  await requireRole('editor')
+
+  const trimmed = url.trim()
+  if (trimmed && !/^https:\/\/calendly\.com\//.test(trimmed)) {
+    return { ok: false, message: 'That doesn’t look like a Calendly link — it should start with https://calendly.com/' }
+  }
+
+  const db = createAdminClient()
+  const { error } = await db
+    .from('settings')
+    .upsert({ key: 'calendly_url', value: trimmed, is_public: true }, { onConflict: 'key' })
+
+  if (error) return { ok: false, message: 'Could not save: ' + error.message }
+
+  revalidatePath('/work-with-me')
+  revalidatePath('/admin/settings')
+  return { ok: true, message: 'Calendly link updated.' }
+}
