@@ -1,5 +1,5 @@
 import { Reveal } from '@/components/reveal'
-import { BookingForm } from '@/components/booking-form'
+import CalendlyEmbed from '@/components/calendly-embed'
 import s from './work-with-me.module.css'
 
 export const metadata = {
@@ -8,8 +8,8 @@ export const metadata = {
 }
 
 const steps = [
-  { t: 'Tell me about your project', d: 'Fill out the short form — your goals, the challenge, and a rough timeline.' },
-  { t: 'I review and reach out', d: 'I’ll email you within 24–48 hours to confirm a call time that works for us both.' },
+  { t: 'Pick a time that works', d: 'Choose an open slot directly on the calendar below — no back-and-forth emails needed.' },
+  { t: 'Get instant confirmation', d: 'You’ll get a calendar invite and confirmation email right away, with a link to reschedule if plans change.' },
   { t: 'We have a discovery call', d: 'A relaxed conversation about your goals, scope, and whether we’re the right fit. No pressure.' },
   { t: 'You get a tailored plan', d: 'If it’s a match, I’ll send a clear quote and next steps. Only then do we talk numbers.' },
 ]
@@ -25,7 +25,7 @@ export default function WorkWithMePage() {
 
       <section className="container">
         <div className={s.layout}>
-          <Reveal><BookingForm /></Reveal>
+          <Reveal><CalendlyEmbed /></Reveal>
 
           <aside className={s.side}>
             <Reveal delay={60}>

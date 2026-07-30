@@ -10,6 +10,14 @@ export type ActionResult = { ok: boolean; message: string }
 // ---------------------------------------------------------------------
 // Status pipeline: new → contacted → confirmed → completed / cancelled
 // Editors and above. RLS ("bookings: editor manage") is the backstop.
+//
+// Note: rows synced in from Calendly (referral_source = 'discovery_call'
+// with a calendly_invitee_uri set) start life already at 'confirmed' —
+// Calendly only creates the invitee once a real slot is booked, so there's
+// no "new" / awaiting-confirmation step for those anymore. Cancelling a
+// call in Calendly also flips it to 'cancelled' here automatically via the
+// webhook; changing status manually here does not cancel it on Calendly's
+// side, so use Calendly itself to actually cancel/reschedule a call.
 // ---------------------------------------------------------------------
 export async function setBookingStatus(id: string, status: BookingStatus): Promise<ActionResult> {
   try {
@@ -33,6 +41,11 @@ export async function setBookingStatus(id: string, status: BookingStatus): Promi
 // Promote from waitlist: flips the flag and fires the same Resend
 // heads-up email the live form sends — waitlisted requests never
 // notified Erwin, so this is the moment his inbox learns about it.
+//
+// Kept for any pre-Calendly waitlisted rows still sitting in the queue.
+// New discovery-call bookings never get waitlisted going forward — if
+// Calendly's weekly limit is reached, it simply stops offering slots, so
+// there's nothing to promote later.
 // ---------------------------------------------------------------------
 export async function promoteFromWaitlist(id: string): Promise<ActionResult> {
   try {
@@ -92,28 +105,10 @@ ${row.message || ''}
   }
 }
 
-// ---------------------------------------------------------------------
-// Weekly discovery-call cap (settings.discovery_weekly_cap).
-// Admin and above — matches the "settings: admin write" RLS policy.
-// ---------------------------------------------------------------------
-export async function setWeeklyCap(cap: number): Promise<ActionResult> {
-  try {
-    await requireRole('admin')
-  } catch {
-    return { ok: false, message: 'Only admins can change the weekly cap.' }
-  }
-  const n = Math.floor(cap)
-  if (!Number.isFinite(n) || n < 1 || n > 100) {
-    return { ok: false, message: 'The cap must be a number between 1 and 100.' }
-  }
-
-  const supabase = await createClient()
-  const { error } = await supabase.from('settings').upsert(
-    { key: 'discovery_weekly_cap', value: n, is_public: false },
-    { onConflict: 'key' },
-  )
-  if (error) return { ok: false, message: 'Could not save the cap: ' + error.message }
-
-  revalidatePath('/admin/bookings')
-  return { ok: true, message: `Weekly cap set to ${n}.` }
-}
+// setWeeklyCap() has been removed — the weekly discovery-call limit is now
+// set directly on the Discovery Call event type in Calendly (Availability →
+// Limit the frequency of bookings), which is the thing actually enforcing
+// it. Editing settings.discovery_weekly_cap here no longer affects how many
+// calls Calendly will accept, so keeping a control for it in this admin
+// panel would just create a second, disconnected "cap" that could drift out
+// of sync with the real one.

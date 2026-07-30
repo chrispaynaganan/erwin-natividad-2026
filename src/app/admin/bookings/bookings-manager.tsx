@@ -3,9 +3,9 @@
 import { useMemo, useState, useTransition } from 'react'
 import {
   IconChevronDown, IconArrowUpCircle, IconSearch, IconMail, IconPhone,
-  IconWorld, IconCircleCheck, IconAlertTriangle, IconPencil,
+  IconWorld, IconCircleCheck, IconAlertTriangle, IconCalendarStats,
 } from '@tabler/icons-react'
-import { setBookingStatus, promoteFromWaitlist, setWeeklyCap, type ActionResult } from './actions'
+import { setBookingStatus, promoteFromWaitlist, type ActionResult } from './actions'
 import { BOOKING_STATUSES, type BookingRow, type BookingStatus } from './types'
 import s from './bookings.module.css'
 
@@ -26,9 +26,7 @@ const fmtDateTime = (iso: string) =>
 const fmtPreferred = (r: BookingRow) =>
   [r.preferred_date, r.preferred_time, r.timezone].filter(Boolean).join(' \u00b7 ') || '—'
 
-export function BookingsManager({ initial, weeklyCap, canEditCap }: {
-  initial: BookingRow[]; weeklyCap: number; canEditCap: boolean
-}) {
+export function BookingsManager({ initial }: { initial: BookingRow[] }) {
   const [rows, setRows] = useState<BookingRow[]>(initial)
   const [tab, setTab] = useState<TabKey>('active')
   const [source, setSource] = useState<SourceKey>('all')
@@ -37,17 +35,14 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
   const [msg, setMsg] = useState<ActionResult | null>(null)
   const [pending, start] = useTransition()
 
-  // Cap widget state
-  const [cap, setCap] = useState(weeklyCap)
-  const [capEditing, setCapEditing] = useState(false)
-  const [capDraft, setCapDraft] = useState(String(weeklyCap))
-
-  // "This week: X of cap" — same rule as the public form's capacity gate:
-  // active (non-waitlisted, non-cancelled) discovery requests in the rolling window.
+  // Informational only — the real weekly limit lives in Calendly's own
+  // event settings (Availability → Limit the frequency of bookings), not
+  // here. This just reflects how many confirmed discovery calls landed via
+  // Calendly in the last 7 days.
   const weekCount = useMemo(() => {
     const since = Date.now() - WINDOW_DAYS * 86400000
     return rows.filter((r) =>
-      r.referral_source === 'discovery_call' && !r.waitlisted && r.status !== 'cancelled' &&
+      r.referral_source === 'discovery_call' && r.status !== 'cancelled' &&
       Date.parse(r.created_at) >= since,
     ).length
   }, [rows])
@@ -93,48 +88,21 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
     })
   }
 
-  function saveCap() {
-    const n = parseInt(capDraft, 10)
-    setMsg(null)
-    start(async () => {
-      const res = await setWeeklyCap(n)
-      setMsg(res)
-      if (res.ok) { setCap(n); setCapEditing(false) }
-    })
-  }
-
   return (
     <div className={s.wrap}>
       <header className={s.head}>
         <div>
           <h1 className={s.h1}>Bookings</h1>
-          <p className={s.sub}>Discovery-call requests and contact messages. New submissions land here automatically.</p>
+          <p className={s.sub}>Discovery calls booked via Calendly and contact-form messages. New submissions land here automatically.</p>
         </div>
 
         <div className={s.capBox}>
-          <span className={s.capLabel}>Discovery calls this week</span>
-          <span className={s.capValue}>
-            <strong className={weekCount >= cap ? s.capFull : undefined}>{weekCount}</strong> of{' '}
-            {capEditing ? (
-              <span className={s.capEditRow}>
-                <input className={s.capInput} type="number" min={1} max={100} value={capDraft}
-                  onChange={(e) => setCapDraft(e.target.value)} />
-                <button type="button" className={s.capSave} onClick={saveCap} disabled={pending}>Save</button>
-                <button type="button" className={s.capCancel} onClick={() => { setCapEditing(false); setCapDraft(String(cap)) }}>Cancel</button>
-              </span>
-            ) : (
-              <>
-                {cap}
-                {canEditCap && (
-                  <button type="button" className={s.capEditBtn} aria-label="Edit weekly cap"
-                    onClick={() => setCapEditing(true)}>
-                    <IconPencil size={14} stroke={1.75} />
-                  </button>
-                )}
-              </>
-            )}
+          <span className={s.capLabel}><IconCalendarStats size={15} stroke={1.75} /> Discovery calls this week</span>
+          <span className={s.capValue}><strong>{weekCount}</strong></span>
+          <span className={s.capHint}>
+            The weekly limit is set in Calendly (Discovery Call event → Availability → Limit the
+            frequency of bookings) — this number is just a record of what came through, not a control.
           </span>
-          <span className={s.capHint}>At the cap, new requests go to the waitlist.</span>
         </div>
       </header>
 
@@ -175,8 +143,8 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
 
       {shown.length === 0 ? (
         <p className={s.empty}>
-          {tab === 'active' && 'No active requests right now. New submissions from the contact and Work With Me forms will appear here.'}
-          {tab === 'waitlist' && 'The waitlist is empty.'}
+          {tab === 'active' && 'No active requests right now. New Calendly bookings and contact-form messages will appear here.'}
+          {tab === 'waitlist' && 'The waitlist is empty. New discovery-call bookings go through Calendly now, so nothing new gets waitlisted — this tab only holds requests from before the switch.'}
           {tab === 'archive' && 'Nothing archived yet — completed and cancelled requests end up here.'}
         </p>
       ) : (
@@ -194,6 +162,7 @@ export function BookingsManager({ initial, weeklyCap, canEditCap }: {
                   <span className={`${s.badge} ${r.referral_source === 'discovery_call' ? s.badgeGold : s.badgePlain}`}>
                     {sourceLabel(r.referral_source)}
                   </span>
+                  {r.calendly_invitee_uri && <span className={s.badge}>Via Calendly</span>}
                   {r.service_interest && <span className={s.interest}>{r.service_interest}</span>}
                   <span className={s.date}>{fmtDateTime(r.created_at)}</span>
                   <span className={`${s.chev} ${open ? s.chevOpen : ''}`}><IconChevronDown size={16} stroke={1.75} /></span>

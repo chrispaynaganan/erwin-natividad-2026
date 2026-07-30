@@ -19,6 +19,8 @@ export type BookingRow = {
   referral_source: string | null  // 'discovery_call' | 'contact_form' | null
   status: BookingStatus
   waitlisted: boolean
+  calendly_event_uri: string | null    // set only for rows synced in from Calendly
+  calendly_invitee_uri: string | null  // set only for rows synced in from Calendly
   created_at: string
   updated_at: string
 }
