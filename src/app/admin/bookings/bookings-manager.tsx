@@ -3,9 +3,10 @@
 import { useMemo, useState, useTransition } from 'react'
 import {
   IconChevronDown, IconArrowUpCircle, IconSearch, IconMail, IconPhone,
-  IconWorld, IconCircleCheck, IconAlertTriangle, IconCalendarStats,
+  IconWorld, IconCalendarStats,
 } from '@tabler/icons-react'
-import { setBookingStatus, promoteFromWaitlist, type ActionResult } from './actions'
+import { useToast } from '@/components/toast-provider'
+import { setBookingStatus, promoteFromWaitlist } from './actions'
 import { BOOKING_STATUSES, type BookingRow, type BookingStatus } from './types'
 import s from './bookings.module.css'
 
@@ -27,12 +28,12 @@ const fmtPreferred = (r: BookingRow) =>
   [r.preferred_date, r.preferred_time, r.timezone].filter(Boolean).join(' \u00b7 ') || '—'
 
 export function BookingsManager({ initial }: { initial: BookingRow[] }) {
+  const toast = useToast()
   const [rows, setRows] = useState<BookingRow[]>(initial)
   const [tab, setTab] = useState<TabKey>('active')
   const [source, setSource] = useState<SourceKey>('all')
   const [query, setQuery] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
-  const [msg, setMsg] = useState<ActionResult | null>(null)
   const [pending, start] = useTransition()
 
   // Informational only — the real weekly limit lives in Calendly's own
@@ -71,20 +72,25 @@ export function BookingsManager({ initial }: { initial: BookingRow[] }) {
   function changeStatus(id: string, status: BookingStatus) {
     const before = rows.find((r) => r.id === id)?.status
     patchRow(id, { status }) // optimistic
-    setMsg(null)
     start(async () => {
       const res = await setBookingStatus(id, status)
-      setMsg(res)
-      if (!res.ok && before) patchRow(id, { status: before }) // roll back
+      if (res.ok) toast.success(res.message)
+      else {
+        toast.error(res.message)
+        if (before) patchRow(id, { status: before }) // roll back
+      }
     })
   }
 
   function promote(id: string) {
-    setMsg(null)
     start(async () => {
       const res = await promoteFromWaitlist(id)
-      setMsg(res)
-      if (res.ok) patchRow(id, { waitlisted: false })
+      if (res.ok) {
+        toast.success(res.message)
+        patchRow(id, { waitlisted: false })
+      } else {
+        toast.error(res.message)
+      }
     })
   }
 
@@ -105,12 +111,6 @@ export function BookingsManager({ initial }: { initial: BookingRow[] }) {
           </span>
         </div>
       </header>
-
-      {msg && (
-        <p className={msg.ok ? s.ok : s.err} role="status">
-          {msg.ok ? <IconCircleCheck size={16} stroke={1.75} /> : <IconAlertTriangle size={16} stroke={1.75} />} {msg.message}
-        </p>
-      )}
 
       <div className={s.toolbar}>
         <nav className={s.tabs}>

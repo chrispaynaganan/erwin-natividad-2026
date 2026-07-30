@@ -3,12 +3,14 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { IconDeviceFloppy, IconCircleCheck, IconAlertTriangle, IconArrowLeft } from '@tabler/icons-react'
+import { IconDeviceFloppy, IconArrowLeft } from '@tabler/icons-react'
 import { Field, TagsField, LinesField } from '@/app/admin/content/fields'
 import { TabRow } from '@/app/admin/content/section-tabs'
 import { ImageField } from '@/components/admin/image-field'
 import { AudioField, type AudioValue } from '@/components/admin/audio-field'
-import { saveProject, type SaveState } from '../actions'
+import { useToast } from '@/components/toast-provider'
+import { useConfirm } from '@/components/confirm-dialog'
+import { saveProject } from '../actions'
 import type { ProjectRow } from '@/lib/projects-db/store'
 import s from '@/app/admin/content/content.module.css'
 import p from '../projects.module.css'
@@ -24,8 +26,9 @@ function slugify(v: string) {
 
 export function ProjectForm({ project }: { project: ProjectRow | null }) {
   const router = useRouter()
+  const toast = useToast()
+  const confirmDialog = useConfirm()
   const [pending, start] = useTransition()
-  const [msg, setMsg] = useState<SaveState>(null)
   const [dirty, setDirty] = useState(false)
   const [tab, setTab] = useState<TabKey>('listing')
 
@@ -60,7 +63,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
   const [status, setStatus] = useState<Status>((project?.status as Status) ?? 'draft')
   const [sortOrder, setSortOrder] = useState(project?.sort_order?.toString() ?? '0')
 
-  function markDirty() { setDirty(true); setMsg(null) }
+  function markDirty() { setDirty(true) }
 
   function onTitleChange(v: string) {
     setTitle(v)
@@ -68,8 +71,17 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
     if (!slugTouched) setSlug(slugify(v))
   }
 
-  function leave(href: string) {
-    if (dirty && !confirm('You have unsaved changes. Leave without saving?')) return
+  async function leave(href: string) {
+    if (dirty) {
+      const proceed = await confirmDialog({
+        title: 'Leave without saving?',
+        message: 'You have unsaved changes. If you leave now, they’ll be lost.',
+        confirmLabel: 'Leave',
+        cancelLabel: 'Stay',
+        tone: 'danger',
+      })
+      if (!proceed) return
+    }
     router.push(href)
   }
 
@@ -103,10 +115,12 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
         status,
         sort_order: sortOrder ? Number(sortOrder) : 0,
       })
-      setMsg(res)
       if (res?.ok) {
+        toast.success(res.message)
         setDirty(false)
         if (!project && res.id) router.replace(`/admin/projects/${res.id}`)
+      } else if (res) {
+        toast.error(res.message)
       }
     })
   }
@@ -238,13 +252,8 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
 
       <div className={s.saveBar}>
         <div className={s.saveStatus}>
-          {msg && (
-            <span className={msg.ok ? s.ok : s.err}>
-              {msg.ok ? <IconCircleCheck size={16} stroke={1.75} /> : <IconAlertTriangle size={16} stroke={1.75} />} {msg.message}
-            </span>
-          )}
-          {!msg && dirty && <span className={s.hintInline}>Unsaved changes</span>}
-          {!msg && !dirty && listingHealth === 'error' && (
+          {dirty && <span className={s.hintInline}>Unsaved changes</span>}
+          {!dirty && listingHealth === 'error' && (
             <span className={s.hintInline}>Title and slug are required</span>
           )}
         </div>

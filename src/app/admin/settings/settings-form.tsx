@@ -3,7 +3,9 @@
 import { useState, useTransition } from 'react'
 import type { SessionProfile } from '@/lib/auth'
 import type { ThemeMode } from '@/lib/content/site-content'
-import { saveProfile, updateEmail, updatePassword, saveThemeMode, saveCalendlyUrl, type SaveState } from './actions'
+import { useToast } from '@/components/toast-provider'
+import { useConfirm } from '@/components/confirm-dialog'
+import { saveProfile, updateEmail, updatePassword, saveThemeMode, saveCalendlyUrl } from './actions'
 import s from './settings.module.css'
 
 type Profile = SessionProfile['profile']
@@ -26,9 +28,15 @@ const DATE_FORMATS: { value: string; label: string }[] = [
 const TABS = ['Profile', 'Notifications', 'Defaults', 'Appearance'] as const
 type Tab = typeof TABS[number]
 
-function StatusLine({ msg }: { msg: SaveState }) {
-  if (!msg) return null
-  return <p className={msg.ok ? s.statusOk : s.statusErr}>{msg.message}</p>
+// Every save action here returns { ok, message } — this turns that straight
+// into a toast instead of each section holding its own status-line state.
+function useSaveToast() {
+  const toast = useToast()
+  return (res: { ok: boolean; message: string } | null) => {
+    if (!res) return
+    if (res.ok) toast.success(res.message)
+    else toast.error(res.message)
+  }
 }
 
 export function SettingsForm({
@@ -62,6 +70,8 @@ export function SettingsForm({
 }
 
 function ProfileSection({ email, profile }: { email: string; profile: Profile }) {
+  const notify = useSaveToast()
+  const toast = useToast()
   const [fullName, setFullName] = useState(profile.full_name ?? '')
   const [newEmail, setNewEmail] = useState(email)
   const [newPassword, setNewPassword] = useState('')
@@ -70,38 +80,34 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
   const [savingName, startName] = useTransition()
   const [savingEmail, startEmail] = useTransition()
   const [savingPassword, startPassword] = useTransition()
-  const [nameMsg, setNameMsg] = useState<SaveState>(null)
-  const [emailMsg, setEmailMsg] = useState<SaveState>(null)
-  const [passwordMsg, setPasswordMsg] = useState<SaveState>(null)
 
   function saveName() {
     startName(async () => {
-      const res = await saveProfile({
+      notify(await saveProfile({
         full_name: fullName,
         timezone: profile.timezone,
         date_format: profile.date_format,
         notify_new_booking: profile.notify_new_booking,
         notify_new_subscriber: profile.notify_new_subscriber,
         notify_new_contact: profile.notify_new_contact,
-      })
-      setNameMsg(res)
+      }))
     })
   }
 
   function saveEmail() {
     startEmail(async () => {
-      setEmailMsg(await updateEmail(newEmail))
+      notify(await updateEmail(newEmail))
     })
   }
 
   function savePassword() {
     if (newPassword !== confirmPassword) {
-      setPasswordMsg({ ok: false, message: 'Passwords don’t match.' })
+      toast.error('Passwords don’t match.')
       return
     }
     startPassword(async () => {
       const res = await updatePassword(newPassword)
-      setPasswordMsg(res)
+      notify(res)
       if (res?.ok) { setNewPassword(''); setConfirmPassword('') }
     })
   }
@@ -116,7 +122,6 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
         <button type="button" className="btn btnSolid" style={{ marginTop: 10 }} onClick={saveName} disabled={savingName}>
           {savingName ? 'Saving…' : 'Save name'}
         </button>
-        <StatusLine msg={nameMsg} />
       </div>
 
       <hr className={s.hr} />
@@ -127,7 +132,6 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
         <button type="button" className="btn btnOutline" style={{ marginTop: 10 }} onClick={saveEmail} disabled={savingEmail}>
           {savingEmail ? 'Sending…' : 'Update email'}
         </button>
-        <StatusLine msg={emailMsg} />
       </div>
 
       <hr className={s.hr} />
@@ -145,29 +149,27 @@ function ProfileSection({ email, profile }: { email: string; profile: Profile })
       <button type="button" className="btn btnOutline" onClick={savePassword} disabled={savingPassword || !newPassword}>
         {savingPassword ? 'Updating…' : 'Update password'}
       </button>
-      <StatusLine msg={passwordMsg} />
     </section>
   )
 }
 
 function NotificationsSection({ profile }: { profile: Profile }) {
+  const notify = useSaveToast()
   const [notifyBooking, setNotifyBooking] = useState(profile.notify_new_booking)
   const [notifySubscriber, setNotifySubscriber] = useState(profile.notify_new_subscriber)
   const [notifyContact, setNotifyContact] = useState(profile.notify_new_contact)
   const [pending, start] = useTransition()
-  const [msg, setMsg] = useState<SaveState>(null)
 
   function save() {
     start(async () => {
-      const res = await saveProfile({
+      notify(await saveProfile({
         full_name: profile.full_name ?? '',
         timezone: profile.timezone,
         date_format: profile.date_format,
         notify_new_booking: notifyBooking,
         notify_new_subscriber: notifySubscriber,
         notify_new_contact: notifyContact,
-      })
-      setMsg(res)
+      }))
     })
   }
 
@@ -194,38 +196,35 @@ function NotificationsSection({ profile }: { profile: Profile }) {
       <button type="button" className="btn btnSolid" onClick={save} disabled={pending}>
         {pending ? 'Saving…' : 'Save notifications'}
       </button>
-      <StatusLine msg={msg} />
     </section>
   )
 }
 
 function DefaultsSection({ profile, calendlyUrl }: { profile: Profile; calendlyUrl: string }) {
+  const notify = useSaveToast()
   const [timezone, setTimezone] = useState(profile.timezone)
   const [dateFormat, setDateFormat] = useState(profile.date_format)
   const [pending, start] = useTransition()
-  const [msg, setMsg] = useState<SaveState>(null)
 
   const [calendly, setCalendly] = useState(calendlyUrl)
   const [savingCalendly, startCalendly] = useTransition()
-  const [calendlyMsg, setCalendlyMsg] = useState<SaveState>(null)
 
   function save() {
     start(async () => {
-      const res = await saveProfile({
+      notify(await saveProfile({
         full_name: profile.full_name ?? '',
         timezone,
         date_format: dateFormat,
         notify_new_booking: profile.notify_new_booking,
         notify_new_subscriber: profile.notify_new_subscriber,
         notify_new_contact: profile.notify_new_contact,
-      })
-      setMsg(res)
+      }))
     })
   }
 
   function saveCalendly() {
     startCalendly(async () => {
-      setCalendlyMsg(await saveCalendlyUrl(calendly))
+      notify(await saveCalendlyUrl(calendly))
     })
   }
 
@@ -252,7 +251,6 @@ function DefaultsSection({ profile, calendlyUrl }: { profile: Profile; calendlyU
       <button type="button" className="btn btnSolid" onClick={save} disabled={pending}>
         {pending ? 'Saving…' : 'Save defaults'}
       </button>
-      <StatusLine msg={msg} />
 
       <hr className={s.hr} />
 
@@ -272,7 +270,6 @@ function DefaultsSection({ profile, calendlyUrl }: { profile: Profile; calendlyU
         <button type="button" className="btn btnSolid" style={{ marginTop: 10 }} onClick={saveCalendly} disabled={savingCalendly}>
           {savingCalendly ? 'Saving…' : 'Save Calendly link'}
         </button>
-        <StatusLine msg={calendlyMsg} />
       </div>
     </section>
   )
@@ -285,27 +282,29 @@ const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
 ]
 
 function AppearanceSection({ themeMode }: { themeMode: ThemeMode }) {
+  const notify = useSaveToast()
+  const confirmDialog = useConfirm()
   const [selected, setSelected] = useState<ThemeMode>(themeMode)
   const [pending, start] = useTransition()
-  const [msg, setMsg] = useState<SaveState>(null)
 
-  function choose(mode: ThemeMode) {
+  async function choose(mode: ThemeMode) {
     if (mode === selected) return
     if (mode !== 'toggle') {
       const label = mode === 'dark' ? 'dark' : 'light'
-      const proceed = confirm(
-        `Switching to ${label} mode only will remove the theme toggle from the site’s navigation bar — every visitor will see the site in ${label} mode, with no way to switch. Continue?`
-      )
+      const proceed = await confirmDialog({
+        title: `Switch to ${label} mode only?`,
+        message: `Switching to ${label} mode only will remove the theme toggle from the site’s navigation bar — every visitor will see the site in ${label} mode, with no way to switch. Continue?`,
+        confirmLabel: 'Continue',
+        cancelLabel: 'Cancel',
+      })
       if (!proceed) return
     }
     setSelected(mode)
-    setMsg(null)
   }
 
   function save() {
     start(async () => {
-      const res = await saveThemeMode(selected)
-      setMsg(res)
+      notify(await saveThemeMode(selected))
     })
   }
 
@@ -348,7 +347,6 @@ function AppearanceSection({ themeMode }: { themeMode: ThemeMode }) {
       >
         {pending ? 'Saving…' : 'Save changes'}
       </button>
-      <StatusLine msg={msg} />
     </section>
   )
 }

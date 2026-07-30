@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SiteChrome } from '@/components/site-chrome'
+import { ToastProvider } from '@/components/toast-provider'
+import { ConfirmDialogProvider } from '@/components/confirm-dialog'
 import { getSiteContent } from '@/lib/content/store'
 import type { ThemeMode } from '@/lib/content/site-content'
 
@@ -44,7 +46,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <SiteChrome branding={nav} themeMode={themeMode}>{children}</SiteChrome>
+        {/* ToastProvider / ConfirmDialogProvider wrap the actual page content
+            (not SiteChrome itself) so every page — public and admin alike —
+            can call useToast()/useConfirm() from anywhere in its component
+            tree. Both render fixed-position overlays, so nesting here vs.
+            outside <SiteChrome> has no visual effect either way; this way
+            keeps them scoped to "the page", which is conceptually cleaner. */}
+        <SiteChrome branding={nav} themeMode={themeMode}>
+          <ToastProvider>
+            <ConfirmDialogProvider>
+              {children}
+            </ConfirmDialogProvider>
+          </ToastProvider>
+        </SiteChrome>
       </body>
     </html>
   )
