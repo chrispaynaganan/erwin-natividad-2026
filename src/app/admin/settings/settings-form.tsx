@@ -23,18 +23,38 @@ const DATE_FORMATS: { value: string; label: string }[] = [
   { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD  (2026-01-05)' },
 ]
 
+const TABS = ['Profile', 'Notifications', 'Defaults', 'Appearance'] as const
+type Tab = typeof TABS[number]
+
 function StatusLine({ msg }: { msg: SaveState }) {
   if (!msg) return null
   return <p className={msg.ok ? s.statusOk : s.statusErr}>{msg.message}</p>
 }
 
 export function SettingsForm({ email, profile, themeMode }: { email: string; profile: Profile; themeMode: ThemeMode }) {
+  const [active, setActive] = useState<Tab>('Profile')
+
   return (
     <>
-      <ProfileSection email={email} profile={profile} />
-      <NotificationsSection profile={profile} />
-      <DefaultsSection profile={profile} />
-      <AppearanceSection themeMode={themeMode} />
+      <div className={s.tabs} role="tablist">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            role="tab"
+            aria-selected={active === tab}
+            className={`${s.tab} ${active === tab ? s.tabActive : ''}`}
+            onClick={() => setActive(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {active === 'Profile' && <ProfileSection email={email} profile={profile} />}
+      {active === 'Notifications' && <NotificationsSection profile={profile} />}
+      {active === 'Defaults' && <DefaultsSection profile={profile} />}
+      {active === 'Appearance' && <AppearanceSection themeMode={themeMode} />}
     </>
   )
 }

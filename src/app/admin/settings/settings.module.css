@@ -114,3 +114,35 @@
   background: rgba(229,115,115,0.1);
   border-color: rgba(229,115,115,0.35);
 }
+
+.tabs {
+  display: flex;
+  gap: 28px;
+  border-bottom: 1px solid var(--border);
+  margin: 24px 0 0;
+  padding-bottom: 0;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--border);
+  cursor: pointer;
+  padding: 0 0 10px;
+  position: relative;
+}
+.tab:hover { color: var(--text-muted); }
+
+.tabActive {
+  color: var(--text);
+}
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: var(--text);
+}
