@@ -17,6 +17,7 @@ export type ProjectInput = {
   paragraphs: string[]
   date_label: string
   audio_url: string | null
+  video_id: string | null
   duration_secs: number | null
   cover_url: string
   client: string
@@ -30,6 +31,24 @@ export type ProjectInput = {
   is_hero: boolean
   status: 'draft' | 'scheduled' | 'published' | 'archived'
   sort_order: number
+}
+
+// Accepts either a bare YouTube video ID or a full URL and normalizes to
+// just the ID, since that's all the video button / iframe embed needs.
+function normalizeVideoId(raw: string | null): string | null {
+  if (!raw) return null
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/,
+  ]
+  for (const pattern of patterns) {
+    const match = trimmed.match(pattern)
+    if (match) return match[1]
+  }
+  // Not a recognizable URL — assume it's already a bare video ID.
+  return trimmed
 }
 
 export async function saveProject(input: ProjectInput): Promise<SaveState> {
@@ -52,6 +71,7 @@ export async function saveProject(input: ProjectInput): Promise<SaveState> {
       paragraphs: input.paragraphs,
       date_label: input.date_label || null,
       audio_url: input.audio_url,
+      video_id: normalizeVideoId(input.video_id),
       duration_secs: input.duration_secs,
       cover_url: input.cover_url || null,
       client: input.client || null,

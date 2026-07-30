@@ -12,6 +12,7 @@ export type ProjectRow = {
   paragraphs: string[]
   date_label: string | null
   audio_url: string | null
+  video_id: string | null
   duration_secs: number | null
   cover_url: string | null
   client: string | null

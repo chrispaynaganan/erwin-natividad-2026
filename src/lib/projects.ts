@@ -6,8 +6,8 @@ import { createPublicClient } from '@/lib/supabase/public'
 // Shared project catalog — used by /work (listing) and /work/[slug] (detail).
 // This used to be a static array; it now reads from the `projects` table.
 // The shape below is unchanged from the original static version (plus
-// `audioUrl`, which the static data never had a slot for) so that
-// ProjectsExplorer, AudioPlayer, and FullAudioPlayer need no changes.
+// `audioUrl`, and now `videoId`) so that ProjectsExplorer, AudioPlayer, and
+// FullAudioPlayer need no changes.
 export type Project = {
   slug: string
   title: string
@@ -16,6 +16,7 @@ export type Project = {
   duration: string
   tags: string[]
   audioUrl?: string
+  videoId?: string
   client?: string
   completed?: string
   studio?: string
@@ -42,6 +43,7 @@ type Row = {
   duration_secs: number | null
   tags: string[]
   audio_url: string | null
+  video_id: string | null
   client: string | null
   studio: string | null
   length_label: string | null
@@ -61,6 +63,7 @@ function toProject(row: Row): Project {
     duration: formatDuration(row.duration_secs),
     tags: row.tags,
     audioUrl: row.audio_url ?? undefined,
+    videoId: row.video_id ?? undefined,
     client: row.client ?? undefined,
     completed: row.date_label ?? undefined, // static data always had these identical
     studio: row.studio ?? undefined,
@@ -73,7 +76,8 @@ function toProject(row: Row): Project {
   }
 }
 
-const COLUMNS = 'slug, title, description, date_label, duration_secs, tags, audio_url, client, studio, length_label, age_range, voice_character, genre, deliverables, paragraphs'
+const COLUMNS =
+  'slug, title, description, date_label, duration_secs, tags, audio_url, video_id, client, studio, length_label, age_range, voice_character, genre, deliverables, paragraphs'
 
 // Public reads use a cookie-free anon client — these are always public,
 // published-only content (enforced by RLS), and this needs to work at
@@ -103,7 +107,7 @@ export async function getFeaturedProjects(limit = 3): Promise<Project[]> {
   return (data ?? []).map(toProject)
 }
 
-// NEW — backs the homepage Hero's single "spotlight" project. Distinct from
+// Backs the homepage Hero's single "spotlight" project. Distinct from
 // is_featured (which drives the Featured Work grid): at most one row can ever
 // have is_hero = true, enforced by a partial unique index (0009_hero_project.sql).
 export async function getHeroProject(): Promise<Project | null> {

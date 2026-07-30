@@ -42,6 +42,10 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
       ? { path: '', url: project.audio_url, durationSecs: project.duration_secs ?? 0, fileName: project.audio_url.split('/').pop() ?? 'demo.m4a' }
       : null
   )
+  // Plain text field — accepts either a bare YouTube video ID or a full
+  // youtube.com/youtu.be URL. saveProject() normalizes it down to just the
+  // ID before it's stored, so what's saved is always embed-ready.
+  const [videoId, setVideoId] = useState(project?.video_id ?? '')
   const [client, setClient] = useState(project?.client ?? '')
   const [studio, setStudio] = useState(project?.studio ?? '')
   const [lengthLabel, setLengthLabel] = useState(project?.length_label ?? '')
@@ -84,6 +88,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
         paragraphs,
         date_label: dateLabel,
         audio_url: audio?.url ?? null,
+        video_id: videoId || null,
         duration_secs: audio?.durationSecs ?? null,
         cover_url: coverUrl,
         client,
@@ -131,7 +136,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
         onSelect={(k) => setTab(k as TabKey)}
         tabs={[
           { key: 'listing', label: 'Card & Listing', health: listingHealth },
-          { key: 'media', label: 'Demo Audio & Cover Art', health: mediaHealth },
+          { key: 'media', label: 'Demo Audio, Video & Cover Art', health: mediaHealth },
           { key: 'detail', label: 'Project Detail Page' },
         ]}
       />
@@ -185,7 +190,7 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
 
         {tab === 'media' && (
           <section className={s.card}>
-            <h2 className={s.cardTitle}>Demo Audio &amp; Cover Art</h2>
+            <h2 className={s.cardTitle}>Demo Audio, Video &amp; Cover Art</h2>
             {mediaHealth === 'attention' && (
               <p className={s.hint} style={{ color: '#C2620F' }}>
                 This project is published with no demo audio, so its card will have no player.
@@ -194,6 +199,17 @@ export function ProjectForm({ project }: { project: ProjectRow | null }) {
             <AudioField label="Demo audio" folder="projects" bucket="project-audio" value={audio} onChange={(v) => { setAudio(v); markDirty() }}
               hint="Public demo audio — converted to AAC (.m4a) in your browser before upload, then playable by anyone." />
             <ImageField label="Cover art" folder="projects" bucket="site-media" value={coverUrl} onChange={(v) => { setCoverUrl(v); markDirty() }} />
+            <Field
+              label="YouTube video (optional)"
+              value={videoId}
+              onChange={(v) => { setVideoId(v); markDirty() }}
+              placeholder="https://youtube.com/watch?v=... or just the video ID"
+            />
+            <p className={s.hint}>
+              Paste the full YouTube link or just the video ID — either works. Set the video to
+              “Unlisted” on YouTube so it only shows up here, not on your channel or in search.
+              Leave blank if this project has no video.
+            </p>
           </section>
         )}
 

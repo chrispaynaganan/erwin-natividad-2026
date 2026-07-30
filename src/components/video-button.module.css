@@ -1,0 +1,75 @@
+.facade {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface-2);
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.facade:hover .thumbnail {
+  transform: scale(1.03);
+}
+
+.facade::after {
+  /* subtle darken so the play icon reads clearly on any thumbnail */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease;
+}
+
+.facade:hover::after {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.playIcon {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  margin: auto;
+  padding-left: 4px; /* optical centering — the triangle has more visual weight on the right */
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--btn-fg);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.facade:hover .playIcon {
+  transform: scale(1.08);
+  background: var(--accent-soft);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

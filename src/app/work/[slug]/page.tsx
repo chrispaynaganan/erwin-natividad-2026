@@ -2,7 +2,14 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject, getAdjacent } from '@/lib/projects'
 import { FullAudioPlayer } from '@/components/full-audio-player'
+import ShareButton from '@/components/share-button'
+import VideoButton from '@/components/video-button'
 import { IconCalendar, IconBriefcase, IconChevronLeft, IconChevronRight, IconArrowUpRight } from '@tabler/icons-react'
+// NOTE: assuming `siteUrl` is a plain exported string constant from this
+// module (per the "site-url.ts" references elsewhere in the project, e.g.
+// the SEO editor). If it's actually a function there, change the line below
+// to `const siteUrl = getSiteUrl()` (or whatever the real export is called).
+import { siteUrl } from '@/lib/site-url'
 import s from './detail.module.css'
 
 export async function generateStaticParams() {
@@ -40,7 +47,12 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
         {/* Main */}
         <div>
           <div className={s.tags}>{p.tags.map((t) => <span key={t} className={s.tag}>{t}</span>)}</div>
-          <h1 className={s.title}>{p.title}</h1>
+
+          <div className={s.titleRow}>
+            <h1 className={s.title}>{p.title}</h1>
+            <ShareButton url={`${siteUrl}/work/${p.slug}`} title={p.title} />
+          </div>
+
           <p className={s.summary}>{p.desc}</p>
           <div className={s.metaRow}>
             <span><IconCalendar size={16} stroke={1.75} /> {p.date}</span>
@@ -49,6 +61,13 @@ export default async function ProjectDetail({ params }: { params: Promise<{ slug
 
           <h2 className={s.playerLabel}>Listen to my full demo</h2>
           <FullAudioPlayer src={p.audioUrl} durationLabel={p.duration} />
+
+          {p.videoId && (
+            <>
+              <h2 className={s.playerLabel}>Watch the video</h2>
+              <VideoButton videoId={p.videoId} title={p.title} />
+            </>
+          )}
 
           <h2 className={s.detailsTitle}>Project Details</h2>
           <div className={s.body}>
