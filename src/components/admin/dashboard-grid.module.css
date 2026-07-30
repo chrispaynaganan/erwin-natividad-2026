@@ -196,13 +196,13 @@
 /* react-grid-layout's default resize handle is a bare corner triangle glyph
    with no theming — restyle it to match the site instead of overriding just
    its color. */
-:global(.react-resizable-handle) {
+.wrap :global(.react-resizable-handle) {
   opacity: 0.5;
 }
-:global(.react-grid-item:hover .react-resizable-handle) {
+.wrap :global(.react-grid-item:hover .react-resizable-handle) {
   opacity: 1;
 }
-:global(.react-grid-item.react-grid-placeholder) {
+.wrap :global(.react-grid-item.react-grid-placeholder) {
   background: var(--accent) !important;
   opacity: 0.15 !important;
   border-radius: var(--radius, 16px) !important;
