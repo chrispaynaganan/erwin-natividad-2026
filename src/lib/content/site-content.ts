@@ -14,11 +14,13 @@ export type SkillGroup = { title: string; tags: string[] }
 export type StatItem = { num: string; label: string }
 export type HighlightItem = { year: string; title: string; text: string }
 export type ExpectItem = { t: string; d: string }
+export type ThemeMode = 'toggle' | 'light' | 'dark'
 export type SeoMeta = { metaTitle: string; metaDescription: string; ogImageUrl: string }
 
 export const blankSeo = (): SeoMeta => ({ metaTitle: '', metaDescription: '', ogImageUrl: '' })
 
 export type SiteContent = {
+  themeMode: ThemeMode
   nav: {
     logoLight: string
     logoDark: string
@@ -90,6 +92,7 @@ export type SiteContent = {
 }
 
 export const defaultSiteContent: SiteContent = {
+  themeMode: 'toggle',
   nav: {
     logoLight: '/logo-light.png',
     logoDark: '/logo-dark.png',

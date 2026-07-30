@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { IconMenu2 } from '@tabler/icons-react'
 import { ThemeToggle } from './theme-toggle'
+import type { ThemeMode } from '@/lib/content/site-content'
 
 const nav = [
   { href: '/services', label: 'Services' },
@@ -25,7 +26,13 @@ function Logo({ light, dark }: { light: string; dark: string }) {
   )
 }
 
-export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderBranding }) {
+export function SiteHeader({
+  branding = DEFAULT_BRANDING,
+  themeMode = 'toggle',
+}: {
+  branding?: HeaderBranding
+  themeMode?: ThemeMode
+}) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
@@ -81,7 +88,7 @@ export function SiteHeader({ branding = DEFAULT_BRANDING }: { branding?: HeaderB
         </nav>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <ThemeToggle />
+          {themeMode === 'toggle' && <ThemeToggle />}
           <Link href={branding.ctaHref} className="btn btnSolid enHideMobile enCta">{branding.ctaLabel}</Link>
           <button aria-label="Menu" onClick={() => setOpen((o) => !o)} className="enMenuBtn"
             style={{ width: 36, height: 36, borderRadius: 'var(--radius-sm)', border: 'none', background: 'var(--surface-2)', color: 'var(--text)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>

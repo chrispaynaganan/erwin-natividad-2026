@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import type { SessionProfile } from '@/lib/auth'
-import { saveProfile, updateEmail, updatePassword, type SaveState } from './actions'
+import type { ThemeMode } from '@/lib/content/site-content'
+import { saveProfile, updateEmail, updatePassword, saveThemeMode, type SaveState } from './actions'
 import s from './settings.module.css'
 
 type Profile = SessionProfile['profile']
@@ -27,13 +28,13 @@ function StatusLine({ msg }: { msg: SaveState }) {
   return <p className={msg.ok ? s.statusOk : s.statusErr}>{msg.message}</p>
 }
 
-export function SettingsForm({ email, profile }: { email: string; profile: Profile }) {
+export function SettingsForm({ email, profile, themeMode }: { email: string; profile: Profile; themeMode: ThemeMode }) {
   return (
     <>
       <ProfileSection email={email} profile={profile} />
       <NotificationsSection profile={profile} />
       <DefaultsSection profile={profile} />
-      <AppearanceComingSoon />
+      <AppearanceSection themeMode={themeMode} />
     </>
   )
 }
@@ -224,15 +225,77 @@ function DefaultsSection({ profile }: { profile: Profile }) {
   )
 }
 
-function AppearanceComingSoon() {
+const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
+  { value: 'toggle', label: 'Navbar toggle' },
+  { value: 'light', label: 'Light mode only' },
+  { value: 'dark', label: 'Dark mode only' },
+]
+
+function AppearanceSection({ themeMode }: { themeMode: ThemeMode }) {
+  const [selected, setSelected] = useState<ThemeMode>(themeMode)
+  const [pending, start] = useTransition()
+  const [msg, setMsg] = useState<SaveState>(null)
+
+  function choose(mode: ThemeMode) {
+    if (mode === selected) return
+    if (mode !== 'toggle') {
+      const label = mode === 'dark' ? 'dark' : 'light'
+      const proceed = confirm(
+        `Switching to ${label} mode only will remove the theme toggle from the site’s navigation bar — every visitor will see the site in ${label} mode, with no way to switch. Continue?`
+      )
+      if (!proceed) return
+    }
+    setSelected(mode)
+    setMsg(null)
+  }
+
+  function save() {
+    start(async () => {
+      const res = await saveThemeMode(selected)
+      setMsg(res)
+    })
+  }
+
   return (
     <section className={s.card}>
       <h2 style={{ marginTop: 0 }}>Appearance</h2>
-      <p className={s.hint}>
-        Theme is currently a per-browser preference (the moon/sun toggle, saved to localStorage). A saved
-        default here is coming once we&rsquo;ve seen ThemeToggle and the root layout&rsquo;s no-flash init script &mdash;
-        wiring it in blind risks breaking that.
+      <p className={s.hint} style={{ marginBottom: 16 }}>
+        This controls the theme on the public site — not just this admin dashboard.
       </p>
+
+      <div className={s.themeGrid}>
+        {THEME_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            className={`${s.themeCard} ${selected === opt.value ? s.themeCardActive : ''}`}
+            onClick={() => choose(opt.value)}
+          >
+            {selected === opt.value && <span className={s.themeCheck}>✓</span>}
+            <span className={s.themePreview} data-preview={opt.value}>
+              <span className={s.themePreviewBar} />
+              <span className={s.themePreviewBar} />
+            </span>
+            <span className={s.themeLabel}>{opt.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {selected !== 'toggle' && (
+        <p className={s.warnBanner}>
+          Visitors won’t see a theme switch — the whole site will show in {selected} mode only.
+        </p>
+      )}
+
+      <button
+        type="button"
+        className="btn btnSolid"
+        onClick={save}
+        disabled={pending || selected === themeMode}
+      >
+        {pending ? 'Saving…' : 'Save changes'}
+      </button>
+      <StatusLine msg={msg} />
     </section>
   )
 }

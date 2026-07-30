@@ -2,6 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { requireRole } from '@/lib/auth'
+import { getSiteContent, SITE_CONTENT_KEY } from '@/lib/content/store'
+import type { ThemeMode } from '@/lib/content/site-content'
 
 export type SaveState = { ok: boolean; message: string } | null
 
@@ -61,4 +65,32 @@ export async function updatePassword(newPassword: string): Promise<SaveState> {
   const { error } = await supabase.auth.updateUser({ password: newPassword })
   if (error) return { ok: false, message: 'Could not update password: ' + error.message }
   return { ok: true, message: 'Password updated.' }
+}
+
+// Site-wide theme control (Appearance tab). Unlike the three actions above,
+// this writes to the `settings` table under SITE_CONTENT_KEY — the same
+// store Content/SEO already use — not `profiles`. It changes what every
+// VISITOR sees on the public site, not just this admin's own session, so it
+// goes through the admin (service-role) client and requires 'editor', same
+// as saveSiteContent elsewhere. The page itself already requires 'admin' to
+// even reach this form, but the action re-checks independently as
+// defense-in-depth, matching the pattern requireRole is meant for.
+export async function saveThemeMode(mode: ThemeMode): Promise<SaveState> {
+  await requireRole('editor')
+
+  const current = await getSiteContent()
+  const db = createAdminClient()
+  const { error } = await db
+    .from('settings')
+    .upsert({ key: SITE_CONTENT_KEY, value: { ...current, themeMode: mode } }, { onConflict: 'key' })
+
+  if (error) return { ok: false, message: 'Could not save: ' + error.message }
+
+  // getSiteContent() is memoized per-request via React cache(), so it's
+  // already fresh next request — but the ROUTE cache also needs busting so
+  // every page (all of which read themeMode through the root layout) picks
+  // up the change immediately instead of serving a stale prerender.
+  revalidatePath('/', 'layout')
+  revalidatePath('/admin/settings')
+  return { ok: true, message: 'Appearance updated.' }
 }
