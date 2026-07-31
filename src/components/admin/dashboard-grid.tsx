@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
 import Link from 'next/link'
-import * as RGLModule from 'react-grid-layout'
+import ReactGridLayoutBase, { WidthProvider } from 'react-grid-layout/legacy'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import {
@@ -19,12 +19,11 @@ import {
 } from '@/lib/admin-dashboard-widgets'
 import styles from './dashboard-grid.module.css'
 
-// react-grid-layout's own .d.ts is incomplete for this package's version —
-// `WidthProvider` isn't recognized as a named export, and its `Layout` item
-// type doesn't resolve to {i,x,y,w,h} in some TS setups. Rather than fight
-// the library's types, we type our *own* usage explicitly (the props we
-// actually pass, and the shape the callback actually receives at runtime —
-// both well-documented, stable parts of its public API).
+// react-grid-layout's own .d.ts for its main entry point is incomplete/
+// mismatched for this codebase's usage (see note below on the /legacy
+// entry point actually used here). Rather than fight the library's types,
+// we type our *own* usage explicitly (the props we actually pass, and the
+// shape the callback actually receives at runtime).
 type RGLItem = { i: string; x: number; y: number; w: number; h: number }
 
 type GridLayoutProps = {
@@ -39,37 +38,29 @@ type GridLayoutProps = {
   children?: React.ReactNode
 }
 
-// IMPORTANT: this must be a *static* import, not `next/dynamic(() =>
-// import('react-grid-layout'))`. Webpack's CommonJS interop for a dynamic
-// import() does not copy named exports (like `WidthProvider`) onto the
-// resulting module namespace, so `mod.WidthProvider` is `undefined` at
-// runtime even though the build succeeds and the types look fine — that's
-// the "e.WidthProvider is not a function" production crash.
+// ROOT CAUSE, confirmed by pulling the actual published package: this repo
+// depends on react-grid-layout v2, which is a ground-up rewrite. Its main
+// entry point (`react-grid-layout`) exports a brand-new `GridLayout` with
+// a different props shape (requires an explicit `width` number, uses
+// `gridConfig`/`compactor` instead of flat `cols`/`compactType`, etc.) and
+// — critically — does NOT export `WidthProvider` at all anymore. That's
+// the actual "WidthProvider is not a function" crash: it isn't a bundler
+// or import-syntax problem, `WidthProvider` genuinely isn't there.
 //
-// This is safe with SSR on its own merits: the only `window`-touching code
-// in this library runs inside `componentDidMount`, which never executes
-// during server rendering. `WidthProvider` exists specifically to correct
-// the initial guessed width once the component mounts client-side — so no
-// `dynamic(..., { ssr: false })` wrapper, and no pre-mount fallback UI, are
-// needed at all.
+// The library ships a dedicated compatibility entry point for exactly
+// this situation: `react-grid-layout/legacy`. It re-exports the old v1
+// API — `WidthProvider`, and a default `ReactGridLayout` that takes the
+// same flat props (`cols`, `rowHeight`, `margin`, `compactType`,
+// `draggableHandle`, `onLayoutChange(layout)`) this component already
+// uses — with correct, standard TypeScript declarations (no cast-fighting
+// needed for the import itself).
 //
-// Separately: this package's shipped .d.ts declares the module with
-// `export =` syntax (a single class), which doesn't model the additional
-// named exports (`WidthProvider`, `Responsive`, etc.) its actual CommonJS
-// output attaches as SIBLINGS of the default export — not properties ON
-// the default export. `RGLDefault.WidthProvider` (a previous attempt at
-// this fix) was wrong for that reason: the default export is just the
-// plain GridLayout component, with nothing hanging off it.
-//
-// A static namespace import (`import * as RGLModule`) captures the whole
-// module object at runtime — `.default` and `.WidthProvider` as true
-// siblings — so we destructure from there and cast to bypass the
-// incomplete types.
-const { default: RGLBase, WidthProvider } = RGLModule as unknown as {
-  default: ComponentType<any>
-  WidthProvider: (Component: ComponentType<any>) => ComponentType<GridLayoutProps>
-}
-const GridLayout = WidthProvider(RGLBase)
+// This is also safe with SSR on its own merits, with no dynamic()/
+// ssr:false wrapper needed: the only `window`-touching code in this
+// library runs inside `componentDidMount`, which never executes during
+// server rendering. `WidthProvider` exists specifically to correct the
+// initial guessed width once the component mounts client-side.
+const GridLayout = WidthProvider(ReactGridLayoutBase) as unknown as ComponentType<GridLayoutProps>
 
 const ICONS: Record<WidgetKey, typeof IconCalendarCheck> = {
   bookings: IconCalendarCheck,
