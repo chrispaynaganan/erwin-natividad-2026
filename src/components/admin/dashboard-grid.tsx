@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ComponentType, ReactNode } from 'react'
-import dynamic from 'next/dynamic'
+import { useMemo, useRef, useState } from 'react'
+import type { ComponentType } from 'react'
 import Link from 'next/link'
+import RGLDefault from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import {
@@ -24,8 +24,7 @@ import styles from './dashboard-grid.module.css'
 // type doesn't resolve to {i,x,y,w,h} in some TS setups. Rather than fight
 // the library's types, we type our *own* usage explicitly (the props we
 // actually pass, and the shape the callback actually receives at runtime —
-// both well-documented, stable parts of its public API) and load the
-// module itself as `any` under the hood.
+// both well-documented, stable parts of its public API).
 type RGLItem = { i: string; x: number; y: number; w: number; h: number }
 
 type GridLayoutProps = {
@@ -37,18 +36,33 @@ type GridLayoutProps = {
   compactType?: 'vertical' | 'horizontal' | null
   draggableHandle?: string
   onLayoutChange?: (layout: RGLItem[]) => void
-  children?: ReactNode
+  children?: React.ReactNode
 }
 
-// react-grid-layout touches `window` while computing initial sizing, which
-// doesn't play well with SSR — load it client-only, after mount.
-const GridLayout = dynamic<GridLayoutProps>(
-  async () => {
-    const mod: any = await import('react-grid-layout')
-    return mod.WidthProvider(mod.default) as ComponentType<GridLayoutProps>
-  },
-  { ssr: false },
-)
+// IMPORTANT: this must be a *static* import, not `next/dynamic(() =>
+// import('react-grid-layout'))`. Webpack's CommonJS interop for a dynamic
+// import() does not copy named exports (like `WidthProvider`) onto the
+// resulting module namespace, so `mod.WidthProvider` is `undefined` at
+// runtime even though the build succeeds and the types look fine — that's
+// the "e.WidthProvider is not a function" production crash.
+//
+// This is safe with SSR on its own merits: the only `window`-touching code
+// in this library runs inside `componentDidMount`, which never executes
+// during server rendering. `WidthProvider` exists specifically to correct
+// the initial guessed width once the component mounts client-side — so no
+// `dynamic(..., { ssr: false })` wrapper, and no pre-mount fallback UI, are
+// needed at all.
+//
+// Separately: this package's shipped .d.ts doesn't expose `WidthProvider`
+// as a named export the type checker recognizes (a distinct issue from the
+// runtime bug above — see §44.5). `import RGL, { WidthProvider } from
+// 'react-grid-layout'` is the pattern the library's own docs show and is
+// runtime-correct, but fails typecheck here. Importing the default and
+// casting sidesteps that gap without reintroducing a dynamic import.
+const RGL = RGLDefault as unknown as ComponentType<any> & {
+  WidthProvider: (Component: ComponentType<any>) => ComponentType<GridLayoutProps>
+}
+const GridLayout = RGL.WidthProvider(RGL)
 
 const ICONS: Record<WidgetKey, typeof IconCalendarCheck> = {
   bookings: IconCalendarCheck,
@@ -135,10 +149,7 @@ export function DashboardGrid({
   const [visible, setVisible] = useState<WidgetKey[]>(initialLayout.visible)
   const [layout, setLayout] = useState<LayoutItem[]>(initialLayout.layout)
   const [addMenuOpen, setAddMenuOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => setMounted(true), [])
 
   const hiddenWidgets = useMemo(
     () => ALL_WIDGET_KEYS.filter((k) => !visible.includes(k)),
@@ -214,33 +225,22 @@ export function DashboardGrid({
         </div>
       </div>
 
-      {!mounted ? (
-        // Static fallback for the brief pre-mount window — same cards, no
-        // drag/resize wiring yet, so there's no layout jump once the real
-        // grid takes over.
-        <div className={styles.staticGrid}>
-          {visible.map((key) => (
-            <WidgetCard key={key} widgetKey={key} metrics={metrics} onRemove={() => removeWidget(key)} />
-          ))}
-        </div>
-      ) : (
-        <GridLayout
-          className={styles.grid}
-          layout={gridLayout}
-          cols={12}
-          rowHeight={ROW_HEIGHT}
-          margin={[16, 16]}
-          compactType="vertical"
-          draggableHandle={`.${styles.dragHandle}`}
-          onLayoutChange={handleLayoutChange}
-        >
-          {visible.map((key) => (
-            <div key={key}>
-              <WidgetCard widgetKey={key} metrics={metrics} onRemove={() => removeWidget(key)} />
-            </div>
-          ))}
-        </GridLayout>
-      )}
+      <GridLayout
+        className={styles.grid}
+        layout={gridLayout}
+        cols={12}
+        rowHeight={ROW_HEIGHT}
+        margin={[16, 16]}
+        compactType="vertical"
+        draggableHandle={`.${styles.dragHandle}`}
+        onLayoutChange={handleLayoutChange}
+      >
+        {visible.map((key) => (
+          <div key={key}>
+            <WidgetCard widgetKey={key} metrics={metrics} onRemove={() => removeWidget(key)} />
+          </div>
+        ))}
+      </GridLayout>
     </div>
   )
 }
