@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react'
 import type { ComponentType } from 'react'
 import Link from 'next/link'
-import RGLDefault from 'react-grid-layout'
+import * as RGLModule from 'react-grid-layout'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 import {
@@ -53,16 +53,23 @@ type GridLayoutProps = {
 // `dynamic(..., { ssr: false })` wrapper, and no pre-mount fallback UI, are
 // needed at all.
 //
-// Separately: this package's shipped .d.ts doesn't expose `WidthProvider`
-// as a named export the type checker recognizes (a distinct issue from the
-// runtime bug above — see §44.5). `import RGL, { WidthProvider } from
-// 'react-grid-layout'` is the pattern the library's own docs show and is
-// runtime-correct, but fails typecheck here. Importing the default and
-// casting sidesteps that gap without reintroducing a dynamic import.
-const RGL = RGLDefault as unknown as ComponentType<any> & {
+// Separately: this package's shipped .d.ts declares the module with
+// `export =` syntax (a single class), which doesn't model the additional
+// named exports (`WidthProvider`, `Responsive`, etc.) its actual CommonJS
+// output attaches as SIBLINGS of the default export — not properties ON
+// the default export. `RGLDefault.WidthProvider` (a previous attempt at
+// this fix) was wrong for that reason: the default export is just the
+// plain GridLayout component, with nothing hanging off it.
+//
+// A static namespace import (`import * as RGLModule`) captures the whole
+// module object at runtime — `.default` and `.WidthProvider` as true
+// siblings — so we destructure from there and cast to bypass the
+// incomplete types.
+const { default: RGLBase, WidthProvider } = RGLModule as unknown as {
+  default: ComponentType<any>
   WidthProvider: (Component: ComponentType<any>) => ComponentType<GridLayoutProps>
 }
-const GridLayout = RGL.WidthProvider(RGL)
+const GridLayout = WidthProvider(RGLBase)
 
 const ICONS: Record<WidgetKey, typeof IconCalendarCheck> = {
   bookings: IconCalendarCheck,
