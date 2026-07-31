@@ -65,7 +65,45 @@
 .link:hover .icon { color: var(--accent-soft); }
 .linkActive .icon { color: var(--btn-fg); }
 
+/* --- Mobile: off-canvas drawer --------------------------------------- */
+/* Same breakpoint as sidebar-toggle-button.module.css — they move as a
+   pair. Below it, the sidebar leaves the flex flow (position: fixed) and
+   slides in from the left instead of permanently occupying 220px of a
+   narrow screen. */
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 50;
+    width: min(220px, 80vw);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.18);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 40;
+  }
+}
+
+@media (min-width: 861px) {
+  /* Belt-and-suspenders: the backdrop can only mount when `open` is true,
+     and `open` can only become true via the hamburger button (hidden
+     above this breakpoint) — but hide it explicitly too in case the
+     drawer was opened on mobile and the viewport is then resized wider. */
+  .backdrop { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .indicator { transition: none; }
   .link { transition: none; }
+  .sidebar { transition: none; }
 }

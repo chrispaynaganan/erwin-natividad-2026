@@ -5,7 +5,10 @@
    so admin and public site read as one product rather than two. */
 .header {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 14px 2rem;
+  /* Fluid horizontal padding: full 2rem on desktop, shrinking down to 1rem
+     on narrow phones, instead of a fixed value that either wastes space or
+     crowds the hamburger/sign-out buttons. */
+  padding: 14px clamp(1rem, 4vw, 2rem);
   border-bottom: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(14px) saturate(160%);
@@ -14,10 +17,32 @@
 }
 [data-theme="dark"] .header { background: rgba(24, 24, 22, 0.72); }
 
-.who { font-size: 0.85rem; color: var(--text-muted); }
+.headerStart {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.who {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .role { color: var(--accent-soft); font-weight: 600; }
 
 .footer {
-  padding: 0.85rem 2rem; border-top: 1px solid var(--border);
+  padding: 0.85rem clamp(1rem, 4vw, 2rem); border-top: 1px solid var(--border);
   color: var(--text-muted); font-size: 0.78rem;
+}
+
+@media (max-width: 480px) {
+  /* On the narrowest phones, drop the "Signed in as" text entirely rather
+     than truncate it into something unreadable — the sign-out button and
+     menu toggle are what matter there. */
+  .who { display: none; }
 }

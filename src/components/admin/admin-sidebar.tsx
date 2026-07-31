@@ -16,6 +16,7 @@ import {
   Settings,
   type LucideIcon,
 } from 'lucide-react'
+import { useSidebar } from './admin-sidebar-context'
 import s from './admin-sidebar.module.css'
 
 type Item = { href: string; label: string; min: AppRole; group: string; match?: string[]; icon: LucideIcon }
@@ -37,6 +38,7 @@ const RANK: Record<AppRole, number> = { member: 0, viewer: 1, editor: 2, admin: 
 
 export function AdminSidebar({ role }: { role: AppRole }) {
   const pathname = usePathname()
+  const { open, close } = useSidebar()
   const visible = items.filter((i) => RANK[role] >= RANK[i.min])
   const groups = Array.from(new Set(visible.map((i) => i.group)))
   const navRef = useRef<HTMLElement>(null)
@@ -59,40 +61,48 @@ export function AdminSidebar({ role }: { role: AppRole }) {
   }, [pathname])
 
   return (
-    <aside className={s.sidebar}>
-      <div className={s.brand}>
-        <span className={s.mark}>en</span>
-        <span className={s.brandLabel}>Admin</span>
-      </div>
-      <nav ref={navRef} className={s.nav}>
-        {indicator && (
-          <span
-            className={s.indicator}
-            style={{ transform: `translateY(${indicator.top}px)`, height: indicator.height }}
-            aria-hidden
-          />
-        )}
-        {groups.map((g) => (
-          <div key={g} className={s.group}>
-            <p className={s.groupLabel}>{g}</p>
-            {visible.filter((i) => i.group === g).map((i) => {
-              const active = isActive(i)
-              const Icon = i.icon
-              return (
-                <Link
-                  key={i.href}
-                  href={i.href}
-                  data-active={active || undefined}
-                  className={`${s.link} ${active ? s.linkActive : ''}`}
-                >
-                  <Icon className={s.icon} size={17} strokeWidth={2} aria-hidden />
-                  <span>{i.label}</span>
-                </Link>
-              )
-            })}
-          </div>
-        ))}
-      </nav>
-    </aside>
+    <>
+      {/* Mobile-only scrim behind the drawer — tapping it closes the menu.
+          Doesn't render (or intercept clicks) on desktop, since `open` can
+          only become true via the hamburger button, which is itself
+          hidden above the drawer breakpoint. */}
+      {open && <div className={s.backdrop} onClick={close} aria-hidden />}
+
+      <aside className={`${s.sidebar} ${open ? s.open : ''}`}>
+        <div className={s.brand}>
+          <span className={s.mark}>en</span>
+          <span className={s.brandLabel}>Admin</span>
+        </div>
+        <nav ref={navRef} className={s.nav}>
+          {indicator && (
+            <span
+              className={s.indicator}
+              style={{ transform: `translateY(${indicator.top}px)`, height: indicator.height }}
+              aria-hidden
+            />
+          )}
+          {groups.map((g) => (
+            <div key={g} className={s.group}>
+              <p className={s.groupLabel}>{g}</p>
+              {visible.filter((i) => i.group === g).map((i) => {
+                const active = isActive(i)
+                const Icon = i.icon
+                return (
+                  <Link
+                    key={i.href}
+                    href={i.href}
+                    data-active={active || undefined}
+                    className={`${s.link} ${active ? s.linkActive : ''}`}
+                  >
+                    <Icon className={s.icon} size={17} strokeWidth={2} aria-hidden />
+                    <span>{i.label}</span>
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
+        </nav>
+      </aside>
+    </>
   )
 }

@@ -1,5 +1,7 @@
 import { getSessionProfile, hasMinRole } from '@/lib/auth'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
+import { SidebarProvider } from '@/components/admin/admin-sidebar-context'
+import { SidebarToggleButton } from '@/components/admin/sidebar-toggle-button'
 import { SignOutButton } from '@/components/signout-button'
 import { AdminLogin } from '@/components/admin/admin-login'
 import { AdminMain } from '@/components/admin/admin-main'
@@ -29,18 +31,23 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className={s.shell}>
-      <AdminSidebar role={session.profile.role} />
-      <div className={s.body}>
-        <header className={s.header}>
-          <span className={s.who}>
-            Signed in as {session.profile.full_name ?? 'staff'} · <span className={s.role}>{session.profile.role}</span>
-          </span>
-          <SignOutButton />
-        </header>
-        <AdminMain>{children}</AdminMain>
-        <footer className={s.footer}>Erwin Natividad · admin v0.1.0</footer>
+    <SidebarProvider>
+      <div className={s.shell}>
+        <AdminSidebar role={session.profile.role} />
+        <div className={s.body}>
+          <header className={s.header}>
+            <div className={s.headerStart}>
+              <SidebarToggleButton />
+              <span className={s.who}>
+                Signed in as {session.profile.full_name ?? 'staff'} · <span className={s.role}>{session.profile.role}</span>
+              </span>
+            </div>
+            <SignOutButton />
+          </header>
+          <AdminMain>{children}</AdminMain>
+          <footer className={s.footer}>Erwin Natividad · admin v0.1.0</footer>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

@@ -23,7 +23,10 @@ export function AdminMain({ children }: { children: React.ReactNode }) {
   }, [pathname])
 
   return (
-    <main ref={mainRef} className={s.pageIn} style={{ flex: 1, padding: '2rem' }}>
+    // Fluid padding: full 2rem on desktop, shrinking to 1rem on narrow
+    // phones, so page content isn't squeezed by fixed margins it doesn't
+    // have room for.
+    <main ref={mainRef} className={s.pageIn} style={{ flex: 1, padding: 'clamp(1rem, 4vw, 2rem)' }}>
       {children}
     </main>
   )
