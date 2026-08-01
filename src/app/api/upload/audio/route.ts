@@ -2,21 +2,7 @@ import { NextResponse } from 'next/server'
 import { getSessionProfile, hasMinRole } from '@/lib/auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-// Audio upload endpoint for the admin panel — sibling to /api/upload
-// (images), same auth model.
-// - Editors and above only.
-// - Expects an ALREADY-CONVERTED AAC (.m4a) file. Conversion happens
-//   client-side via ffmpeg.wasm (see lib/audio/convert.ts) — there's no
-//   fast, dependency-light server-side equivalent to `sharp` for audio here,
-//   so the browser does the transcoding before the file is ever sent.
-// - Bucket-aware: `episode-audio` is PRIVATE (premium gating — see doc 02,
-//   "Premium audio never leaks"), so only a Storage path is returned there,
-//   never a public URL. `project-audio` (portfolio demos) and
-//   `show-intro-audio` (show intro clips — no premium gating, meant to play
-//   for anyone) are PUBLIC — a public URL is returned for both.
 export const runtime = 'nodejs'
-
-const MAX_BYTES = 200 * 1024 * 1024 // generous cap for long-form episodes — confirm this matches each bucket's own file_size_limit
 
 const AUDIO_BUCKETS: Record<string, { public: boolean }> = {
   'episode-audio': { public: false },
@@ -24,44 +10,33 @@ const AUDIO_BUCKETS: Record<string, { public: boolean }> = {
   'show-intro-audio': { public: true },
 }
 
+// Issues a short-lived signed upload URL instead of accepting the file body
+// directly — Vercel Functions cap request bodies at ~4.5MB regardless of any
+// in-app size limit, so the actual audio bytes must go client → Supabase
+// Storage directly, never through this function.
 export async function POST(req: Request) {
   const session = await getSessionProfile()
   if (!session || !hasMinRole(session.profile.role, 'editor')) {
     return NextResponse.json({ error: 'Not authorized.' }, { status: 401 })
   }
 
-  const form = await req.formData()
-  const file = form.get('file')
-  const bucket = String(form.get('bucket') ?? 'episode-audio')
-  const folder = (String(form.get('folder') ?? 'misc').replace(/[^a-zA-Z0-9-_]/g, '') || 'misc').toLowerCase()
+  const { bucket, folder: rawFolder, fileName } = await req.json()
+  const folder = (String(rawFolder ?? 'misc').replace(/[^a-zA-Z0-9-_]/g, '') || 'misc').toLowerCase()
 
   const bucketConfig = AUDIO_BUCKETS[bucket]
   if (!bucketConfig) return NextResponse.json({ error: 'Unknown audio bucket.' }, { status: 400 })
-  if (!(file instanceof File)) return NextResponse.json({ error: 'No file received.' }, { status: 400 })
-  if (!/\.m4a$/i.test(file.name) && file.type !== 'audio/mp4') {
+  if (!fileName || !/\.m4a$/i.test(fileName)) {
     return NextResponse.json({ error: 'Expected an AAC (.m4a) file — conversion should happen before upload.' }, { status: 400 })
   }
-  if (file.size > MAX_BYTES) return NextResponse.json({ error: 'Audio file is too large (max 200 MB).' }, { status: 400 })
 
-  const body = Buffer.from(await file.arrayBuffer())
   const path = `${folder}/${crypto.randomUUID()}.m4a`
-
   const db = createAdminClient()
-  const { error } = await db.storage.from(bucket).upload(path, body, {
-    contentType: 'audio/mp4',
-    cacheControl: '31536000',
-    upsert: false,
-  })
-  if (error) {
-    console.error('[upload-audio] storage error:', error)
-    return NextResponse.json({ error: 'Upload failed: ' + error.message }, { status: 500 })
+  const { data, error } = await db.storage.from(bucket).createSignedUploadUrl(path)
+  if (error || !data) {
+    console.error('[upload-audio] sign error:', error)
+    return NextResponse.json({ error: 'Could not prepare upload: ' + (error?.message ?? 'unknown error') }, { status: 500 })
   }
 
-  if (bucketConfig.public) {
-    const { data } = db.storage.from(bucket).getPublicUrl(path)
-    return NextResponse.json({ path, url: data.publicUrl })
-  }
-
-  // Private bucket — no getPublicUrl call, no url in the response.
-  return NextResponse.json({ path })
+  const url = bucketConfig.public ? db.storage.from(bucket).getPublicUrl(path).data.publicUrl : undefined
+  return NextResponse.json({ path, token: data.token, url })
 }
