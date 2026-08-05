@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useState } from 'react'
 import { IconPlayerPlay, IconPlayerPause, IconLock, IconSearch } from '@tabler/icons-react'
 import type { PublicEpisode } from '@/lib/episodes'
@@ -50,11 +51,16 @@ export function PodcastEpisodeList({
                   type="button"
                   className={s.episodePlayBtn}
                   aria-label={isActivePlaying ? 'Pause' : 'Play'}
-                  onClick={() => play(ep, showTitle, showSlug, episodes)}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    play(ep, showTitle, showSlug, episodes)
+                  }}
                 >
                   {ep.isPremium ? <IconLock size={17} stroke={1.75} /> : isActivePlaying ? <IconPlayerPause size={17} stroke={1.75} /> : <IconPlayerPlay size={17} stroke={1.75} />}
                 </button>
-                <div className={s.episodeMeta}>
+
+                <Link href={`/podcasts/${showSlug}/${ep.slug}`} className={s.episodeMeta} style={{ display: 'block' }}>
                   <div className={s.episodeTitle}>
                     {ep.episodeNumber != null && <span className={s.episodeNum}>#{ep.episodeNumber}</span>} {ep.title}
                     {ep.isPremium && <span className={s.episodeBadge}>Members Only</span>}
@@ -65,7 +71,7 @@ export function PodcastEpisodeList({
                     <span>·</span>
                     <span>{fmt(ep.durationSecs)}</span>
                   </div>
-                </div>
+                </Link>
               </div>
             )
           })}

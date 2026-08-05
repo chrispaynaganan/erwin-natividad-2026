@@ -61,3 +61,15 @@
 .showPlayFill { display: block; height: 100%; background: var(--text); border-radius: 999px; }
 .showPlayDuration { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; }
 .showPlaySpinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--surface-2); border-top-color: transparent; animation: pmpSpin 0.7s linear infinite; }
+
+/* Episode detail page */
+.episodeDetailTitleRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 28px; }
+.episodeDetailTitle { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 400; letter-spacing: -0.02em; }
+.episodeDetailDesc { color: var(--text-muted); margin-top: 16px; max-width: 62ch; line-height: 1.6; }
+.episodeExternalLink { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 0.9rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.episodeExternalLink:hover { text-decoration: underline; }
+.infoCard { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px 18px; margin-top: 12px; max-width: 460px; }
+.infoRow { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+.infoRow:last-child { border-bottom: none; }
+.infoLabel { color: var(--text-muted); }
+.infoValue { font-weight: 600; text-align: right; }

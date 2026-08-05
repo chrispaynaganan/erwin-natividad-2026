@@ -13,9 +13,11 @@ export type PublicEpisode = {
   coverUrl: string | null
   isPremium: boolean
   publishedAt: string | null
+  externalLinkUrl: string | null
+  externalLinkLabel: string | null
 }
 
-const COLUMNS = 'id, show_id, title, slug, description, duration_secs, episode_number, season, cover_url, is_premium, published_at'
+const COLUMNS = 'id, show_id, title, slug, description, duration_secs, episode_number, season, cover_url, is_premium, published_at, external_link_url, external_link_label'
 
 function toEpisode(row: any): PublicEpisode {
   return {
@@ -23,6 +25,7 @@ function toEpisode(row: any): PublicEpisode {
     description: row.description, durationSecs: row.duration_secs,
     episodeNumber: row.episode_number, season: row.season, coverUrl: row.cover_url,
     isPremium: row.is_premium, publishedAt: row.published_at,
+    externalLinkUrl: row.external_link_url, externalLinkLabel: row.external_link_label,
   }
 }
 
@@ -53,12 +56,13 @@ export async function getEpisodesForShow(showId: string): Promise<PublicEpisode[
   return (data ?? []).map(toEpisode)
 }
 
-export async function getEpisode(id: string): Promise<PublicEpisode | null> {
+export async function getEpisodeBySlug(showId: string, slug: string): Promise<PublicEpisode | null> {
   const db = createAdminClient()
   const { data, error } = await db
     .from('episodes')
     .select(COLUMNS)
-    .eq('id', id)
+    .eq('show_id', showId)
+    .eq('slug', slug)
     .eq('status', 'published')
     .maybeSingle()
   if (error) throw new Error(error.message)
