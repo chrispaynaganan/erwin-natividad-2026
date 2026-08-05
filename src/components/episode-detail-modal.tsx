@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react'
-import { IconX, IconExternalLink } from '@tabler/icons-react'
+import Link from 'next/link'
+import { IconX, IconExternalLink, IconChevronRight } from '@tabler/icons-react'
 import type { PublicEpisode } from '@/lib/episodes'
 import { EpisodePlayPill } from './episode-play-pill'
 import ShareButton from './share-button'
@@ -26,7 +27,9 @@ export function EpisodeDetailModal({
     }
   }, [onClose])
 
-  const fmtDate = (iso: string | null) =>
+  const fmtDateShort = (iso: string | null) =>
+    iso ? new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : ''
+  const fmtDateFull = (iso: string | null) =>
     iso ? new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '—'
   const fmtLen = (secs: number | null) => (secs ? `${Math.round(secs / 60)} min` : '—')
 
@@ -37,17 +40,28 @@ export function EpisodeDetailModal({
           <IconX size={18} stroke={1.75} />
         </button>
 
-        <div className={s.modalTitleRow}>
+        <div className={s.modalHeader}>
+          {episode.coverUrl && (
+            <div className={s.modalArt}>
+              <img src={episode.coverUrl} alt="" />
+            </div>
+          )}
           <div>
+            <div className={s.modalDate}>{fmtDateShort(episode.publishedAt)}</div>
             <h2 className={s.modalTitle}>
-              {episode.episodeNumber != null && <span className={s.episodeNum}>#{episode.episodeNumber}</span>} {episode.title}
+              {episode.episodeNumber != null && <span className={s.episodeNum}>#{episode.episodeNumber} </span>}
+              {episode.title}
             </h2>
-            <p className={s.modalShow}>{showTitle}</p>
+            <Link href={`/podcasts/${showSlug}`} className={s.modalShowLink} onClick={onClose}>
+              {showTitle} <IconChevronRight size={14} stroke={1.75} />
+            </Link>
           </div>
-          <ShareButton url={`${SITE_URL}/podcasts/${showSlug}?episode=${episode.slug}`} title={episode.title} />
         </div>
 
-        <EpisodePlayPill episode={episode} showTitle={showTitle} showSlug={showSlug} episodes={episodes} />
+        <div className={s.modalActions}>
+          <ShareButton url={`${SITE_URL}/podcasts/${showSlug}?episode=${episode.slug}`} title={episode.title} />
+          <EpisodePlayPill episode={episode} showTitle={showTitle} showSlug={showSlug} episodes={episodes} />
+        </div>
 
         {episode.description && <p className={s.modalDesc}>{episode.description}</p>}
 
@@ -57,11 +71,25 @@ export function EpisodeDetailModal({
           </a>
         )}
 
-        <div className={s.infoCard}>
-          <div className={s.infoRow}><span className={s.infoLabel}>Show</span><span className={s.infoValue}>{showTitle}</span></div>
-          <div className={s.infoRow}><span className={s.infoLabel}>Published</span><span className={s.infoValue}>{fmtDate(episode.publishedAt)}</span></div>
-          <div className={s.infoRow}><span className={s.infoLabel}>Length</span><span className={s.infoValue}>{fmtLen(episode.durationSecs)}</span></div>
-          {episode.isPremium && <div className={s.infoRow}><span className={s.infoLabel}>Access</span><span className={s.infoValue}>Members Only</span></div>}
+        <div className={s.infoGrid}>
+          <div>
+            <div className={s.infoGridLabel}>Show</div>
+            <div className={s.infoGridValue}>{showTitle}</div>
+          </div>
+          <div>
+            <div className={s.infoGridLabel}>Published</div>
+            <div className={s.infoGridValue}>{fmtDateFull(episode.publishedAt)}</div>
+          </div>
+          <div>
+            <div className={s.infoGridLabel}>Length</div>
+            <div className={s.infoGridValue}>{fmtLen(episode.durationSecs)}</div>
+          </div>
+          {episode.isPremium && (
+            <div>
+              <div className={s.infoGridLabel}>Access</div>
+              <div className={s.infoGridValue}>Members Only</div>
+            </div>
+          )}
         </div>
       </div>
     </div>
