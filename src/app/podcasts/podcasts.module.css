@@ -42,7 +42,17 @@
 .episodeTitle { font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .episodeNum { color: var(--text-muted); font-weight: 500; }
 .episodeBadge { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 999px; background: var(--tag-bg); color: var(--tag-text); }
-.episodeDesc { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-top: 4px; }
+.episodeDesc {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .episodeSub { display: flex; gap: 8px; color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; }
 
 .showPlayPill {
